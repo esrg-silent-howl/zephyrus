@@ -3321,7 +3321,7 @@ FRAME-LETTER</description>
 </class>
 </classes>
 <parts>
-<part name="IC1" library="STM32F051" deviceset="STM32F051K8T6" device="" value="STM32F051"/>
+<part name="IC1" library="STM32F051" deviceset="STM32F051K8T6" device="" override_package3d_urn="urn:adsk.eagle:package:25016239/2" override_package_urn="urn:adsk.eagle:footprint:25016240/1" value="STM32F051"/>
 <part name="J1" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_13" device="" package3d_urn="urn:adsk.eagle:package:38176/1"/>
 <part name="J2" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_13" device="" package3d_urn="urn:adsk.eagle:package:38176/1"/>
 <part name="SUPPLY1" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="VDD" device=""/>
@@ -3335,11 +3335,11 @@ FRAME-LETTER</description>
 <part name="SUPPLY6" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="VDD" device=""/>
 <part name="GND5" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND6" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
-<part name="R1" library="SparkFun-Resistors" library_urn="urn:adsk.eagle:library:532" deviceset="0.22OHM" device="-0805-1/4W-1%" package3d_urn="urn:adsk.eagle:package:39651/1" value="110k"/>
-<part name="C1" library="C2012X7R1H104K085AA-100n" deviceset="C2012X7R1H104K085AA" device="" value="100n"/>
-<part name="C2" library="C2012X7R1H104K085AA-100n" deviceset="C2012X7R1H104K085AA" device="" value="100n"/>
-<part name="C3" library="C3216X7R1C106K160AC-10u" deviceset="C3216X7R1C106K160AC" device="" value="10u"/>
-<part name="C4" library="C3216X7R1C106K160AC-10u" deviceset="C3216X7R1C106K160AC" device="" value="10u"/>
+<part name="R1" library="SparkFun-Resistors" library_urn="urn:adsk.eagle:library:532" deviceset="0.22OHM" device="-0805-1/4W-1%" package3d_urn="urn:adsk.eagle:package:39651/1" override_package3d_urn="urn:adsk.eagle:package:25023228/2" override_package_urn="urn:adsk.eagle:footprint:39617/1" value="110k"/>
+<part name="C1" library="C2012X7R1H104K085AA-100n" deviceset="C2012X7R1H104K085AA" device="" override_package3d_urn="urn:adsk.eagle:package:25023066/2" override_package_urn="urn:adsk.eagle:footprint:25023067/1" value="100n"/>
+<part name="C2" library="C2012X7R1H104K085AA-100n" deviceset="C2012X7R1H104K085AA" device="" override_package3d_urn="urn:adsk.eagle:package:25023087/2" override_package_urn="urn:adsk.eagle:footprint:25023088/1" value="100n"/>
+<part name="C3" library="C3216X7R1C106K160AC-10u" deviceset="C3216X7R1C106K160AC" device="" override_package3d_urn="urn:adsk.eagle:package:25023072/2" override_package_urn="urn:adsk.eagle:footprint:25023073/1" value="10u"/>
+<part name="C4" library="C3216X7R1C106K160AC-10u" deviceset="C3216X7R1C106K160AC" device="" override_package3d_urn="urn:adsk.eagle:package:25023083/2" override_package_urn="urn:adsk.eagle:footprint:25023084/1" value="10u"/>
 <part name="GND7" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND8" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="SUPPLY7" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="VDD" device=""/>
@@ -3902,6 +3902,11 @@ will not be understood (or retained) with this version.
 Since Version 8.3, EAGLE supports the association of 3D packages
 with devices in libraries, schematics, and board files. Those 3D
 packages will not be understood (or retained) with this version.
+</note>
+<note version="9.4" severity="warning">
+Since Version 9.4, EAGLE supports the overriding of 3D packages
+in schematics and board files. Those overridden 3d packages
+will not be understood (or retained) with this version.
 </note>
 </compatibility>
 </eagle>
