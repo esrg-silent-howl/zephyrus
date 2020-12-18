@@ -141,8 +141,7 @@ __weak void nrf_packet_received_callback(nrf24l01* dev, uint8_t* data) {
 
 NRF_RESULT nrf_read_register(nrf24l01* dev, uint8_t reg, uint8_t* data) {
     uint8_t tx = 0;
-    if (nrf_send_command(dev, NRF_CMD_R_REGISTER | reg, &tx, data, 1) !=
-        NRF_OK) {
+    if (nrf_send_command(dev, NRF_CMD_R_REGISTER | reg, &tx, data, 1) != NRF_OK) {
         return NRF_ERROR;
     }
     return NRF_OK;
