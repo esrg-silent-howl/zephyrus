@@ -4160,6 +4160,82 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 </deviceset>
 </devicesets>
 </library>
+<library name="AP22814AW5-7">
+<description>&lt;DiodesZetex AP22814AW5-7, USB Power Switch, High Side, 65m, 1.6 V min. 5-Pin, SOT25&lt;/b&gt;&lt;p&gt;
+&lt;author&gt;Created by SamacSys&lt;/author&gt;</description>
+<packages>
+<package name="SOT95P285X130-5N">
+<description>&lt;b&gt;SOT25&lt;/b&gt;&lt;br&gt;
+</description>
+<smd name="1" x="-1.3" y="0.95" dx="1.15" dy="0.6" layer="1"/>
+<smd name="2" x="-1.3" y="0" dx="1.15" dy="0.6" layer="1"/>
+<smd name="3" x="-1.3" y="-0.95" dx="1.15" dy="0.6" layer="1"/>
+<smd name="4" x="1.3" y="-0.95" dx="1.15" dy="0.6" layer="1"/>
+<smd name="5" x="1.3" y="0.95" dx="1.15" dy="0.6" layer="1"/>
+<text x="0" y="0" size="1.27" layer="25" align="center">&gt;NAME</text>
+<text x="0" y="0" size="1.27" layer="27" align="center">&gt;VALUE</text>
+<wire x1="-2.125" y1="1.8" x2="2.125" y2="1.8" width="0.05" layer="51"/>
+<wire x1="2.125" y1="1.8" x2="2.125" y2="-1.8" width="0.05" layer="51"/>
+<wire x1="2.125" y1="-1.8" x2="-2.125" y2="-1.8" width="0.05" layer="51"/>
+<wire x1="-2.125" y1="-1.8" x2="-2.125" y2="1.8" width="0.05" layer="51"/>
+<wire x1="-0.8" y1="1.5" x2="0.8" y2="1.5" width="0.1" layer="51"/>
+<wire x1="0.8" y1="1.5" x2="0.8" y2="-1.5" width="0.1" layer="51"/>
+<wire x1="0.8" y1="-1.5" x2="-0.8" y2="-1.5" width="0.1" layer="51"/>
+<wire x1="-0.8" y1="-1.5" x2="-0.8" y2="1.5" width="0.1" layer="51"/>
+<wire x1="-0.8" y1="0.55" x2="0.15" y2="1.5" width="0.1" layer="51"/>
+<wire x1="-0.375" y1="1.5" x2="0.375" y2="1.5" width="0.2" layer="21"/>
+<wire x1="0.375" y1="1.5" x2="0.375" y2="-1.5" width="0.2" layer="21"/>
+<wire x1="0.375" y1="-1.5" x2="-0.375" y2="-1.5" width="0.2" layer="21"/>
+<wire x1="-0.375" y1="-1.5" x2="-0.375" y2="1.5" width="0.2" layer="21"/>
+<wire x1="-1.875" y1="1.5" x2="-0.725" y2="1.5" width="0.2" layer="21"/>
+</package>
+</packages>
+<symbols>
+<symbol name="AP22814AW5-7">
+<wire x1="5.08" y1="2.54" x2="20.32" y2="2.54" width="0.254" layer="94"/>
+<wire x1="20.32" y1="-7.62" x2="20.32" y2="2.54" width="0.254" layer="94"/>
+<wire x1="20.32" y1="-7.62" x2="5.08" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="5.08" y1="2.54" x2="5.08" y2="-7.62" width="0.254" layer="94"/>
+<text x="21.59" y="7.62" size="1.778" layer="95" align="center-left">&gt;NAME</text>
+<text x="21.59" y="5.08" size="1.778" layer="96" align="center-left">&gt;VALUE</text>
+<pin name="OUT" x="0" y="0" length="middle" direction="pwr"/>
+<pin name="GND" x="0" y="-2.54" length="middle" direction="pwr"/>
+<pin name="FLG" x="0" y="-5.08" length="middle"/>
+<pin name="EN" x="25.4" y="0" length="middle" direction="in" rot="R180"/>
+<pin name="IN" x="25.4" y="-2.54" length="middle" direction="pwr" rot="R180"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="AP22814AW5-7" prefix="PS">
+<description>&lt;b&gt;DiodesZetex AP22814AW5-7, USB Power Switch, High Side, 65m, 1.6 V min. 5-Pin, SOT25&lt;/b&gt;&lt;p&gt;
+Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.pdf"&gt; Datasheet &lt;/a&gt;</description>
+<gates>
+<gate name="G$1" symbol="AP22814AW5-7" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="SOT95P285X130-5N">
+<connects>
+<connect gate="G$1" pin="EN" pad="4"/>
+<connect gate="G$1" pin="FLG" pad="3"/>
+<connect gate="G$1" pin="GND" pad="2"/>
+<connect gate="G$1" pin="IN" pad="5"/>
+<connect gate="G$1" pin="OUT" pad="1"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="DESCRIPTION" value="DiodesZetex AP22814AW5-7, USB Power Switch, High Side, 65m, 1.6 V min. 5-Pin, SOT25" constant="no"/>
+<attribute name="HEIGHT" value="1.3mm" constant="no"/>
+<attribute name="MANUFACTURER_NAME" value="Diodes Inc." constant="no"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="AP22814AW5-7" constant="no"/>
+<attribute name="MOUSER_PART_NUMBER" value="621-AP22814AW5-7" constant="no"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.co.uk/ProductDetail/Diodes-Incorporated/AP22814AW5-7?qs=lqAf%2FiVYw9i7Wkgkb62RxQ%3D%3D" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -4217,14 +4293,10 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 <part name="U$8" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="1uF [0603]"/>
 <part name="U$9" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
 <part name="GND11" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="U$10" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="1uF [0603]"/>
 <part name="U$11" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
 <part name="GND12" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="U$12" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0805_L" package3d_urn="urn:adsk.eagle:package:2593726/1" value="4.7nF [0805]"/>
-<part name="U$13" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="1uF [0603]"/>
 <part name="U$14" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
 <part name="GND13" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="U$15" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0805_L" package3d_urn="urn:adsk.eagle:package:2593726/1" value="4.7nF [0805]"/>
 <part name="Y2" library="FA-20H_16.0000MF12Z-AC3" deviceset="FA-20H_16.0000MF12Z-AC3" device=""/>
 <part name="GND4" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND5" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
@@ -4247,6 +4319,9 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 <part name="R7" library="Resistor" library_urn="urn:adsk.eagle:library:16378527" deviceset="R-US" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16378565/2" technology="_" value="10K[0603]"/>
 <part name="GND23" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND26" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
+<part name="PS1" library="AP22814AW5-7" deviceset="AP22814AW5-7" device=""/>
+<part name="U$3" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="4.7uF [0603]"/>
+<part name="U$4" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="4.7uF [0603]"/>
 </parts>
 <sheets>
 <sheet>
@@ -4333,18 +4408,18 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 <attribute name="VALUE" x="-80.518" y="68.58" size="1.778" layer="96" rot="R90" align="center"/>
 </instance>
 <instance part="R2" gate="G$1" x="40.64" y="138.43" smashed="yes" rot="R180">
-<attribute name="NAME" x="40.64" y="136.9314" size="1.778" layer="95" rot="R180" align="center"/>
+<attribute name="NAME" x="40.64" y="135.6614" size="1.778" layer="95" rot="R180" align="center"/>
 <attribute name="VALUE" x="41.91" y="140.462" size="1.778" layer="96" rot="R180" align="center"/>
 </instance>
 <instance part="GND15" gate="1" x="45.72" y="133.35" smashed="yes">
 <attribute name="VALUE" x="45.72" y="133.096" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="C3" gate="C$1" x="-93.98" y="120.65" smashed="yes">
-<attribute name="NAME" x="-99.441" y="117.094" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="-96.901" y="113.284" size="1.778" layer="96" rot="R90"/>
+<instance part="C3" gate="C$1" x="-93.98" y="121.92" smashed="yes">
+<attribute name="NAME" x="-99.441" y="118.364" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="-96.901" y="114.554" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="GND16" gate="1" x="-93.98" y="111.76" smashed="yes">
-<attribute name="VALUE" x="-93.98" y="111.506" size="1.778" layer="96" align="top-center"/>
+<instance part="GND16" gate="1" x="-93.98" y="113.03" smashed="yes">
+<attribute name="VALUE" x="-93.98" y="112.776" size="1.778" layer="96" align="top-center"/>
 </instance>
 <instance part="C4" gate="C$1" x="-78.74" y="120.65" smashed="yes">
 <attribute name="NAME" x="-84.201" y="117.094" size="1.778" layer="95" rot="R90"/>
@@ -4426,35 +4501,19 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 <instance part="GND11" gate="1" x="58.42" y="267.97" smashed="yes">
 <attribute name="VALUE" x="58.42" y="267.716" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="U$10" gate="C$1" x="81.28" y="275.59" smashed="yes">
-<attribute name="NAME" x="75.819" y="272.034" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="78.359" y="268.224" size="1.778" layer="96" rot="R90"/>
+<instance part="U$11" gate="C$1" x="87.63" y="276.86" smashed="yes">
+<attribute name="NAME" x="92.329" y="273.304" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="94.869" y="269.494" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="U$11" gate="C$1" x="95.25" y="275.59" smashed="yes">
-<attribute name="NAME" x="99.949" y="272.034" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="102.489" y="268.224" size="1.778" layer="96" rot="R90"/>
+<instance part="GND12" gate="1" x="80.01" y="267.97" smashed="yes">
+<attribute name="VALUE" x="80.01" y="267.716" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="GND12" gate="1" x="87.63" y="266.7" smashed="yes">
-<attribute name="VALUE" x="87.63" y="266.446" size="1.778" layer="96" align="top-center"/>
+<instance part="U$14" gate="C$1" x="119.38" y="276.86" smashed="yes">
+<attribute name="NAME" x="124.079" y="273.304" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="126.619" y="269.494" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="U$12" gate="C$1" x="87.63" y="275.59" smashed="yes">
-<attribute name="NAME" x="85.979" y="270.764" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="92.329" y="268.224" size="1.778" layer="96" rot="R90"/>
-</instance>
-<instance part="U$13" gate="C$1" x="111.76" y="275.59" smashed="yes">
-<attribute name="NAME" x="106.299" y="272.034" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="108.839" y="268.224" size="1.778" layer="96" rot="R90"/>
-</instance>
-<instance part="U$14" gate="C$1" x="125.73" y="275.59" smashed="yes">
-<attribute name="NAME" x="130.429" y="272.034" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="132.969" y="268.224" size="1.778" layer="96" rot="R90"/>
-</instance>
-<instance part="GND13" gate="1" x="118.11" y="266.7" smashed="yes">
-<attribute name="VALUE" x="118.11" y="266.446" size="1.778" layer="96" align="top-center"/>
-</instance>
-<instance part="U$15" gate="C$1" x="118.11" y="275.59" smashed="yes">
-<attribute name="NAME" x="116.459" y="270.764" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="122.809" y="268.224" size="1.778" layer="96" rot="R90"/>
+<instance part="GND13" gate="1" x="111.76" y="267.97" smashed="yes">
+<attribute name="VALUE" x="111.76" y="267.716" size="1.778" layer="96" align="top-center"/>
 </instance>
 <instance part="Y2" gate="G$1" x="-80.01" y="369.57" smashed="yes">
 <attribute name="NAME" x="-43.18" y="377.19" size="1.778" layer="95" align="center-left"/>
@@ -4534,6 +4593,18 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 </instance>
 <instance part="GND26" gate="1" x="12.7" y="279.4" smashed="yes">
 <attribute name="VALUE" x="12.7" y="279.146" size="1.778" layer="96" align="top-center"/>
+</instance>
+<instance part="PS1" gate="G$1" x="-69.85" y="86.36" smashed="yes">
+<attribute name="NAME" x="-64.77" y="95.25" size="1.778" layer="95" align="center-left"/>
+<attribute name="VALUE" x="-64.77" y="92.71" size="1.778" layer="96" align="center-left"/>
+</instance>
+<instance part="U$3" gate="C$1" x="80.01" y="276.86" smashed="yes">
+<attribute name="NAME" x="73.279" y="272.034" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="75.819" y="264.414" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="U$4" gate="C$1" x="111.76" y="276.86" smashed="yes">
+<attribute name="NAME" x="102.489" y="272.034" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="106.299" y="265.684" size="1.778" layer="96" rot="R90"/>
 </instance>
 </instances>
 <busses>
@@ -4639,7 +4710,7 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 </segment>
 <segment>
 <pinref part="C3" gate="C$1" pin="2"/>
-<wire x1="-93.98" y1="115.57" x2="-93.98" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="-93.98" y1="116.84" x2="-93.98" y2="115.57" width="0.1524" layer="91"/>
 <pinref part="GND16" gate="1" pin="GND"/>
 </segment>
 <segment>
@@ -4703,24 +4774,20 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 <pinref part="GND11" gate="1" pin="GND"/>
 </segment>
 <segment>
-<pinref part="U$10" gate="C$1" pin="2"/>
-<pinref part="U$11" gate="C$1" pin="2"/>
-<wire x1="81.28" y1="270.51" x2="87.63" y2="270.51" width="0.1524" layer="91"/>
-<wire x1="87.63" y1="270.51" x2="95.25" y2="270.51" width="0.1524" layer="91"/>
-<wire x1="87.63" y1="270.51" x2="87.63" y2="269.24" width="0.1524" layer="91"/>
-<junction x="87.63" y="270.51"/>
+<pinref part="U$3" gate="C$1" pin="2"/>
+<wire x1="80.01" y1="271.78" x2="80.01" y2="270.51" width="0.1524" layer="91"/>
 <pinref part="GND12" gate="1" pin="GND"/>
-<pinref part="U$12" gate="C$1" pin="2"/>
+<pinref part="U$11" gate="C$1" pin="2"/>
+<wire x1="80.01" y1="271.78" x2="87.63" y2="271.78" width="0.1524" layer="91"/>
+<junction x="80.01" y="271.78"/>
 </segment>
 <segment>
-<pinref part="U$13" gate="C$1" pin="2"/>
 <pinref part="U$14" gate="C$1" pin="2"/>
-<wire x1="111.76" y1="270.51" x2="118.11" y2="270.51" width="0.1524" layer="91"/>
-<wire x1="118.11" y1="270.51" x2="125.73" y2="270.51" width="0.1524" layer="91"/>
-<wire x1="118.11" y1="270.51" x2="118.11" y2="269.24" width="0.1524" layer="91"/>
-<junction x="118.11" y="270.51"/>
+<wire x1="111.76" y1="271.78" x2="119.38" y2="271.78" width="0.1524" layer="91"/>
+<wire x1="111.76" y1="271.78" x2="111.76" y2="270.51" width="0.1524" layer="91"/>
 <pinref part="GND13" gate="1" pin="GND"/>
-<pinref part="U$15" gate="C$1" pin="2"/>
+<pinref part="U$4" gate="C$1" pin="2"/>
+<junction x="111.76" y="271.78"/>
 </segment>
 <segment>
 <pinref part="GND4" gate="1" pin="GND"/>
@@ -4894,24 +4961,20 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 <label x="22.86" y="80.01" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="U$10" gate="C$1" pin="1"/>
 <pinref part="U$11" gate="C$1" pin="1"/>
-<wire x1="81.28" y1="278.13" x2="87.63" y2="278.13" width="0.1524" layer="91"/>
-<label x="87.63" y="280.67" size="1.778" layer="95" rot="R180" xref="yes"/>
-<wire x1="87.63" y1="278.13" x2="95.25" y2="278.13" width="0.1524" layer="91"/>
-<wire x1="87.63" y1="278.13" x2="87.63" y2="280.67" width="0.1524" layer="91"/>
-<junction x="87.63" y="278.13"/>
-<pinref part="U$12" gate="C$1" pin="1"/>
+<label x="80.01" y="281.94" size="1.778" layer="95" rot="R180" xref="yes"/>
+<wire x1="80.01" y1="279.4" x2="87.63" y2="279.4" width="0.1524" layer="91"/>
+<wire x1="80.01" y1="279.4" x2="80.01" y2="281.94" width="0.1524" layer="91"/>
+<pinref part="U$3" gate="C$1" pin="1"/>
+<junction x="80.01" y="279.4"/>
 </segment>
 <segment>
-<pinref part="U$13" gate="C$1" pin="1"/>
 <pinref part="U$14" gate="C$1" pin="1"/>
-<wire x1="111.76" y1="278.13" x2="118.11" y2="278.13" width="0.1524" layer="91"/>
-<label x="118.11" y="280.67" size="1.778" layer="95" rot="R180" xref="yes"/>
-<wire x1="118.11" y1="278.13" x2="125.73" y2="278.13" width="0.1524" layer="91"/>
-<wire x1="118.11" y1="278.13" x2="118.11" y2="280.67" width="0.1524" layer="91"/>
-<junction x="118.11" y="278.13"/>
-<pinref part="U$15" gate="C$1" pin="1"/>
+<label x="111.76" y="281.94" size="1.778" layer="95" rot="R180" xref="yes"/>
+<wire x1="111.76" y1="279.4" x2="119.38" y2="279.4" width="0.1524" layer="91"/>
+<wire x1="111.76" y1="279.4" x2="111.76" y2="281.94" width="0.1524" layer="91"/>
+<pinref part="U$4" gate="C$1" pin="1"/>
+<junction x="111.76" y="279.4"/>
 </segment>
 <segment>
 <pinref part="PROG_IF" gate="G$1" pin="5"/>
@@ -5123,8 +5186,8 @@ Source: &lt;a href="http://www.st.com/web/en/resource/technical/document/datashe
 </segment>
 <segment>
 <pinref part="C3" gate="C$1" pin="1"/>
-<wire x1="-93.98" y1="123.19" x2="-93.98" y2="124.46" width="0.1524" layer="91"/>
-<label x="-93.98" y="124.46" size="1.778" layer="95" xref="yes"/>
+<wire x1="-93.98" y1="124.46" x2="-93.98" y2="125.73" width="0.1524" layer="91"/>
+<label x="-93.98" y="125.73" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="VDDPA" class="0">
