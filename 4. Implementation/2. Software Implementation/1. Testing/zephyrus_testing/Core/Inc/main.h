@@ -91,8 +91,6 @@ void Error_Handler(void);
 #define NRF3_MOSI_GPIO_Port GPIOC
 #define NRF3_CSN_Pin GPIO_PIN_2
 #define NRF3_CSN_GPIO_Port GPIOD
-#define LD2_Pin GPIO_PIN_7
-#define LD2_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

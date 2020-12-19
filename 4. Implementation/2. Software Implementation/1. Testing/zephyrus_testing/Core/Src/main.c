@@ -20,8 +20,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
 #include "spi.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -117,11 +117,38 @@ void test_nrf24l01() {
 	}
 }
 
+void enable_delay(void){
+	DWT->CYCCNT = 0;
+	CoreDebug->DEMCR |= 0x01000000;	
+	DWT->CTRL |= 1;
+}
+void delay(uint32_t tick){
+	uint32_t start = DWT->CYCCNT;
+	uint32_t current = 0;
+	
+	do{
+		current = DWT->CYCCNT;
+	} while((current - start) < tick);
+}
+
+uint8_t captured;
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+	
+	if(htim->Instance == TIM2) {
+		captured = 1;
+		TIM2->CR1 &= ~TIM_CR1_CEN;
+		TIM2->CNT = 0;
+		
+	}
+}
+
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -136,9 +163,15 @@ void MX_FREERTOS_Init(void);
   * @retval int
   */
 int main(void)
-{
++{
   /* USER CODE BEGIN 1 */
 	
+	#define CORRECTION_FACTOR	0.22
+	
+	uint32_t cycles = 0;
+	float distance = 0.0;
+	float distances[20] = {0};
+	uint32_t index = 0;
   /* USER CODE END 1 */
   
 
@@ -162,32 +195,52 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI3_Init();
   MX_SPI1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 	
-	if (0) {
+	enable_delay();
+
+	// Stop TIM2 counter
+	TIM2->CR1 &= ~TIM_CR1_CEN;
+	// Reset TIM2 counter
+	TIM2->CNT = 0;
+	// Enable Capture/Compare 2 interrupt
+	TIM2->DIER |= TIM_IT_CC2;
+		// Enable the Input Capture channel 2
+	TIM2->CCER |= TIM_CCER_CC2E;
+	
+	// HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2);
+	
+	loop:
+	
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET);
+	delay(216*20);	// 20us
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET);
+	
+	while(!captured);
+	captured = 0;
+	cycles = HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_2);
+	distance = CORRECTION_FACTOR * (cycles*1.0/108000000.0)  *340 / 2;
+	distances[index++] = distance;
+	
+	delay(216*10000);	// 10ms
+
+	if(index < 20)
+		goto loop;
+	
+	while(1);
+	
   /* USER CODE END 2 */
-
-  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init(); 
-
-  /* Start scheduler */
-  osKernelStart();
-  
-  /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	}	
 	
-	
-	vTaskStartScheduler();
-		
-	while (1) {
-		
-	}
+  while (1)
+  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+  }
   /* USER CODE END 3 */
 }
 
