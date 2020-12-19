@@ -3307,6 +3307,8 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="C2" library="Capacitor" library_urn="urn:adsk.eagle:library:16290819" deviceset="C" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16290898/2" technology="_" value="100n [0603]"/>
 <part name="GND4" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND3" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
+<part name="C1" library="Capacitor" library_urn="urn:adsk.eagle:library:16290819" deviceset="C" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16290898/2" technology="_" value="100n [0603]"/>
+<part name="GND5" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -3340,8 +3342,8 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <attribute name="NAME" x="12.7" y="50.8" size="1.778" layer="95" rot="R180" align="center-left"/>
 <attribute name="VALUE" x="19.05" y="48.26" size="1.778" layer="96" rot="R180" align="center-left"/>
 </instance>
-<instance part="GND1" gate="1" x="26.67" y="54.61" smashed="yes">
-<attribute name="VALUE" x="26.67" y="53.086" size="1.778" layer="96" align="top-center"/>
+<instance part="GND1" gate="1" x="39.37" y="54.61" smashed="yes">
+<attribute name="VALUE" x="39.37" y="53.086" size="1.778" layer="96" align="top-center"/>
 </instance>
 <instance part="J2" gate="G$1" x="-64.77" y="31.75" smashed="yes">
 <attribute name="VALUE" x="-69.85" y="21.844" size="1.778" layer="96" font="vector"/>
@@ -3356,6 +3358,13 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 </instance>
 <instance part="GND3" gate="1" x="-59.69" y="41.91" smashed="yes" rot="R180">
 <attribute name="VALUE" x="-59.69" y="43.434" size="1.778" layer="96" rot="R180" align="top-center"/>
+</instance>
+<instance part="C1" gate="G$1" x="25.4" y="49.53" smashed="yes">
+<attribute name="NAME" x="29.21" y="44.45" size="1.778" layer="95"/>
+<attribute name="VALUE" x="29.21" y="46.99" size="1.778" layer="96"/>
+</instance>
+<instance part="GND5" gate="1" x="25.4" y="40.64" smashed="yes">
+<attribute name="VALUE" x="25.4" y="39.116" size="1.778" layer="96" align="top-center"/>
 </instance>
 </instances>
 <busses>
@@ -3377,7 +3386,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <segment>
 <pinref part="GND1" gate="1" pin="GND"/>
 <pinref part="PS1" gate="G$1" pin="GND"/>
-<wire x1="22.86" y1="57.15" x2="26.67" y2="57.15" width="0.1524" layer="91"/>
+<wire x1="22.86" y1="57.15" x2="39.37" y2="57.15" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND4" gate="1" pin="GND"/>
@@ -3387,6 +3396,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <segment>
 <pinref part="GND3" gate="1" pin="GND"/>
 <pinref part="J2" gate="G$1" pin="6"/>
+</segment>
+<segment>
+<pinref part="GND5" gate="1" pin="GND"/>
+<pinref part="C1" gate="G$1" pin="2"/>
+<wire x1="25.4" y1="43.18" x2="25.4" y2="44.45" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="SW" class="0">
@@ -3405,15 +3419,17 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 </net>
 <net name="VOUT" class="0">
 <segment>
-<pinref part="PS1" gate="G$1" pin="OUT"/>
-<wire x1="22.86" y1="54.61" x2="22.86" y2="49.53" width="0.1524" layer="91"/>
-<label x="22.86" y="49.53" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
 <wire x1="-59.69" y1="34.29" x2="-58.42" y2="34.29" width="0.1524" layer="91"/>
 <label x="-58.42" y="35.56" size="1.778" layer="95" xref="yes"/>
 <wire x1="-58.42" y1="34.29" x2="-58.42" y2="35.56" width="0.1524" layer="91"/>
 <pinref part="J2" gate="G$1" pin="4"/>
+</segment>
+<segment>
+<pinref part="PS1" gate="G$1" pin="OUT"/>
+<pinref part="C1" gate="G$1" pin="1"/>
+<wire x1="22.86" y1="54.61" x2="25.4" y2="54.61" width="0.1524" layer="91"/>
+<wire x1="25.4" y1="54.61" x2="25.4" y2="52.07" width="0.1524" layer="91"/>
+<label x="25.4" y="54.61" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="EN" class="0">
