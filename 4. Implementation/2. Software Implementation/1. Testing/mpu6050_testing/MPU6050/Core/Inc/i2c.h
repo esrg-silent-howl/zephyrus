@@ -27,7 +27,8 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+extern volatile uint8_t i2c_rx_flag;
+extern volatile uint8_t i2c_tx_flag;
 /* USER CODE END Includes */
 
 extern I2C_HandleTypeDef hi2c1;
