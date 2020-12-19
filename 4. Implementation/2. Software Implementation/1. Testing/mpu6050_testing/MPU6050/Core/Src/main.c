@@ -27,7 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "mpu6050.h"
+#include "gyro_accelerometer.h"
 #include <stdio.h>
 /* USER CODE END Includes */
 
