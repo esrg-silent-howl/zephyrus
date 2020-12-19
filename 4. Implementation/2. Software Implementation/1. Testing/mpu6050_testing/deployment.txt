@@ -1,3 +1,0 @@
-- Replace I2C_MemRead with I2C_MemReadIT
-- Use in the interrupt taskSignalFromISR
-- use in the task xSignalWait (or whatever its called)

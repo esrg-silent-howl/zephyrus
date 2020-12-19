@@ -1,0 +1,42 @@
+Funcoes: MOD_funcName()
+Variables: var_name
+Defines: DEF_NAME
+Types(struct, etc.): MOD_TypeName_t
+Enumerations: ENUM_NAME
+Tasks: zTaskName
+Mutexes: mMutexName
+Semaphores: semSemaphoreName
+
+for/while:
+while (...) {
+
+}
+
+if:
+if (...) {
+
+	// code
+	
+} else {
+
+	// code
+}
+
+if (...)
+	// code
+else 
+	// code
+
+do while:
+
+do {
+ 	
+} while(...);
+
+
+comments:
+
+/* comment */
+code
+
+code /* comment */
