@@ -4837,7 +4837,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="PB_CTRL" library="MAX16150AUT+T" deviceset="MAX16150AUT+T" device=""/>
 <part name="NRF24L01+" library="nRF24L01P-T" deviceset="NRF24L01P-T" device=""/>
 <part name="ANT1" library="2450BM14A0002T" deviceset="2450BM14A0002T" device=""/>
-<part name="U$2" library="MIFA" deviceset="MIFA-CYPRESS" device="-2"/>
+<part name="MIFA" library="MIFA" deviceset="MIFA-CYPRESS" device="-2"/>
 <part name="GND1" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="S2" library="PTS636_SM43_SMTR_LFS" deviceset="PTS636_SM43_SMTR_LFS" device=""/>
 <part name="BATT_HLD" library="BAT-HLD-001" deviceset="BAT-HLD-001" device="" override_package3d_urn="urn:adsk.eagle:package:25483737/2" override_package_urn="urn:adsk.eagle:footprint:25483738/1"/>
@@ -4876,12 +4876,12 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="VCC_BATT5" library="mpad_v2.1" deviceset="VCC_BATT" device=""/>
 <part name="R5" library="Resistor" library_urn="urn:adsk.eagle:library:16378527" deviceset="R-US" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16378565/2" technology="_" value="1.4K[0603]"/>
 <part name="R6" library="Resistor" library_urn="urn:adsk.eagle:library:16378527" deviceset="R-US" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16378565/2" technology="_" value="1.4K[0603]"/>
-<part name="U$8" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="1uF [0603]"/>
-<part name="U$9" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
+<part name="C23" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="1uF [0603]"/>
+<part name="C24" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
 <part name="GND11" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="U$11" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
+<part name="C22" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
 <part name="GND12" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="U$14" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
+<part name="C21" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
 <part name="GND13" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="Y2" library="FA-20H_16.0000MF12Z-AC3" deviceset="FA-20H_16.0000MF12Z-AC3" device=""/>
 <part name="GND4" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
@@ -4905,8 +4905,8 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="R7" library="Resistor" library_urn="urn:adsk.eagle:library:16378527" deviceset="R-US" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16378565/2" technology="_" value="10K[0603]"/>
 <part name="GND23" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND26" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="U$3" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="4.7uF [0603]"/>
-<part name="U$4" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="4.7uF [0603]"/>
+<part name="C19" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="4.7uF [0603]"/>
+<part name="C20" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="4.7uF [0603]"/>
 <part name="PS2" library="AP22814AW5-7" deviceset="AP22814AW5-7" device="" override_package3d_urn="urn:adsk.eagle:package:25460533/2" override_package_urn="urn:adsk.eagle:footprint:25460534/1"/>
 <part name="GND27" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="C2" library="Capacitor" library_urn="urn:adsk.eagle:library:16290819" deviceset="C" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16290898/2" technology="_" value="100n [0603]"/>
@@ -4937,9 +4937,9 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <attribute name="NAME" x="90.17" y="189.23" size="1.778" layer="95" align="center-left"/>
 <attribute name="VALUE" x="90.17" y="186.69" size="1.778" layer="96" align="center-left"/>
 </instance>
-<instance part="U$2" gate="G$1" x="116.84" y="176.53" smashed="yes">
-<attribute name="NAME" x="119.38" y="184.15" size="1.27" layer="95"/>
-<attribute name="VALUE" x="116.84" y="179.07" size="1.27" layer="96"/>
+<instance part="MIFA" gate="G$1" x="115.57" y="176.53" smashed="yes">
+<attribute name="NAME" x="118.11" y="184.15" size="1.27" layer="95"/>
+<attribute name="VALUE" x="115.57" y="179.07" size="1.27" layer="96"/>
 </instance>
 <instance part="GND1" gate="1" x="109.22" y="171.45" smashed="yes">
 <attribute name="VALUE" x="109.22" y="171.196" size="1.778" layer="96" align="top-center"/>
@@ -5075,25 +5075,25 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <attribute name="NAME" x="-26.8986" y="68.58" size="1.778" layer="95" rot="R90" align="center"/>
 <attribute name="VALUE" x="-29.718" y="68.58" size="1.778" layer="96" rot="R90" align="center"/>
 </instance>
-<instance part="U$8" gate="C$1" x="55.88" y="276.86" smashed="yes">
+<instance part="C23" gate="C$1" x="55.88" y="276.86" smashed="yes">
 <attribute name="NAME" x="50.419" y="273.304" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="52.959" y="269.494" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="U$9" gate="C$1" x="60.96" y="276.86" smashed="yes">
+<instance part="C24" gate="C$1" x="60.96" y="276.86" smashed="yes">
 <attribute name="NAME" x="65.659" y="273.304" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="68.199" y="269.494" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="GND11" gate="1" x="58.42" y="267.97" smashed="yes">
 <attribute name="VALUE" x="58.42" y="267.716" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="U$11" gate="C$1" x="87.63" y="276.86" smashed="yes">
+<instance part="C22" gate="C$1" x="87.63" y="276.86" smashed="yes">
 <attribute name="NAME" x="92.329" y="273.304" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="94.869" y="269.494" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="GND12" gate="1" x="80.01" y="267.97" smashed="yes">
 <attribute name="VALUE" x="80.01" y="267.716" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="U$14" gate="C$1" x="119.38" y="276.86" smashed="yes">
+<instance part="C21" gate="C$1" x="119.38" y="276.86" smashed="yes">
 <attribute name="NAME" x="124.079" y="273.304" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="126.619" y="269.494" size="1.778" layer="96" rot="R90"/>
 </instance>
@@ -5169,21 +5169,21 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <instance part="GND10" gate="1" x="-8.89" y="332.74" smashed="yes">
 <attribute name="VALUE" x="-8.89" y="332.486" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="R7" gate="G$1" x="-20.32" y="332.74" smashed="yes" rot="R270">
-<attribute name="NAME" x="-17.5514" y="332.74" size="1.778" layer="95" rot="R270" align="center"/>
-<attribute name="VALUE" x="-23.622" y="332.74" size="1.778" layer="96" rot="R270" align="center"/>
+<instance part="R7" gate="G$1" x="-20.32" y="334.01" smashed="yes" rot="R270">
+<attribute name="NAME" x="-17.5514" y="334.01" size="1.778" layer="95" rot="R270" align="center"/>
+<attribute name="VALUE" x="-23.622" y="334.01" size="1.778" layer="96" rot="R270" align="center"/>
 </instance>
-<instance part="GND23" gate="1" x="-20.32" y="326.39" smashed="yes">
-<attribute name="VALUE" x="-20.32" y="326.136" size="1.778" layer="96" align="top-center"/>
+<instance part="GND23" gate="1" x="-20.32" y="325.12" smashed="yes">
+<attribute name="VALUE" x="-20.32" y="324.866" size="1.778" layer="96" align="top-center"/>
 </instance>
 <instance part="GND26" gate="1" x="12.7" y="279.4" smashed="yes">
 <attribute name="VALUE" x="12.7" y="279.146" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="U$3" gate="C$1" x="80.01" y="276.86" smashed="yes">
+<instance part="C19" gate="C$1" x="80.01" y="276.86" smashed="yes">
 <attribute name="NAME" x="73.279" y="272.034" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="75.819" y="264.414" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="U$4" gate="C$1" x="111.76" y="276.86" smashed="yes">
+<instance part="C20" gate="C$1" x="111.76" y="276.86" smashed="yes">
 <attribute name="NAME" x="102.489" y="272.034" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="106.299" y="265.684" size="1.778" layer="96" rot="R90"/>
 </instance>
@@ -5242,17 +5242,18 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <label x="27.94" y="181.61" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
-<net name="N$1" class="0">
+<net name="MIFA" class="0">
 <segment>
 <pinref part="ANT1" gate="G$1" pin="UNBALANCED_PORT"/>
-<pinref part="U$2" gate="G$1" pin="ANT"/>
-<wire x1="93.98" y1="176.53" x2="116.84" y2="176.53" width="0.1524" layer="91"/>
+<pinref part="MIFA" gate="G$1" pin="ANT"/>
+<wire x1="93.98" y1="176.53" x2="115.57" y2="176.53" width="0.1524" layer="91"/>
+<label x="97.79" y="176.53" size="1.778" layer="95" rot="R270" xref="yes"/>
 </segment>
 </net>
 <net name="GND" class="0">
 <segment>
-<pinref part="U$2" gate="G$1" pin="GND"/>
-<wire x1="114.3" y1="179.07" x2="109.22" y2="179.07" width="0.1524" layer="91"/>
+<pinref part="MIFA" gate="G$1" pin="GND"/>
+<wire x1="113.03" y1="179.07" x2="109.22" y2="179.07" width="0.1524" layer="91"/>
 <wire x1="109.22" y1="179.07" x2="109.22" y2="173.99" width="0.1524" layer="91"/>
 <pinref part="GND1" gate="1" pin="GND"/>
 <pinref part="ANT1" gate="G$1" pin="GND"/>
@@ -5354,8 +5355,8 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <pinref part="GND21" gate="1" pin="GND"/>
 </segment>
 <segment>
-<pinref part="U$8" gate="C$1" pin="2"/>
-<pinref part="U$9" gate="C$1" pin="2"/>
+<pinref part="C23" gate="C$1" pin="2"/>
+<pinref part="C24" gate="C$1" pin="2"/>
 <wire x1="55.88" y1="271.78" x2="58.42" y2="271.78" width="0.1524" layer="91"/>
 <wire x1="58.42" y1="271.78" x2="60.96" y2="271.78" width="0.1524" layer="91"/>
 <wire x1="58.42" y1="271.78" x2="58.42" y2="270.51" width="0.1524" layer="91"/>
@@ -5363,19 +5364,19 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <pinref part="GND11" gate="1" pin="GND"/>
 </segment>
 <segment>
-<pinref part="U$3" gate="C$1" pin="2"/>
+<pinref part="C19" gate="C$1" pin="2"/>
 <wire x1="80.01" y1="271.78" x2="80.01" y2="270.51" width="0.1524" layer="91"/>
 <pinref part="GND12" gate="1" pin="GND"/>
-<pinref part="U$11" gate="C$1" pin="2"/>
+<pinref part="C22" gate="C$1" pin="2"/>
 <wire x1="80.01" y1="271.78" x2="87.63" y2="271.78" width="0.1524" layer="91"/>
 <junction x="80.01" y="271.78"/>
 </segment>
 <segment>
-<pinref part="U$14" gate="C$1" pin="2"/>
+<pinref part="C21" gate="C$1" pin="2"/>
 <wire x1="111.76" y1="271.78" x2="119.38" y2="271.78" width="0.1524" layer="91"/>
 <wire x1="111.76" y1="271.78" x2="111.76" y2="270.51" width="0.1524" layer="91"/>
 <pinref part="GND13" gate="1" pin="GND"/>
-<pinref part="U$4" gate="C$1" pin="2"/>
+<pinref part="C20" gate="C$1" pin="2"/>
 <junction x="111.76" y="271.78"/>
 </segment>
 <segment>
@@ -5429,7 +5430,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 </segment>
 <segment>
 <pinref part="R7" gate="G$1" pin="2"/>
-<wire x1="-20.32" y1="327.66" x2="-20.32" y2="328.93" width="0.1524" layer="91"/>
+<wire x1="-20.32" y1="328.93" x2="-20.32" y2="327.66" width="0.1524" layer="91"/>
 <pinref part="GND23" gate="1" pin="GND"/>
 </segment>
 <segment>
@@ -5572,19 +5573,19 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <label x="22.86" y="80.01" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="U$11" gate="C$1" pin="1"/>
+<pinref part="C22" gate="C$1" pin="1"/>
 <label x="80.01" y="281.94" size="1.778" layer="95" rot="R180" xref="yes"/>
 <wire x1="80.01" y1="279.4" x2="87.63" y2="279.4" width="0.1524" layer="91"/>
 <wire x1="80.01" y1="279.4" x2="80.01" y2="281.94" width="0.1524" layer="91"/>
-<pinref part="U$3" gate="C$1" pin="1"/>
+<pinref part="C19" gate="C$1" pin="1"/>
 <junction x="80.01" y="279.4"/>
 </segment>
 <segment>
-<pinref part="U$14" gate="C$1" pin="1"/>
+<pinref part="C21" gate="C$1" pin="1"/>
 <label x="111.76" y="281.94" size="1.778" layer="95" rot="R180" xref="yes"/>
 <wire x1="111.76" y1="279.4" x2="119.38" y2="279.4" width="0.1524" layer="91"/>
 <wire x1="111.76" y1="279.4" x2="111.76" y2="281.94" width="0.1524" layer="91"/>
-<pinref part="U$4" gate="C$1" pin="1"/>
+<pinref part="C20" gate="C$1" pin="1"/>
 <junction x="111.76" y="279.4"/>
 </segment>
 <segment>
@@ -5638,6 +5639,20 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <wire x1="27.94" y1="138.43" x2="27.94" y2="142.24" width="0.1524" layer="91"/>
 <label x="27.94" y="142.24" size="1.778" layer="95" xref="yes"/>
 <wire x1="25.4" y1="142.24" x2="27.94" y2="142.24" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="C23" gate="C$1" pin="1"/>
+<pinref part="C24" gate="C$1" pin="1"/>
+<wire x1="55.88" y1="279.4" x2="58.42" y2="279.4" width="0.1524" layer="91"/>
+<label x="58.42" y="281.94" size="1.778" layer="95" xref="yes"/>
+<wire x1="58.42" y1="279.4" x2="60.96" y2="279.4" width="0.1524" layer="91"/>
+<wire x1="58.42" y1="279.4" x2="58.42" y2="281.94" width="0.1524" layer="91"/>
+<junction x="58.42" y="279.4"/>
+</segment>
+<segment>
+<wire x1="-15.24" y1="307.34" x2="-17.78" y2="307.34" width="0.1524" layer="91"/>
+<label x="-17.78" y="307.34" size="1.778" layer="95" rot="R180" xref="yes"/>
+<pinref part="IC1" gate="G$1" pin="VDDA"/>
 </segment>
 </net>
 <net name="PWR_CLR" class="0">
@@ -5779,22 +5794,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <wire x1="7.62" y1="335.28" x2="7.62" y2="345.44" width="0.1524" layer="91"/>
 <wire x1="7.62" y1="345.44" x2="13.97" y2="345.44" width="0.1524" layer="91"/>
 <pinref part="IC1" gate="G$1" pin="PB4"/>
-</segment>
-</net>
-<net name="VDDA" class="0">
-<segment>
-<pinref part="U$8" gate="C$1" pin="1"/>
-<pinref part="U$9" gate="C$1" pin="1"/>
-<wire x1="55.88" y1="279.4" x2="58.42" y2="279.4" width="0.1524" layer="91"/>
-<label x="58.42" y="281.94" size="1.778" layer="95" xref="yes"/>
-<wire x1="58.42" y1="279.4" x2="60.96" y2="279.4" width="0.1524" layer="91"/>
-<wire x1="58.42" y1="279.4" x2="58.42" y2="281.94" width="0.1524" layer="91"/>
-<junction x="58.42" y="279.4"/>
-</segment>
-<segment>
-<wire x1="-15.24" y1="307.34" x2="-17.78" y2="307.34" width="0.1524" layer="91"/>
-<label x="-17.78" y="307.34" size="1.778" layer="95" rot="R180" xref="yes"/>
-<pinref part="IC1" gate="G$1" pin="VDDA"/>
 </segment>
 </net>
 <net name="NRF24L01_CRYSTAL2" class="0">
@@ -5976,7 +5975,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <wire x1="0" y1="335.28" x2="0" y2="340.36" width="0.1524" layer="91"/>
 <wire x1="0" y1="340.36" x2="-20.32" y2="340.36" width="0.1524" layer="91"/>
 <pinref part="R7" gate="G$1" pin="1"/>
-<wire x1="-20.32" y1="340.36" x2="-20.32" y2="337.82" width="0.1524" layer="91"/>
+<wire x1="-20.32" y1="340.36" x2="-20.32" y2="339.09" width="0.1524" layer="91"/>
 <pinref part="IC1" gate="G$1" pin="PB7"/>
 </segment>
 </net>
@@ -5990,6 +5989,18 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 </nets>
 </sheet>
 </sheets>
+<errors>
+<approved hash="104,1,-15.24,317.5,IC1,VDD_1,VDD,,,"/>
+<approved hash="104,1,-15.24,307.34,IC1,VDDA,VDD,,,"/>
+<approved hash="104,1,12.7,281.94,IC1,VSS_1,GND,,,"/>
+<approved hash="104,1,22.86,299.72,IC1,VDD_2,VDD,,,"/>
+<approved hash="104,1,-5.08,335.28,IC1,VSS_2,GND,,,"/>
+<approved hash="104,1,15.24,54.61,PS2,OUT,VDD,,,"/>
+<approved hash="104,1,-10.16,57.15,PS2,IN,VCC_BATT,,,"/>
+<approved hash="106,1,15.24,59.69,FLG,,,,,"/>
+<approved hash="113,1,12.596,303.426,FRAME2,,,,,"/>
+<approved hash="113,1,12.596,118.006,FRAME3,,,,,"/>
+</errors>
 </schematic>
 </drawing>
 <compatibility>
