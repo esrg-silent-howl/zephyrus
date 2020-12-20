@@ -759,7 +759,7 @@ Feel free to contact us at &lt;a href="mailto:Support@PCBLayout.com"&gt;Support@
 <contactref element="PS1" pad="2"/>
 <contactref element="C2" pad="2"/>
 <contactref element="J2" pad="6"/>
-<polygon width="0.1524" layer="16">
+<polygon width="0.1524" layer="16" thermals="no">
 <vertex x="0.2794" y="13.589"/>
 <vertex x="15.6464" y="13.589"/>
 <vertex x="15.6464" y="0.254"/>
@@ -806,8 +806,8 @@ Feel free to contact us at &lt;a href="mailto:Support@PCBLayout.com"&gt;Support@
 <vertex x="8.3058" y="9.398"/>
 <vertex x="8.3058" y="7.2136"/>
 <vertex x="9.5758" y="7.2136"/>
-<vertex x="9.5758" y="9.7536"/>
-<vertex x="10.4394" y="10.6172"/>
+<vertex x="9.5758" y="9.6774"/>
+<vertex x="10.4394" y="10.541"/>
 <vertex x="10.4394" y="12.8778"/>
 <vertex x="10.1854" y="13.1318"/>
 </polygon>
@@ -845,8 +845,8 @@ Feel free to contact us at &lt;a href="mailto:Support@PCBLayout.com"&gt;Support@
 <vertex x="10.6934" y="8.2042"/>
 <vertex x="10.9474" y="8.2042"/>
 <vertex x="11.2522" y="8.509"/>
-<vertex x="11.2522" y="10.0838"/>
-<vertex x="10.7188" y="10.6172"/>
+<vertex x="11.2522" y="9.9568"/>
+<vertex x="10.7188" y="10.4902"/>
 <vertex x="10.7188" y="13.0048"/>
 <vertex x="10.8712" y="13.1572"/>
 <vertex x="12.7" y="13.1572"/>
