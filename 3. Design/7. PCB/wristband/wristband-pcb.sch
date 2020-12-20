@@ -4840,7 +4840,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="U$2" library="MIFA" deviceset="MIFA-CYPRESS" device="-2"/>
 <part name="GND1" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="S2" library="PTS636_SM43_SMTR_LFS" deviceset="PTS636_SM43_SMTR_LFS" device=""/>
-<part name="BATT_HLD" library="BAT-HLD-001" deviceset="BAT-HLD-001" device=""/>
+<part name="BATT_HLD" library="BAT-HLD-001" deviceset="BAT-HLD-001" device="" override_package3d_urn="urn:adsk.eagle:package:25483737/2" override_package_urn="urn:adsk.eagle:footprint:25483738/1"/>
 <part name="GND2" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="VCC_BATT1" library="mpad_v2.1" deviceset="VCC_BATT" device=""/>
 <part name="VCC_BATT2" library="mpad_v2.1" deviceset="VCC_BATT" device=""/>
@@ -4867,11 +4867,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="C8" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="2.2 nF [0603]"/>
 <part name="GND20" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND21" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="C10" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" value="22nF [1206]"/>
+<part name="C10" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" override_package3d_urn="urn:adsk.eagle:package:25483757/2" override_package_urn="urn:adsk.eagle:footprint:25483758/1" value="22nF [1206]"/>
 <part name="C11" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" value="22nF [1206]"/>
 <part name="C12" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" value="22nF [1206]"/>
 <part name="C13" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" value="22nF [1206]"/>
-<part name="C14" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" value="22nF [1206]"/>
+<part name="C14" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" override_package3d_urn="urn:adsk.eagle:package:25483753/2" override_package_urn="urn:adsk.eagle:footprint:25483755/1" value="22nF [1206]"/>
 <part name="GND22" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="VCC_BATT5" library="mpad_v2.1" deviceset="VCC_BATT" device=""/>
 <part name="R5" library="Resistor" library_urn="urn:adsk.eagle:library:16378527" deviceset="R-US" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16378565/2" technology="_" value="1.4K[0603]"/>
@@ -4914,6 +4914,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="C1" library="Capacitor" library_urn="urn:adsk.eagle:library:16290819" deviceset="C" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16290898/2" technology="_" value="100n [0603]"/>
 <part name="GND29" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="VCC_BATT6" library="mpad_v2.1" deviceset="VCC_BATT" device=""/>
+<part name="C9" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" override_package3d_urn="urn:adsk.eagle:package:25483761/2" override_package_urn="urn:adsk.eagle:footprint:25483762/1" value="22nF [1206]"/>
 </parts>
 <sheets>
 <sheet>
@@ -5061,11 +5062,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <attribute name="NAME" x="116.84" y="107.95" size="1.778" layer="95" rot="R270" align="center-left"/>
 <attribute name="VALUE" x="119.38" y="113.03" size="1.778" layer="96" rot="R270" align="center-left"/>
 </instance>
-<instance part="GND22" gate="1" x="102.87" y="96.52" smashed="yes">
-<attribute name="VALUE" x="102.87" y="96.266" size="1.778" layer="96" align="top-center"/>
+<instance part="GND22" gate="1" x="107.95" y="97.79" smashed="yes">
+<attribute name="VALUE" x="107.95" y="97.536" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="VCC_BATT5" gate="VCC_BAT" x="102.87" y="114.3" smashed="yes">
-<attribute name="VALUE" x="98.679" y="117.602" size="1.778" layer="96"/>
+<instance part="VCC_BATT5" gate="VCC_BAT" x="107.95" y="113.03" smashed="yes">
+<attribute name="VALUE" x="103.759" y="116.332" size="1.778" layer="96"/>
 </instance>
 <instance part="R5" gate="G$1" x="-38.1" y="68.58" smashed="yes" rot="R90">
 <attribute name="NAME" x="-39.5986" y="68.58" size="1.778" layer="95" rot="R90" align="center"/>
@@ -5211,6 +5212,10 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <instance part="VCC_BATT6" gate="VCC_BAT" x="-12.7" y="60.96" smashed="yes">
 <attribute name="VALUE" x="-13.081" y="65.532" size="1.778" layer="96"/>
 </instance>
+<instance part="C9" gate="G$1" x="133.35" y="113.03" smashed="yes" rot="R270">
+<attribute name="NAME" x="127" y="107.95" size="1.778" layer="95" rot="R270" align="center-left"/>
+<attribute name="VALUE" x="129.54" y="113.03" size="1.778" layer="96" rot="R270" align="center-left"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -5354,22 +5359,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <pinref part="GND21" gate="1" pin="GND"/>
 </segment>
 <segment>
-<pinref part="C10" gate="G$1" pin="2"/>
-<pinref part="C14" gate="G$1" pin="2"/>
-<wire x1="82.55" y1="100.33" x2="92.71" y2="100.33" width="0.1524" layer="91"/>
-<pinref part="C11" gate="G$1" pin="2"/>
-<wire x1="92.71" y1="100.33" x2="102.87" y2="100.33" width="0.1524" layer="91"/>
-<junction x="92.71" y="100.33"/>
-<pinref part="C12" gate="G$1" pin="2"/>
-<wire x1="102.87" y1="100.33" x2="113.03" y2="100.33" width="0.1524" layer="91"/>
-<junction x="102.87" y="100.33"/>
-<pinref part="C13" gate="G$1" pin="2"/>
-<wire x1="113.03" y1="100.33" x2="123.19" y2="100.33" width="0.1524" layer="91"/>
-<junction x="113.03" y="100.33"/>
-<wire x1="102.87" y1="100.33" x2="102.87" y2="99.06" width="0.1524" layer="91"/>
-<pinref part="GND22" gate="1" pin="GND"/>
-</segment>
-<segment>
 <pinref part="U$8" gate="C$1" pin="2"/>
 <pinref part="U$9" gate="C$1" pin="2"/>
 <wire x1="55.88" y1="271.78" x2="58.42" y2="271.78" width="0.1524" layer="91"/>
@@ -5467,6 +5456,26 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <pinref part="C1" gate="G$1" pin="2"/>
 <wire x1="17.78" y1="43.18" x2="17.78" y2="44.45" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="C10" gate="G$1" pin="2"/>
+<pinref part="C14" gate="G$1" pin="2"/>
+<wire x1="82.55" y1="100.33" x2="92.71" y2="100.33" width="0.1524" layer="91"/>
+<pinref part="C11" gate="G$1" pin="2"/>
+<wire x1="92.71" y1="100.33" x2="102.87" y2="100.33" width="0.1524" layer="91"/>
+<junction x="92.71" y="100.33"/>
+<pinref part="C12" gate="G$1" pin="2"/>
+<wire x1="102.87" y1="100.33" x2="107.95" y2="100.33" width="0.1524" layer="91"/>
+<junction x="102.87" y="100.33"/>
+<pinref part="C13" gate="G$1" pin="2"/>
+<wire x1="107.95" y1="100.33" x2="113.03" y2="100.33" width="0.1524" layer="91"/>
+<wire x1="113.03" y1="100.33" x2="123.19" y2="100.33" width="0.1524" layer="91"/>
+<junction x="113.03" y="100.33"/>
+<pinref part="C9" gate="G$1" pin="2"/>
+<wire x1="123.19" y1="100.33" x2="133.35" y2="100.33" width="0.1524" layer="91"/>
+<junction x="123.19" y="100.33"/>
+<pinref part="GND22" gate="1" pin="GND"/>
+<junction x="107.95" y="100.33"/>
+</segment>
 </net>
 <net name="N$2" class="0">
 <segment>
@@ -5502,21 +5511,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <wire x1="104.14" y1="125.73" x2="104.14" y2="130.81" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="C14" gate="G$1" pin="1"/>
-<wire x1="83.82" y1="113.03" x2="92.71" y2="113.03" width="0.1524" layer="91"/>
-<pinref part="C11" gate="G$1" pin="1"/>
-<wire x1="92.71" y1="113.03" x2="102.87" y2="113.03" width="0.1524" layer="91"/>
-<junction x="92.71" y="113.03"/>
-<pinref part="C12" gate="G$1" pin="1"/>
-<wire x1="102.87" y1="113.03" x2="113.03" y2="113.03" width="0.1524" layer="91"/>
-<junction x="102.87" y="113.03"/>
-<pinref part="C13" gate="G$1" pin="1"/>
-<wire x1="113.03" y1="113.03" x2="123.19" y2="113.03" width="0.1524" layer="91"/>
-<junction x="113.03" y="113.03"/>
-<pinref part="VCC_BATT5" gate="VCC_BAT" pin="VCC_BATT"/>
-<wire x1="102.87" y1="113.03" x2="102.87" y2="114.3" width="0.1524" layer="91"/>
-</segment>
-<segment>
 <pinref part="VCC_BATT6" gate="VCC_BAT" pin="VCC_BATT"/>
 <pinref part="PS2" gate="G$1" pin="IN"/>
 <wire x1="-10.16" y1="57.15" x2="-12.7" y2="57.15" width="0.1524" layer="91"/>
@@ -5524,6 +5518,26 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <pinref part="C2" gate="G$1" pin="1"/>
 <wire x1="-12.7" y1="60.96" x2="-12.7" y2="57.15" width="0.1524" layer="91"/>
 <junction x="-12.7" y="57.15"/>
+</segment>
+<segment>
+<pinref part="C14" gate="G$1" pin="1"/>
+<wire x1="82.55" y1="113.03" x2="92.71" y2="113.03" width="0.1524" layer="91"/>
+<pinref part="C11" gate="G$1" pin="1"/>
+<wire x1="92.71" y1="113.03" x2="102.87" y2="113.03" width="0.1524" layer="91"/>
+<junction x="92.71" y="113.03"/>
+<pinref part="C12" gate="G$1" pin="1"/>
+<wire x1="102.87" y1="113.03" x2="107.95" y2="113.03" width="0.1524" layer="91"/>
+<junction x="102.87" y="113.03"/>
+<pinref part="C13" gate="G$1" pin="1"/>
+<wire x1="107.95" y1="113.03" x2="113.03" y2="113.03" width="0.1524" layer="91"/>
+<wire x1="113.03" y1="113.03" x2="123.19" y2="113.03" width="0.1524" layer="91"/>
+<junction x="113.03" y="113.03"/>
+<pinref part="C9" gate="G$1" pin="1"/>
+<wire x1="123.19" y1="113.03" x2="133.35" y2="113.03" width="0.1524" layer="91"/>
+<junction x="123.19" y="113.03"/>
+<pinref part="VCC_BATT5" gate="VCC_BAT" pin="VCC_BATT"/>
+<junction x="107.95" y="113.03"/>
+<pinref part="C10" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="PWR_INT" class="0">
@@ -5548,11 +5562,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 </net>
 <net name="VDD" class="0">
 <segment>
-<pinref part="NRF24L01+" gate="G$1" pin="VDD_3"/>
-<wire x1="27.94" y1="138.43" x2="27.94" y2="142.24" width="0.1524" layer="91"/>
-<label x="27.94" y="142.24" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
 <pinref part="C6" gate="C$1" pin="1"/>
 <pinref part="C7" gate="C$1" pin="1"/>
 <wire x1="-58.42" y1="123.19" x2="-55.88" y2="123.19" width="0.1524" layer="91"/>
@@ -5560,15 +5569,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <wire x1="-55.88" y1="123.19" x2="-53.34" y2="123.19" width="0.1524" layer="91"/>
 <wire x1="-55.88" y1="123.19" x2="-55.88" y2="125.73" width="0.1524" layer="91"/>
 <junction x="-55.88" y="123.19"/>
-</segment>
-<segment>
-<pinref part="C4" gate="C$1" pin="1"/>
-<pinref part="C5" gate="C$1" pin="1"/>
-<wire x1="-78.74" y1="123.19" x2="-76.2" y2="123.19" width="0.1524" layer="91"/>
-<label x="-76.2" y="125.73" size="1.778" layer="95" xref="yes"/>
-<wire x1="-76.2" y1="123.19" x2="-73.66" y2="123.19" width="0.1524" layer="91"/>
-<wire x1="-76.2" y1="123.19" x2="-76.2" y2="125.73" width="0.1524" layer="91"/>
-<junction x="-76.2" y="123.19"/>
 </segment>
 <segment>
 <pinref part="NRF24L01+" gate="G$1" pin="VDD_2"/>
@@ -5628,6 +5628,27 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <wire x1="15.24" y1="54.61" x2="17.78" y2="54.61" width="0.1524" layer="91"/>
 <wire x1="17.78" y1="54.61" x2="17.78" y2="52.07" width="0.1524" layer="91"/>
 <label x="17.78" y="54.61" size="1.778" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="C3" gate="C$1" pin="1"/>
+<wire x1="-93.98" y1="124.46" x2="-93.98" y2="125.73" width="0.1524" layer="91"/>
+<label x="-93.98" y="125.73" size="1.778" layer="95" xref="yes"/>
+<pinref part="C4" gate="C$1" pin="1"/>
+<pinref part="C5" gate="C$1" pin="1"/>
+<wire x1="-78.74" y1="123.19" x2="-76.2" y2="123.19" width="0.1524" layer="91"/>
+<label x="-76.2" y="125.73" size="1.778" layer="95" xref="yes"/>
+<wire x1="-76.2" y1="123.19" x2="-73.66" y2="123.19" width="0.1524" layer="91"/>
+<wire x1="-76.2" y1="123.19" x2="-76.2" y2="125.73" width="0.1524" layer="91"/>
+<junction x="-76.2" y="123.19"/>
+<wire x1="-93.98" y1="125.73" x2="-76.2" y2="125.73" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="NRF24L01+" gate="G$1" pin="DVDD"/>
+<wire x1="25.4" y1="138.43" x2="25.4" y2="142.24" width="0.1524" layer="91"/>
+<pinref part="NRF24L01+" gate="G$1" pin="VDD_3"/>
+<wire x1="27.94" y1="138.43" x2="27.94" y2="142.24" width="0.1524" layer="91"/>
+<label x="27.94" y="142.24" size="1.778" layer="95" xref="yes"/>
+<wire x1="25.4" y1="142.24" x2="27.94" y2="142.24" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="PWR_CLR" class="0">
@@ -5806,19 +5827,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <pinref part="NRF24L01+" gate="G$1" pin="IREF"/>
 <pinref part="R2" gate="G$1" pin="2"/>
 <wire x1="33.02" y1="138.43" x2="35.56" y2="138.43" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="DVDD" class="0">
-<segment>
-<pinref part="NRF24L01+" gate="G$1" pin="DVDD"/>
-<wire x1="25.4" y1="138.43" x2="25.4" y2="146.05" width="0.1524" layer="91"/>
-<wire x1="25.4" y1="146.05" x2="27.94" y2="146.05" width="0.1524" layer="91"/>
-<label x="27.94" y="146.05" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
-<pinref part="C3" gate="C$1" pin="1"/>
-<wire x1="-93.98" y1="124.46" x2="-93.98" y2="125.73" width="0.1524" layer="91"/>
-<label x="-93.98" y="125.73" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="VDDPA" class="0">
