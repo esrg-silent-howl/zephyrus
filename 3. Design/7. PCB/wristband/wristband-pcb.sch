@@ -4914,7 +4914,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="C1" library="Capacitor" library_urn="urn:adsk.eagle:library:16290819" deviceset="C" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16290898/2" technology="_" value="100n [0603]"/>
 <part name="GND29" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="VCC_BATT6" library="mpad_v2.1" deviceset="VCC_BATT" device=""/>
-<part name="C9" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" override_package3d_urn="urn:adsk.eagle:package:25483761/2" override_package_urn="urn:adsk.eagle:footprint:25483762/1" value="22nF [1206]"/>
 </parts>
 <sheets>
 <sheet>
@@ -5212,10 +5211,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <instance part="VCC_BATT6" gate="VCC_BAT" x="-12.7" y="60.96" smashed="yes">
 <attribute name="VALUE" x="-13.081" y="65.532" size="1.778" layer="96"/>
 </instance>
-<instance part="C9" gate="G$1" x="133.35" y="113.03" smashed="yes" rot="R270">
-<attribute name="NAME" x="127" y="107.95" size="1.778" layer="95" rot="R270" align="center-left"/>
-<attribute name="VALUE" x="129.54" y="113.03" size="1.778" layer="96" rot="R270" align="center-left"/>
-</instance>
 </instances>
 <busses>
 </busses>
@@ -5470,9 +5465,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <wire x1="107.95" y1="100.33" x2="113.03" y2="100.33" width="0.1524" layer="91"/>
 <wire x1="113.03" y1="100.33" x2="123.19" y2="100.33" width="0.1524" layer="91"/>
 <junction x="113.03" y="100.33"/>
-<pinref part="C9" gate="G$1" pin="2"/>
-<wire x1="123.19" y1="100.33" x2="133.35" y2="100.33" width="0.1524" layer="91"/>
-<junction x="123.19" y="100.33"/>
 <pinref part="GND22" gate="1" pin="GND"/>
 <junction x="107.95" y="100.33"/>
 </segment>
@@ -5532,9 +5524,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <wire x1="107.95" y1="113.03" x2="113.03" y2="113.03" width="0.1524" layer="91"/>
 <wire x1="113.03" y1="113.03" x2="123.19" y2="113.03" width="0.1524" layer="91"/>
 <junction x="113.03" y="113.03"/>
-<pinref part="C9" gate="G$1" pin="1"/>
-<wire x1="123.19" y1="113.03" x2="133.35" y2="113.03" width="0.1524" layer="91"/>
-<junction x="123.19" y="113.03"/>
 <pinref part="VCC_BATT5" gate="VCC_BAT" pin="VCC_BATT"/>
 <junction x="107.95" y="113.03"/>
 <pinref part="C10" gate="G$1" pin="1"/>
@@ -5926,7 +5915,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <pinref part="IC1" gate="G$1" pin="PB1"/>
 </segment>
 </net>
-<net name="N$5" class="0">
+<net name="PWR_EN" class="0">
 <segment>
 <pinref part="R5" gate="G$1" pin="2"/>
 <pinref part="R6" gate="G$1" pin="2"/>
@@ -5939,6 +5928,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <pinref part="PS2" gate="G$1" pin="EN"/>
 <wire x1="-35.56" y1="54.61" x2="-10.16" y2="54.61" width="0.1524" layer="91"/>
 <junction x="-35.56" y="54.61"/>
+<label x="-33.02" y="54.61" size="1.778" layer="95" rot="R270" xref="yes"/>
 </segment>
 </net>
 <net name="LED_CONN_PROB" class="0">
