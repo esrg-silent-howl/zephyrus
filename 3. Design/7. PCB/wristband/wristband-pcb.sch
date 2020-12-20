@@ -5151,8 +5151,8 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <attribute name="NAME" x="81.28" y="314.96" size="1.778" layer="95" rot="R180" align="center-left"/>
 <attribute name="VALUE" x="81.28" y="317.5" size="1.778" layer="96" rot="R180" align="center-left"/>
 </instance>
-<instance part="GND9" gate="1" x="102.87" y="328.93" smashed="yes">
-<attribute name="VALUE" x="102.87" y="331.216" size="1.778" layer="96" align="top-center"/>
+<instance part="GND9" gate="1" x="109.22" y="330.2" smashed="yes">
+<attribute name="VALUE" x="109.22" y="335.026" size="1.778" layer="96" align="top-center"/>
 </instance>
 <instance part="FRAME2" gate="G$1" x="-119.38" y="213.36" smashed="yes"/>
 <instance part="FRAME2" gate="G$2" x="43.18" y="213.36" smashed="yes">
@@ -5416,12 +5416,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <wire x1="100.33" y1="350.52" x2="100.33" y2="349.25" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="MPU_6050_IF" gate="G$1" pin="4"/>
-<wire x1="97.79" y1="330.2" x2="97.79" y2="331.47" width="0.1524" layer="91"/>
-<pinref part="GND9" gate="1" pin="GND"/>
-<wire x1="97.79" y1="331.47" x2="102.87" y2="331.47" width="0.1524" layer="91"/>
-</segment>
-<segment>
 <wire x1="-5.08" y1="335.28" x2="-5.08" y2="337.82" width="0.1524" layer="91"/>
 <wire x1="-5.08" y1="337.82" x2="-8.89" y2="337.82" width="0.1524" layer="91"/>
 <wire x1="-8.89" y1="337.82" x2="-8.89" y2="335.28" width="0.1524" layer="91"/>
@@ -5468,6 +5462,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <junction x="113.03" y="100.33"/>
 <pinref part="GND22" gate="1" pin="GND"/>
 <junction x="107.95" y="100.33"/>
+</segment>
+<segment>
+<pinref part="MPU_6050_IF" gate="G$1" pin="5"/>
+<pinref part="GND9" gate="1" pin="GND"/>
+<wire x1="97.79" y1="332.74" x2="109.22" y2="332.74" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$2" class="0">
@@ -5596,10 +5595,9 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 </segment>
 <segment>
 <pinref part="MPU_6050_IF" gate="G$1" pin="1"/>
-<wire x1="97.79" y1="322.58" x2="100.33" y2="322.58" width="0.1524" layer="91"/>
-<label x="104.14" y="320.04" size="1.778" layer="95" xref="yes"/>
-<wire x1="100.33" y1="322.58" x2="100.33" y2="320.04" width="0.1524" layer="91"/>
-<wire x1="100.33" y1="320.04" x2="104.14" y2="320.04" width="0.1524" layer="91"/>
+<wire x1="97.79" y1="322.58" x2="97.79" y2="314.96" width="0.1524" layer="91"/>
+<label x="107.95" y="314.96" size="1.778" layer="95" xref="yes"/>
+<wire x1="97.79" y1="314.96" x2="107.95" y2="314.96" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <wire x1="-15.24" y1="317.5" x2="-15.24" y2="320.04" width="0.1524" layer="91"/>
@@ -5717,83 +5715,90 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 </net>
 <net name="SYS_NRST" class="0">
 <segment>
-<pinref part="PROG_IF" gate="G$1" pin="4"/>
-<label x="100.33" y="359.41" size="1.778" layer="95" xref="yes"/>
-<wire x1="97.79" y1="358.14" x2="100.33" y2="358.14" width="0.1524" layer="91"/>
-<wire x1="100.33" y1="358.14" x2="100.33" y2="359.41" width="0.1524" layer="91"/>
-</segment>
-<segment>
 <wire x1="-15.24" y1="309.88" x2="-27.94" y2="309.88" width="0.1524" layer="91"/>
 <wire x1="-27.94" y1="309.88" x2="-27.94" y2="308.61" width="0.1524" layer="91"/>
 <label x="-27.94" y="308.61" size="1.778" layer="95" rot="R180" xref="yes"/>
 <pinref part="IC1" gate="G$1" pin="NRST"/>
 </segment>
+<segment>
+<label x="110.49" y="350.52" size="1.778" layer="95" xref="yes"/>
+<pinref part="PROG_IF" gate="G$1" pin="2"/>
+<wire x1="109.22" y1="350.52" x2="110.49" y2="350.52" width="0.1524" layer="91"/>
+<wire x1="97.79" y1="353.06" x2="109.22" y2="353.06" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="353.06" x2="109.22" y2="350.52" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="SYS_SWDIO" class="0">
-<segment>
-<pinref part="PROG_IF" gate="G$1" pin="3"/>
-<wire x1="97.79" y1="355.6" x2="100.33" y2="355.6" width="0.1524" layer="91"/>
-<label x="100.33" y="355.6" size="1.778" layer="95" xref="yes"/>
-</segment>
 <segment>
 <wire x1="22.86" y1="314.96" x2="25.4" y2="314.96" width="0.1524" layer="91"/>
 <label x="25.4" y="313.69" size="1.778" layer="95" xref="yes"/>
 <wire x1="25.4" y1="314.96" x2="25.4" y2="313.69" width="0.1524" layer="91"/>
 <pinref part="IC1" gate="G$1" pin="PA13"/>
 </segment>
+<segment>
+<label x="110.49" y="358.14" size="1.778" layer="95" xref="yes"/>
+<pinref part="PROG_IF" gate="G$1" pin="4"/>
+<wire x1="97.79" y1="358.14" x2="110.49" y2="358.14" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="SYS_SWCLK" class="0">
-<segment>
-<pinref part="PROG_IF" gate="G$1" pin="2"/>
-<label x="100.33" y="351.79" size="1.778" layer="95" xref="yes"/>
-<wire x1="97.79" y1="353.06" x2="100.33" y2="353.06" width="0.1524" layer="91"/>
-<wire x1="100.33" y1="353.06" x2="100.33" y2="351.79" width="0.1524" layer="91"/>
-</segment>
 <segment>
 <wire x1="22.86" y1="317.5" x2="25.4" y2="317.5" width="0.1524" layer="91"/>
 <label x="25.4" y="317.5" size="1.778" layer="95" xref="yes"/>
 <pinref part="IC1" gate="G$1" pin="PA14"/>
 </segment>
+<segment>
+<label x="110.49" y="354.33" size="1.778" layer="95" xref="yes"/>
+<wire x1="109.22" y1="355.6" x2="110.49" y2="355.6" width="0.1524" layer="91"/>
+<wire x1="110.49" y1="355.6" x2="110.49" y2="354.33" width="0.1524" layer="91"/>
+<pinref part="PROG_IF" gate="G$1" pin="3"/>
+<wire x1="107.95" y1="355.6" x2="109.22" y2="355.6" width="0.1524" layer="91"/>
+<wire x1="107.95" y1="355.6" x2="97.79" y2="355.6" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="MPU_6050_SCL" class="0">
-<segment>
-<pinref part="MPU_6050_IF" gate="G$1" pin="2"/>
-<wire x1="97.79" y1="325.12" x2="100.33" y2="325.12" width="0.1524" layer="91"/>
-<wire x1="100.33" y1="325.12" x2="100.33" y2="323.85" width="0.1524" layer="91"/>
-<label x="104.14" y="323.85" size="1.778" layer="95" xref="yes"/>
-<wire x1="100.33" y1="323.85" x2="104.14" y2="323.85" width="0.1524" layer="91"/>
-</segment>
 <segment>
 <wire x1="5.08" y1="335.28" x2="5.08" y2="349.25" width="0.1524" layer="91"/>
 <wire x1="5.08" y1="349.25" x2="13.97" y2="349.25" width="0.1524" layer="91"/>
 <label x="13.97" y="349.25" size="1.778" layer="95" xref="yes"/>
 <pinref part="IC1" gate="G$1" pin="PB5"/>
 </segment>
-</net>
-<net name="MPU_6050_SDA" class="0">
 <segment>
 <pinref part="MPU_6050_IF" gate="G$1" pin="3"/>
-<label x="104.14" y="327.66" size="1.778" layer="95" xref="yes"/>
 <wire x1="97.79" y1="327.66" x2="104.14" y2="327.66" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="327.66" x2="104.14" y2="323.85" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="323.85" x2="107.95" y2="323.85" width="0.1524" layer="91"/>
+<label x="107.95" y="323.85" size="1.778" layer="95" xref="yes"/>
 </segment>
+</net>
+<net name="MPU_6050_SDA" class="0">
 <segment>
 <wire x1="2.54" y1="335.28" x2="2.54" y2="353.06" width="0.1524" layer="91"/>
 <wire x1="2.54" y1="353.06" x2="13.97" y2="353.06" width="0.1524" layer="91"/>
 <label x="13.97" y="353.06" size="1.778" layer="95" xref="yes"/>
 <pinref part="IC1" gate="G$1" pin="PB6"/>
 </segment>
+<segment>
+<pinref part="MPU_6050_IF" gate="G$1" pin="2"/>
+<wire x1="97.79" y1="325.12" x2="100.33" y2="325.12" width="0.1524" layer="91"/>
+<wire x1="100.33" y1="325.12" x2="100.33" y2="320.04" width="0.1524" layer="91"/>
+<wire x1="100.33" y1="320.04" x2="107.95" y2="320.04" width="0.1524" layer="91"/>
+<label x="107.95" y="320.04" size="1.778" layer="95" xref="yes"/>
+</segment>
 </net>
 <net name="MPU_6050_INT" class="0">
-<segment>
-<pinref part="MPU_6050_IF" gate="G$1" pin="5"/>
-<wire x1="97.79" y1="332.74" x2="104.14" y2="332.74" width="0.1524" layer="91"/>
-<label x="104.14" y="332.74" size="1.778" layer="95" xref="yes"/>
-</segment>
 <segment>
 <label x="13.97" y="345.44" size="1.778" layer="95" xref="yes"/>
 <wire x1="7.62" y1="335.28" x2="7.62" y2="345.44" width="0.1524" layer="91"/>
 <wire x1="7.62" y1="345.44" x2="13.97" y2="345.44" width="0.1524" layer="91"/>
 <pinref part="IC1" gate="G$1" pin="PB4"/>
+</segment>
+<segment>
+<pinref part="MPU_6050_IF" gate="G$1" pin="4"/>
+<wire x1="97.79" y1="330.2" x2="105.41" y2="330.2" width="0.1524" layer="91"/>
+<wire x1="105.41" y1="330.2" x2="105.41" y2="327.66" width="0.1524" layer="91"/>
+<wire x1="105.41" y1="327.66" x2="107.95" y2="327.66" width="0.1524" layer="91"/>
+<label x="107.95" y="327.66" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="NRF24L01_CRYSTAL2" class="0">
