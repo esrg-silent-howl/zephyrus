@@ -1,0 +1,8 @@
+"Qty";"Value";"Device";"Package";"Parts";"Description";"";
+"2";"";"CONN_02";"1X02";"J4, J5";"Multi connection point. Often used as Generic Header-pin footprint for 0.1 inch spaced/style header connections";"";
+"1";"";"CONN_05";"1X05";"J3";"Multi connection point. Often used as Generic Header-pin footprint for 0.1 inch spaced/style header connections";"";
+"2";"";"CONN_13";"1X13";"J1, J2";"Multi connection point. Often used as Generic Header-pin footprint for 0.1 inch spaced/style header connections";"";
+"2";"100n";"C2012X7R1H104K085AA";"CAPC2012X100N";"C1, C2";"TDK C2012 C 100nF Ceramic Multilayer Capacitor, 50 V dc, +125C, X7R Dielectric, +/-10% SMD";"";
+"2";"10u";"C3216X7R1C106K160AC";"CAPC3216X180N";"C3, C4";"1206 X7R ceramic capacitor 16V 10uF TDK C3216 C 10uF Ceramic Multilayer Capacitor, 16 V dc X7R Dielectric +/-10% SMD";"";
+"1";"110k";"0.22OHM-0805-1/4W-1%";"0805";"R1";"0.22Ω resistor";"";
+"1";"STM32F051";"STM32F051K8T6";"QFP80P900X900X160-32N";"IC1";"Source:  Datasheet";"";
