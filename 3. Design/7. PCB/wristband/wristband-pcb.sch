@@ -4855,20 +4855,20 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="R1" library="Resistor" library_urn="urn:adsk.eagle:library:16378527" deviceset="R-US" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16378565/2" technology="_" value="1.4K[0603]"/>
 <part name="R2" library="Resistor" library_urn="urn:adsk.eagle:library:16378527" deviceset="R-US" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16378565/2" technology="_" value="22K[0603]"/>
 <part name="GND15" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="C3" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="33nF [0603]"/>
+<part name="C3" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25496290/2" override_package_urn="urn:adsk.eagle:footprint:25496291/1" value="33nF [0603]"/>
 <part name="GND16" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="C4" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="1nF [0603]"/>
-<part name="C5" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
+<part name="C4" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25496288/2" override_package_urn="urn:adsk.eagle:footprint:25496289/1" value="1nF [0603]"/>
+<part name="C5" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25496272/2" override_package_urn="urn:adsk.eagle:footprint:25496273/1" value="10nF [0603]"/>
 <part name="GND17" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="C6" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="1nF [0603]"/>
-<part name="C7" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
+<part name="C6" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25496270/2" override_package_urn="urn:adsk.eagle:footprint:25496271/1" value="1nF [0603]"/>
+<part name="C7" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25496268/2" override_package_urn="urn:adsk.eagle:footprint:25496269/1" value="10nF [0603]"/>
 <part name="GND18" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND19" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="C8" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="2.2 nF [0603]"/>
+<part name="C8" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25496261/2" override_package_urn="urn:adsk.eagle:footprint:25496262/1" value="2.2 nF [0603]"/>
 <part name="GND20" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND21" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="C10" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" override_package3d_urn="urn:adsk.eagle:package:25483757/2" override_package_urn="urn:adsk.eagle:footprint:25483758/1" value="22nF [1206]"/>
-<part name="C11" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" value="22nF [1206]"/>
+<part name="C11" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" override_package3d_urn="urn:adsk.eagle:package:25496253/2" override_package_urn="urn:adsk.eagle:footprint:25496254/1" value="22nF [1206]"/>
 <part name="C12" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" override_package3d_urn="urn:adsk.eagle:package:25493473/2" override_package_urn="urn:adsk.eagle:footprint:25493474/1" value="22nF [1206]"/>
 <part name="C13" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" override_package3d_urn="urn:adsk.eagle:package:25493381/2" override_package_urn="urn:adsk.eagle:footprint:25493382/1" value="22nF [1206]"/>
 <part name="C14" library="CL31B226KPHNNNE" deviceset="CL31B226KPHNNNE" device="" override_package3d_urn="urn:adsk.eagle:package:25483753/2" override_package_urn="urn:adsk.eagle:footprint:25483755/1" value="22nF [1206]"/>
@@ -4879,7 +4879,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="C23" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25493683/2" override_package_urn="urn:adsk.eagle:footprint:25493684/1" value="1uF [0603]"/>
 <part name="C24" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25493694/2" override_package_urn="urn:adsk.eagle:footprint:25493695/1" value="10nF [0603]"/>
 <part name="GND11" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="C22" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="10nF [0603]"/>
+<part name="C22" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25496257/2" override_package_urn="urn:adsk.eagle:footprint:25496258/1" value="10nF [0603]"/>
 <part name="GND12" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="C21" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25493669/2" override_package_urn="urn:adsk.eagle:footprint:25493670/1" value="10nF [0603]"/>
 <part name="GND13" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
@@ -4906,7 +4906,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <part name="GND23" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND26" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="C19" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25493691/2" override_package_urn="urn:adsk.eagle:footprint:25493692/1" value="4.7uF [0603]"/>
-<part name="C20" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" value="4.7uF [0603]"/>
+<part name="C20" library="Nordic_nRF" library_urn="urn:adsk.eagle:library:169009" deviceset="CAPACITOR" device="_0603_L" package3d_urn="urn:adsk.eagle:package:2593727/1" override_package3d_urn="urn:adsk.eagle:package:25496259/2" override_package_urn="urn:adsk.eagle:footprint:25496260/1" value="4.7uF [0603]"/>
 <part name="PS2" library="AP22814AW5-7" deviceset="AP22814AW5-7" device="" override_package3d_urn="urn:adsk.eagle:package:25460533/2" override_package_urn="urn:adsk.eagle:footprint:25460534/1"/>
 <part name="GND27" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="C2" library="Capacitor" library_urn="urn:adsk.eagle:library:16290819" deviceset="C" device="CHIP-0603(1608-METRIC)" package3d_urn="urn:adsk.eagle:package:16290898/2" override_package3d_urn="urn:adsk.eagle:package:25492349/2" override_package_urn="urn:adsk.eagle:footprint:16290847/2" technology="_" value="100n [0603]"/>
@@ -4946,7 +4946,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 </instance>
 <instance part="S2" gate="G$1" x="-83.82" y="57.15" smashed="yes" rot="R180">
 <attribute name="NAME" x="-85.09" y="54.61" size="1.778" layer="95" rot="R180" align="center-left"/>
-<attribute name="VALUE" x="-88.9" y="64.77" size="1.778" layer="96" rot="R180" align="center-left"/>
+<attribute name="VALUE" x="-87.63" y="63.5" size="1.778" layer="96" rot="R180" align="center-left"/>
 </instance>
 <instance part="BATT_HLD" gate="G$1" x="104.14" y="135.89" smashed="yes">
 <attribute name="NAME" x="120.65" y="143.51" size="1.778" layer="95" align="center-left"/>
@@ -5163,8 +5163,8 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 <attribute name="LAST_DATE_TIME" x="55.88" y="29.21" size="2.54" layer="94"/>
 </instance>
 <instance part="IC1" gate="G$1" x="-15.24" y="317.5" smashed="yes">
-<attribute name="NAME" x="19.05" y="335.28" size="1.778" layer="95" align="center-left"/>
-<attribute name="VALUE" x="19.05" y="332.74" size="1.778" layer="96" align="center-left"/>
+<attribute name="NAME" x="21.59" y="330.2" size="1.778" layer="95" align="center-left"/>
+<attribute name="VALUE" x="21.59" y="327.66" size="1.778" layer="96" align="center-left"/>
 </instance>
 <instance part="GND10" gate="1" x="-8.89" y="332.74" smashed="yes">
 <attribute name="VALUE" x="-8.89" y="332.486" size="1.778" layer="96" align="top-center"/>
