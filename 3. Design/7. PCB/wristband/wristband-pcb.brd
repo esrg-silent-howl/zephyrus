@@ -2295,9 +2295,9 @@ IPC High Density</description>
 </signal>
 <signal name="N$4">
 <contactref element="R7" pad="1"/>
-<contactref element="IC1" pad="30"/>
-<wire x1="12.5538" y1="10.5702" x2="12.5452" y2="10.5616" width="0.5588" layer="1"/>
-<wire x1="12.5452" y1="10.5616" x2="12.5452" y2="8.4582" width="0.5588" layer="1"/>
+<contactref element="IC1" pad="31"/>
+<wire x1="13.3538" y1="10.5702" x2="13.3538" y2="9.2668" width="0.6096" layer="1"/>
+<wire x1="13.3538" y1="9.2668" x2="12.5452" y2="8.4582" width="0.6096" layer="1"/>
 </signal>
 <signal name="FLG">
 <contactref element="PS2" pad="3"/>

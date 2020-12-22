@@ -5977,11 +5977,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/2/AP22814AW5-7.
 </net>
 <net name="N$4" class="0">
 <segment>
-<wire x1="0" y1="335.28" x2="0" y2="340.36" width="0.1524" layer="91"/>
-<wire x1="0" y1="340.36" x2="-20.32" y2="340.36" width="0.1524" layer="91"/>
 <pinref part="R7" gate="G$1" pin="1"/>
 <wire x1="-20.32" y1="340.36" x2="-20.32" y2="339.09" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="G$1" pin="PB7"/>
+<pinref part="IC1" gate="G$1" pin="BOOT0"/>
+<wire x1="-2.54" y1="335.28" x2="-2.54" y2="340.36" width="0.1524" layer="91"/>
+<wire x1="-2.54" y1="340.36" x2="-20.32" y2="340.36" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="FLG" class="0">
