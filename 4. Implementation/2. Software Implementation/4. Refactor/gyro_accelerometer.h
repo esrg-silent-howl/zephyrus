@@ -39,8 +39,6 @@ typedef struct {
     double Gy;
     double Gz;
 
-    float Temperature;
-
     double KalmanAngleX;
     double KalmanAngleY;
 } MPU6050_t;
@@ -62,8 +60,6 @@ uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx);
 void MPU6050_Read_Accel(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
 
 void MPU6050_Read_Gyro(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
-
-void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
 
 void MPU6050_Read_All(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
 
