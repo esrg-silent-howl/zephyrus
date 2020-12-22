@@ -95,6 +95,7 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
+	if (0) {
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -104,7 +105,8 @@ int main(void)
   osKernelStart();
   
   /* We should never get here as control is now taken by the scheduler */
-
+	}
+	
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
