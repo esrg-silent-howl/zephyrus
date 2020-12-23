@@ -32,7 +32,8 @@ RTOS_MUTEX_STATIC(mReference);
 RTOS_MUTEX_STATIC(mUSS);
 
 /*!< System Semaphores Creation */
-RTOS_SEMAPHORE_STATIC(semConfig, 3); 
+RTOS_SEMAPHORE_STATIC(semConfig, 3);
+RTOS_SEMAPHORE_STATIC(semWorking, 4); 
 
 /*!< System Notifiations Creation */
 RTOS_NOTIFICATION(nConfig, 0);
@@ -56,6 +57,15 @@ static void THREADS_incSemConfig(void) {
 		RTOS_NOTIFY(zRFManager, nConfig);
 }
 
+static void THREADS_sleep(void){}
+static void THREADS_wakeUp(void){}
+	
+static void THREADS_checkForPower(void){
+
+
+}
+	
+
 RTOS_TASK_FUN(zMain) {
     
 	RTOS_TIMESTAMP(timestamp);
@@ -64,9 +74,15 @@ RTOS_TASK_FUN(zMain) {
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
-
-    /*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, 5);
+		
+		/*!< Read Power Pin */
+		THREADS_checkForPower();
+		
+		/*!< Check for working threads */
+		while(RTOS_SEMAPHORE_GET_COUNT(semWorking) != 0){};
+			
+		THREADS_sleep(); /*!< TODO: Sleep */
+		THREADS_wakeUp();			
 	}
 
 	vTaskDelete(NULL);
@@ -87,6 +103,9 @@ RTOS_TASK_FUN(zGyroAccelerometerManager) {
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
+		
+		/*!< Declare the sleep mode entering */
+		RTOS_SEMAPHORE_DEC(semWorking);
 		
 		/*!< Sleep */
 		RTOS_DELAY_UNTIL(timestamp, 5);
@@ -116,7 +135,10 @@ RTOS_TASK_FUN(zRFManager) {
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
-
+		
+		/*!< Declare the sleep mode entering */
+		RTOS_SEMAPHORE_DEC(semWorking);
+		
     /*!< Sleep */
 		RTOS_DELAY_UNTIL(timestamp, 5);
 	}
@@ -138,7 +160,10 @@ RTOS_TASK_FUN(zInferenceManager) {
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
-
+		
+		/*!< Declare the sleep mode entering */
+		RTOS_SEMAPHORE_DEC(semWorking);
+		
     /*!< Sleep */
 		RTOS_DELAY_UNTIL(timestamp, 5);
 	}
@@ -160,7 +185,10 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
-
+		
+		/*!< Declare the sleep mode entering */
+		RTOS_SEMAPHORE_DEC(semWorking);
+		
     /*!< Sleep */
 		RTOS_DELAY_UNTIL(timestamp, 5);
 	}
@@ -186,6 +214,7 @@ void THREADS_create(void) {
 	RTOS_MUTEX_CREATE_STATIC(mUSS);
 
 	RTOS_SEMAPHORE_CREATE_STATIC(semConfig, 0);
+	RTOS_SEMAPHORE_CREATE_STATIC(semWorking, 0);
 
 	F_SET(F_TASKS_CREATED);
 }

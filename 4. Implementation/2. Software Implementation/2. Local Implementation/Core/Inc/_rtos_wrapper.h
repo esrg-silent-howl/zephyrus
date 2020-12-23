@@ -82,7 +82,7 @@ xTaskNotifyWait(0, __notification__, NULL, portMAX_DELAY)
 #define RTOS_SEMAPHORE_HANDLE(__semaphore__)	__semaphore__
 
 /*!< Get __semaphore__'s maximum count */
-#define RTOS_SEMAPHORE_MAX_COUNT(__semaphore__) CAT(__task__, _MaxCount)
+#define RTOS_SEMAPHORE_MAX_COUNT(__semaphore__) CAT(__semaphore__, _MaxCount)
 
 /*!< Declare the necessary objects for creating and manipulating a mutex */
 #define RTOS_SEMAPHORE_STATIC(__semaphore__, __MAX_COUNT__) \
@@ -93,7 +93,7 @@ StaticSemaphore_t RTOS_SEMAPHORE_BUFFER(__semaphore__);
 /*!< Wrapper macro for 'xSemaphoreCreateMutexStatic' */
 #define RTOS_SEMAPHORE_CREATE_STATIC(__semaphore__, __INIT_COUNT__)	\
 	RTOS_SEMAPHORE_HANDLE(__semaphore__) = xSemaphoreCreateCountingStatic( \
-			RTOS_SEMAPHORE_MAX_COUNT(__semaphore), __INIT_COUNT__, &RTOS_SEMAPHORE_BUFFER(__semaphore__))
+			RTOS_SEMAPHORE_MAX_COUNT(__semaphore__), __INIT_COUNT__, &RTOS_SEMAPHORE_BUFFER(__semaphore__))
 
 /*!< Wrapper macro for 'xSemaphoreTake' for specific use for semaphores
  *	created through this API */
