@@ -38,14 +38,17 @@ RTOS_SEMAPHORE_STATIC(semConfig, 3);
 RTOS_NOTIFICATION(nConfig, 0);
 RTOS_NOTIFICATION(nConnected, 1);
 
-/* Flags Container*/
+/*!< Flags Container*/
 uint32_t flags = 0;
 
-/* Current connection state */
+/*!< System Timestamps Creation */
+RTOS_TIMESTAMP(tsZero);
+
+/*!< Current connection state */
 RF_ConnectionState_t connection_state;
 
 
-void incSemConfig (void) {
+static void THREADS_incSemConfig(void) {
 	
 	RTOS_SEMAPHORE_INC(semConfig);
 	
@@ -74,8 +77,10 @@ RTOS_TASK_FUN(zGyroAccelerometerManager) {
 
 	RTOS_TIMESTAMP(timestamp);
 
-	RTOS_SEMAPHORE_INC(semConfig);
+	/*!< Signal another configuration complete */
+	THREADS_incSemConfig();
 	
+	/*!< Await the establishment of a connection to continue */
 	RTOS_AWAIT(nConnected);
 	
 	while(1) {
@@ -94,10 +99,15 @@ RTOS_TASK_FUN(zRFManager) {
 
 	RTOS_TIMESTAMP(timestamp);
 	
+	/*!< Wait for all configurations to be complete */
 	RTOS_AWAIT(nConfig);
 	
 	RTOS_DELAY(1000);
 	
+	/*!< Synchronization time stamp */
+	RTOS_KEEP_TIMESTAMP(tsZero);
+	
+	/*!< Notify tasks of a successful connection */
 	RTOS_NOTIFY(zGyroAccelerometerManager, nConnected);
 	RTOS_NOTIFY(zInferenceManager, nConnected);
 	RTOS_NOTIFY(zUltrasonicManager, nConnected);
@@ -118,8 +128,10 @@ RTOS_TASK_FUN(zInferenceManager) {
 
 	RTOS_TIMESTAMP(timestamp);
 
-	RTOS_SEMAPHORE_INC(semConfig);
+	/*!< Signal another configuration complete */
+	THREADS_incSemConfig();
 	
+	/*!< Await the establishment of a connection to continue */
 	RTOS_AWAIT(nConnected);
 	
 	while(1) {
@@ -138,8 +150,10 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 
  	RTOS_TIMESTAMP(timestamp);
 
-	RTOS_SEMAPHORE_INC(semConfig);
+	/*!< Signal another configuration complete */
+	THREADS_incSemConfig();
 	
+	/*!< Await the establishment of a connection to continue */
 	RTOS_AWAIT(nConnected);	
 	
 	while(1) {

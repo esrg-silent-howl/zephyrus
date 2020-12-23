@@ -97,12 +97,12 @@ StaticSemaphore_t RTOS_SEMAPHORE_BUFFER(__semaphore__);
 
 /*!< Wrapper macro for 'xSemaphoreTake' for specific use for semaphores
  *	created through this API */
-#define RTOS_SEMAPHORE_INC(__semaphore__) \
+#define RTOS_SEMAPHORE_DEC(__semaphore__) \
 	xSemaphoreTake(__semaphore__, portMAX_DELAY)
 
 /*!< Wrapper macro for 'xSemaphoreGive' for specific use for semaphores
  *	created through this API */
-#define RTOS_SEMAPHORE_DEC(__semaphore__) \
+#define RTOS_SEMAPHORE_INC(__semaphore__) \
 	xSemaphoreGive(__semaphore__)
 	
 	/*!< Wrapper macro for 'xSemaphoreTakeFromISR' for specific use for semaphores
