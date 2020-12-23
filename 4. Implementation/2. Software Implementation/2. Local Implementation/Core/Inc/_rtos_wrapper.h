@@ -28,20 +28,99 @@
 #define CAT(x, y) x ## y
 
 /*! Returned by some methods as a way to convey success in their operation */
-#define RTOS_RETURN_SUCCESS pdTRUE
+#define RTOS_TRUE pdTRUE
 
 /*! Returned by some methods as a way to convey failure in their operation */
-#define RTOS_RETURN_FAILURE pdFALSE
+#define RTOS_FALSE pdFALSE
 
 /*! Converts a value from milliseconds to its equivalent in system ticks */
 #define RTOS_TOOLS_MS_TO_TICKS(__ms__)	pdMS_TO_TICKS(__ms__)
 
+
+/*!< -------------------------------------- DELAYS ------------------------------------- */
+
+#define RTOS_TIMESTAMP(__timestamp__)	\
+	TickType_t __timestamp__
+
+#define RTOS_KEEP_TIMESTAMP(__timestamp__) \
+	__timestamp__ = xTaskGetTickCount()
+
+/*!< Delay task execution __msdelay__ ms */
+#define RTOS_DELAY(__msdelay__)	\
+	vTaskDelay(RTOS_TOOLS_MS_TO_TICKS(__msdelay__))
+
+/*!< Delay task execution __msdelay__ ms past __timestamp__*/
+#define RTOS_DELAY_UNTIL(__timestamp__, __msdelay__)	\
+	vTaskDelayUntil(&__timestamp__, RTOS_TOOLS_MS_TO_TICKS(__msdelay__))
+
+
+/*!< ---------------------------------- NOTIFICATIONS ---------------------------------- */
+
+/*!< Create a notification with an __id__ in the range [0, 31] */
+#define RTOS_NOTIFICATION(__notification__, __id__) \
+uint32_t __notification__ = 1 << __id__;
+
 /*!< Notifies a task */
-#define RTOS_NOTIFICATION_GIVE(__task__) \
-xTaskNotifyGive(RTOS_TASK_HANDLE(__task__))
+#define RTOS_NOTIFY(__task__, __notification__) \
+xTaskNotify(__task__, __notification__, eSetBits)
+
+/*!< Notifies a task */
+#define RTOS_NOTIFY_ISR(__task__, __notification__) \
+xTaskNotify(__task__, __notification__, eSetBits, NULL)
 
 /*!< Awaits a notification */
-#define RTOS_NOTIFICATION_WAIT()		ulTaskNotifyTake(pdTRUE, portMAX_DELAY)
+#define RTOS_AWAIT(__notification__)		\
+xTaskNotifyWait(0, __notification__, NULL, portMAX_DELAY)
+
+
+/*!< ----------------------------------- SEMAPHORES ----------------------------------- */
+
+/*!< Get the representation of the mutex buffer associated with __semaphore__ */
+#define RTOS_SEMAPHORE_BUFFER(__semaphore__)	CAT(__semaphore__, _SemaphoreBuffer)
+
+/*!< Get the representation of the handle associated with __semaphore__ */
+#define RTOS_SEMAPHORE_HANDLE(__semaphore__)	__semaphore__
+
+/*!< Get __semaphore__'s maximum count */
+#define RTOS_SEMAPHORE_MAX_COUNT(__semaphore__) CAT(__task__, _MaxCount)
+
+/*!< Declare the necessary objects for creating and manipulating a mutex */
+#define RTOS_SEMAPHORE_STATIC(__semaphore__, __MAX_COUNT__) \
+const uint32_t RTOS_SEMAPHORE_MAX_COUNT(__semaphore__) = __MAX_COUNT__; \
+SemaphoreHandle_t RTOS_SEMAPHORE_HANDLE(__semaphore__); \
+StaticSemaphore_t RTOS_SEMAPHORE_BUFFER(__semaphore__);
+
+/*!< Wrapper macro for 'xSemaphoreCreateMutexStatic' */
+#define RTOS_SEMAPHORE_CREATE_STATIC(__semaphore__, __INIT_COUNT__)	\
+	RTOS_SEMAPHORE_HANDLE(__semaphore__) = xSemaphoreCreateCountingStatic( \
+			RTOS_SEMAPHORE_MAX_COUNT(__semaphore), __INIT_COUNT__, &RTOS_SEMAPHORE_BUFFER(__semaphore__))
+
+/*!< Wrapper macro for 'xSemaphoreTake' for specific use for semaphores
+ *	created through this API */
+#define RTOS_SEMAPHORE_INC(__semaphore__) \
+	xSemaphoreTake(__semaphore__, portMAX_DELAY)
+
+/*!< Wrapper macro for 'xSemaphoreGive' for specific use for semaphores
+ *	created through this API */
+#define RTOS_SEMAPHORE_DEC(__semaphore__) \
+	xSemaphoreGive(__semaphore__)
+	
+	/*!< Wrapper macro for 'xSemaphoreTakeFromISR' for specific use for semaphores
+ *	created through this API */
+#define RTOS_SEMAPHORE_INC_ISR(__semaphore__) \
+	xSemaphoreTakeFromISR(__semaphore__, NULL)
+
+/*!< Wrapper macro for 'xSemaphoreGiveFromISR' for specific use for semaphores
+ *	created through this API */
+#define RTOS_SEMAPHORE_DEC_ISR(__semaphore__) \
+	xSemaphoreGiveFromISR(__semaphore__, NULL)
+
+/*!< Get count of __semaphore__ */
+#define RTOS_SEMAPHORE_GET_COUNT(__semaphore__) \
+	uxSemaphoreGetCount(RTOS_SEMAPHORE_HANDLE(__semaphore__))
+
+
+/*!< ---------------------------------- MUTEXES ---------------------------------- */
 
 /*!
  *	@brief	Get the representation of the mutex buffer associated with __mutex__
@@ -105,8 +184,8 @@ StaticSemaphore_t RTOS_MUTEX_BUFFER(__mutex__);
  *	 - RTOS_RETURN_SUCCESS in case the mutex is or becomes available
  *	 - RTOS_RETURN_FAILURE in case the mutex is not available before timeout
  */
-#define RTOS_MUTEX_LOCK(__mutex__, __ticks_to_wait__) \
-	xSemaphoreTake(__mutex__, __ticks_to_wait__)
+#define RTOS_MUTEX_LOCK(__mutex__) \
+	xSemaphoreTake(__mutex__, portMAX_DELAY)
 
 /*!
  *	@brief	Wrapper macro for 'xSemaphoreTake' for specific use for mutexes
@@ -125,6 +204,7 @@ StaticSemaphore_t RTOS_MUTEX_BUFFER(__mutex__);
 	xSemaphoreGive(__mutex__)
 
 
+/*!< ---------------------------------- TASKS ---------------------------------- */
 
 /*!
  *	@brief	Get the representation of the stack array associated with __task__

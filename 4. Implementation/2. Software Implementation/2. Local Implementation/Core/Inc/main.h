@@ -48,6 +48,29 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 
+/* Check for GNU compiler */
+#if defined (__GNUC__)
+    /**/
+    #ifndef _weak_ 
+        #define _weak_      __attribute__((weak))
+    #endif
+
+    #ifndef _unused_ 
+        #define _unused_      __attribute__((unused))
+    #endif
+
+    #ifndef _packed_ 
+        #define _packed_      __attribute__((packed))
+    #endif
+
+#endif
+
+/*!< Set __flag__  (1) */
+#define F_SET(__flag__)			flags |= (uint32_t)(1U<<__flag__)
+/*!< Clear __flag__ (0) */
+#define F_CLEAR(__flag__)		flags &= (uint32_t)(~(1U<<__flag__))
+/*!< Read __flag__ */
+#define F_READ(__flag__)		((flags & (1<<__flag__)) >> __flag__)
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
