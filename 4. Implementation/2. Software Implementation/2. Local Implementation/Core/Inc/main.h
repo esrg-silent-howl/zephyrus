@@ -71,6 +71,7 @@ extern "C" {
 #define F_CLEAR(__flag__)		flags &= (uint32_t)(~(1U<<__flag__))
 /*!< Read __flag__ */
 #define F_READ(__flag__)		((flags & (1<<__flag__)) >> __flag__)
+
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -102,8 +103,6 @@ void Error_Handler(void);
 #define NRF24L01_MOSI_GPIO_Port GPIOC
 #define NRF24L01_CSN_Pin GPIO_PIN_2
 #define NRF24L01_CSN_GPIO_Port GPIOD
-#define LD2_Pin GPIO_PIN_7
-#define LD2_GPIO_Port GPIOB
 #define MPU_6050_SCL_Pin GPIO_PIN_8
 #define MPU_6050_SCL_GPIO_Port GPIOB
 #define MPU_6050_SDA_Pin GPIO_PIN_9

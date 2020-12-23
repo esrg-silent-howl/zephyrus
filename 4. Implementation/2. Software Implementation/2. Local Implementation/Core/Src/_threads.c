@@ -1,5 +1,7 @@
 #include "_threads.h"
 #include "main.h"
+#include "adc.h"
+#include "tim.h"
 
 /*!< Flag definitions */
 #define F_TASKS_CREATED		0
@@ -13,7 +15,6 @@
 #define E_SET_COUNT	(uint32_t)(-2)
 
 /*!< System Threads Period */
-#define PERIOD_MAIN_THREAD          xxxx
 #define PERIOD_GYRO_ACC_THREAD      xxxx
 #define PERIOD_RF_THREAD            xxxx
 #define PERIOD_INFERENCE_THREAD	    xxxx
@@ -60,28 +61,91 @@ static void THREADS_incSemConfig(void) {
 static void THREADS_sleep(void){}
 static void THREADS_wakeUp(void){}
 	
-static void THREADS_checkForPower(void){
+static double THREADS_checkForLowBattery(void){
+	
+#define EVAL_LOW				1
+#define EVAL_HIGH				0
+#define VBATT_RSCALE		3
+#define VBATT_MAX				8200
+#define VBATT_MIN				6000
+#define VBATT_EXCURSION	(VBATT_MAX-VBATT_MIN)
+#define LOW_BATT_THRSLD	15
+#define HYSTERESIS			2
 
+	static int last_evaluation = EVAL_HIGH;	/* Evaluation from last iteration */
+	int evaluation;			/* Evaluation to be made */
+	int adc_value;			/* Raw ADC reading	*/
+	int v_batt;					/* Battery voltage */
+	int batt_lvl;				/* Calculated battery level */
+	
+	/* Convert battery voltage with resistive divider */
+	if(HAL_ADC_Start(&hadc1) == HAL_OK)
+		if(HAL_ADC_PollForConversion(&hadc1, 1) == HAL_OK)
+			adc_value = HAL_ADC_GetValue(&hadc1);
+		HAL_ADC_Stop(&hadc1);
+	
+	/* Calculate real battery voltage */
+	v_batt = adc_value * 3300 / 4096 * VBATT_RSCALE;
+	
+	/* Extrapolate 0-100 battery level assuming linear voltage drop */	
+	batt_lvl = 100 * (v_batt - VBATT_MIN) / VBATT_EXCURSION;
+		
+	/* If last evaluation was LOW, go to HIGH only once the hysteresis margin has been overcome in the UP direction
+	 * If last evaluation was HIGH, go to LOW only once the hysteresis margin has been overcome in the DOWN direction */
+	if (last_evaluation == EVAL_LOW)
+		evaluation = batt_lvl < LOW_BATT_THRSLD + HYSTERESIS;	
+	else
+		evaluation = (batt_lvl <= LOW_BATT_THRSLD - HYSTERESIS);
 
+	/* Keep calculated value for future reference */
+	last_evaluation = evaluation;
+
+	return evaluation;
 }
 	
 
 RTOS_TASK_FUN(zMain) {
-    
-	RTOS_TIMESTAMP(timestamp);
+  
+#define BATTERY_LVL_MEAS_PERIOD		2000
+#define POWER_LED_PERIOD_MS				2000
+#define POWER_LED_DUTY_CYCLE			25
+#define POWER_LED_PULSE_NORMAL		POWER_LED_PERIOD_MS
+#define POWER_LED_PULSE_LOW_BATT	POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100
+
+	RTOS_TIMESTAMP(tsBattLvlMeasurement);
+	
+	/* Turn LED off (not making any assumptions about the current battery level) */
+	htim4.Instance->CCR2 = POWER_LED_PULSE_LOW_BATT;
+	
+	/* Set the previously defined auto-reload value */
+	htim4.Instance->ARR = POWER_LED_PERIOD_MS;
+	
+	/* Enable OC channel 2, main output and timer */
+	HAL_TIM_OC_Start(&htim4, TIM_CHANNEL_2);
 
 	while(1) {
-
-		/*!< Keep current time stamp */
-		RTOS_KEEP_TIMESTAMP(timestamp);
 		
-		/*!< Read Power Pin */
-		THREADS_checkForPower();
-		
-		/*!< Check for working threads */
-		while(RTOS_SEMAPHORE_GET_COUNT(semWorking) != 0){};
+		/* Battery level measurement is not perfectly synchronous, as it would require a special thread
+		 * or an interruption and it doesn't justify such development effort or scheduling priority */
+		if (RTOS_GET_TIMESTAMP() >= tsBattLvlMeasurement + BATTERY_LVL_MEAS_PERIOD) {
 			
-		THREADS_sleep(); /*!< TODO: Sleep */
+			/*!< Keep current time stamp */
+			RTOS_KEEP_TIMESTAMP(tsBattLvlMeasurement);
+			
+			/*!< Read battery voltage and change led indicator accordingly */
+			if (THREADS_checkForLowBattery())
+				htim4.Instance->CCR2 = POWER_LED_PULSE_LOW_BATT;
+			else
+				htim4.Instance->CCR2 = POWER_LED_PULSE_NORMAL;
+		}
+		
+		/*!< Wait for other threads to stop working */
+		while(RTOS_SEMAPHORE_GET_COUNT(semWorking) != 0){};
+		
+		/*!< TODO: Sleep */
+		THREADS_sleep(); 
+			
+		/*!< TODO: Wake up from sleep */
 		THREADS_wakeUp();			
 	}
 

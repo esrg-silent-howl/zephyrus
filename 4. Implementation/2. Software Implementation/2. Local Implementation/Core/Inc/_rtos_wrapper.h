@@ -44,6 +44,9 @@
 
 #define RTOS_KEEP_TIMESTAMP(__timestamp__) \
 	__timestamp__ = xTaskGetTickCount()
+	
+#define RTOS_GET_TIMESTAMP() \
+	xTaskGetTickCount()
 
 /*!< Delay task execution __msdelay__ ms */
 #define RTOS_DELAY(__msdelay__)	\

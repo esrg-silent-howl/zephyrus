@@ -24,6 +24,7 @@
 #include "adc.h"
 #include "i2c.h"
 #include "spi.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -95,8 +96,13 @@ int main(void)
   MX_SPI3_Init();
   MX_ADC1_Init();
   MX_I2C1_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-
+	
+	__HAL_TIM_SetAutoreload(&htim4, 2000);
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 250);
+	HAL_TIM_OC_Start(&htim4, TIM_CHANNEL_2);
+	while(1);
 #if 0
   /* USER CODE END 2 */
 
