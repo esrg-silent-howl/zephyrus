@@ -57,9 +57,20 @@ static void THREADS_incSemConfig(void) {
 		RTOS_NOTIFY(zRFManager, nConfig);
 }
 
-static void THREADS_sleep(void){}
-static void THREADS_wakeUp(void){}
+static void THREADS_sleep(void){
 	
+	static uint32_t sleeps = 0;
+	
+	sleeps ++;
+	
+	/* Clear SLEEPDEEP bit of Cortex System Control Register */
+	CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
+	
+	/* Request Wait For Interrupt */
+	__WFI();
+}
+
+
 static double THREADS_checkForLowBattery(){
 	
 #define EVAL_LOW				1
@@ -99,12 +110,11 @@ static double THREADS_checkForLowBattery(){
 	return evaluation;
 }
 	
-volatile int bit;
 RTOS_TASK_FUN(zMain) {
  
 #define BATTERY_LVL_MEAS_PERIOD		2000
-#define POWER_LED_PERIOD_MS				2000
-#define POWER_LED_DUTY_CYCLE			13
+#define POWER_LED_PERIOD_MS			2000
+#define POWER_LED_DUTY_CYCLE		13
 #define POWER_LED_PULSE_NORMAL		POWER_LED_PERIOD_MS
 #define POWER_LED_PULSE_LOW_BATT	(POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100)
 	
@@ -140,6 +150,7 @@ RTOS_TASK_FUN(zMain) {
 		/*!< If a conversion is complete, interpret it */
 		if (READ_BIT(ADC1->SR, ADC_FLAG_EOC)) {
 			
+			/* Clear EOC flag */
 			CLEAR_BIT(ADC1->SR, ADC_FLAG_EOC);
 			
 			/*!< Read battery voltage and change led indicator accordingly */
@@ -149,20 +160,15 @@ RTOS_TASK_FUN(zMain) {
 				htim4.Instance->CCR2 = POWER_LED_PULSE_NORMAL;
 		}
 		
-		RTOS_DELAY(50);
-		
 		/*!< Wait for other threads to stop working */
 		while(RTOS_SEMAPHORE_GET_COUNT(semWorking) != 0){};
 		
-		/*!< TODO: Sleep */
+		/*!< Sleep until the next interruption */
 		THREADS_sleep(); 
-			
-		/*!< TODO: Wake up from sleep */
-		THREADS_wakeUp();			
+	
 	}
 
 	vTaskDelete(NULL);
-
 }
 
 RTOS_TASK_FUN(zGyroAccelerometerManager) {
@@ -230,6 +236,8 @@ RTOS_TASK_FUN(zRFManager) {
 
 RTOS_TASK_FUN(zInferenceManager) {
 
+#define Z_INFERENCE_MANAGER_PERIOD_MS	40
+
 	RTOS_TIMESTAMP(timestamp);
 
 	/*!< Signal another configuration complete */
@@ -240,17 +248,21 @@ RTOS_TASK_FUN(zInferenceManager) {
 	
 	while(1) {
 		
-		/*!< Declare the sleep mode entering */
+		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
+
+
+		/* TODO: inference work */
+
 		
-		/*!< Declare the sleep mode entering */
+		/*!< Declare sleeping state */
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
-    /*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, 20);
+    	/*!< Sleep */
+		RTOS_DELAY_UNTIL(timestamp, Z_INFERENCE_MANAGER_PERIOD_MS);
 	}
 
 	vTaskDelete(NULL);

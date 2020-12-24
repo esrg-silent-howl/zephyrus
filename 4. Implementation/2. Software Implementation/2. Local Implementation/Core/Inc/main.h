@@ -85,6 +85,8 @@ void Error_Handler(void);
 #define USER_Btn_Pin GPIO_PIN_13
 #define USER_Btn_GPIO_Port GPIOC
 #define USER_Btn_EXTI_IRQn EXTI15_10_IRQn
+#define BATTERY_LEVEL_Pin GPIO_PIN_4
+#define BATTERY_LEVEL_GPIO_Port GPIOA
 #define LD1_Pin GPIO_PIN_0
 #define LD1_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_14
@@ -103,6 +105,8 @@ void Error_Handler(void);
 #define NRF24L01_MOSI_GPIO_Port GPIOC
 #define NRF24L01_CSN_Pin GPIO_PIN_2
 #define NRF24L01_CSN_GPIO_Port GPIOD
+#define LED_POWER_Pin GPIO_PIN_7
+#define LED_POWER_GPIO_Port GPIOB
 #define MPU_6050_SCL_Pin GPIO_PIN_8
 #define MPU_6050_SCL_GPIO_Port GPIOB
 #define MPU_6050_SDA_Pin GPIO_PIN_9
