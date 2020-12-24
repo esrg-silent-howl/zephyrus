@@ -4,8 +4,8 @@
 #include "tim.h"
 
 /*!< Flag definitions */
-#define F_TASKS_CREATED		0
-#define F_SCHEDULER_STARTED	(F_TASKS_CREATED+1)
+#define F_TASKS_CREATED					0
+#define F_SCHEDULER_STARTED			(F_TASKS_CREATED+1)
 
 /*!< No error */
 #define E_OK				(uint32_t)0
@@ -21,7 +21,7 @@
 #define PERIOD_ULTRASONIC_THREAD	xxxx
 
 /*!< System Threads Creation */
-RTOS_TASK_STATIC(zMain, 256, RP_IDLE, "zMain");
+RTOS_TASK_STATIC(zMain, 256, RP_REAL_TIME, "zMain");
 RTOS_TASK_STATIC(zGyroAccelerometerManager, 256, RP_NORMAL, "zGyroAccelerometerManager");
 RTOS_TASK_STATIC(zRFManager, 512, RP_ABOVE_NORMAL, "zRFManager");
 RTOS_TASK_STATIC(zInferenceManager, 256, RP_HIGH, "zInferenceManager");
@@ -49,7 +49,6 @@ RTOS_TIMESTAMP(tsZero);
 /*!< Current connection state */
 RF_ConnectionState_t connection_state;
 
-
 static void THREADS_incSemConfig(void) {
 	
 	RTOS_SEMAPHORE_INC(semConfig);
@@ -61,7 +60,7 @@ static void THREADS_incSemConfig(void) {
 static void THREADS_sleep(void){}
 static void THREADS_wakeUp(void){}
 	
-static double THREADS_checkForLowBattery(void){
+static double THREADS_checkForLowBattery(){
 	
 #define EVAL_LOW				1
 #define EVAL_HIGH				0
@@ -72,65 +71,76 @@ static double THREADS_checkForLowBattery(void){
 #define LOW_BATT_THRSLD	15
 #define HYSTERESIS			2
 
-	static int last_evaluation = EVAL_HIGH;	/* Evaluation from last iteration */
-	int evaluation;			/* Evaluation to be made */
-	int adc_value;			/* Raw ADC reading	*/
-	int v_batt;					/* Battery voltage */
-	int batt_lvl;				/* Calculated battery level */
+	static int last_evaluation = EVAL_HIGH;	/*!< Evaluation from last iteration */
+	int evaluation;			/*!< Evaluation to be made */
+	int adc_value;			/*!< Raw ADC reading	*/
+	int v_batt;					/*!< Battery voltage */
+	int batt_lvl;				/*!< Calculated battery level */
 	
-	/* Convert battery voltage with resistive divider */
-	if(HAL_ADC_Start(&hadc1) == HAL_OK)
-		if(HAL_ADC_PollForConversion(&hadc1, 1) == HAL_OK)
-			adc_value = HAL_ADC_GetValue(&hadc1);
-		HAL_ADC_Stop(&hadc1);
-	
-	/* Calculate real battery voltage */
+	/*!< Fetch ADC conversion value */
+	adc_value = READ_REG(ADC1->DR);
+
+	/*!< Calculate real battery voltage */
 	v_batt = adc_value * 3300 / 4096 * VBATT_RSCALE;
 	
-	/* Extrapolate 0-100 battery level assuming linear voltage drop */	
+	/*!< Extrapolate 0-100 battery level assuming linear voltage drop */	
 	batt_lvl = 100 * (v_batt - VBATT_MIN) / VBATT_EXCURSION;
 		
-	/* If last evaluation was LOW, go to HIGH only once the hysteresis margin has been overcome in the UP direction
+	/*!< If last evaluation was LOW, go to HIGH only once the hysteresis margin has been overcome in the UP direction
 	 * If last evaluation was HIGH, go to LOW only once the hysteresis margin has been overcome in the DOWN direction */
 	if (last_evaluation == EVAL_LOW)
 		evaluation = batt_lvl < LOW_BATT_THRSLD + HYSTERESIS;	
 	else
 		evaluation = (batt_lvl <= LOW_BATT_THRSLD - HYSTERESIS);
 
-	/* Keep calculated value for future reference */
+	/*!< Keep calculated value for future reference */
 	last_evaluation = evaluation;
 
 	return evaluation;
 }
 	
-
+volatile int bit;
 RTOS_TASK_FUN(zMain) {
-  
+ 
 #define BATTERY_LVL_MEAS_PERIOD		2000
 #define POWER_LED_PERIOD_MS				2000
-#define POWER_LED_DUTY_CYCLE			25
+#define POWER_LED_DUTY_CYCLE			13
 #define POWER_LED_PULSE_NORMAL		POWER_LED_PERIOD_MS
-#define POWER_LED_PULSE_LOW_BATT	POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100
-
-	RTOS_TIMESTAMP(tsBattLvlMeasurement);
+#define POWER_LED_PULSE_LOW_BATT	(POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100)
 	
-	/* Turn LED off (not making any assumptions about the current battery level) */
-	htim4.Instance->CCR2 = POWER_LED_PULSE_LOW_BATT;
+	/*!< Turn LED off (not making any assumptions about the current battery level) */
+	WRITE_REG(TIM4->CCR2, POWER_LED_PULSE_LOW_BATT);
 	
-	/* Set the previously defined auto-reload value */
-	htim4.Instance->ARR = POWER_LED_PERIOD_MS;
+	/*!< Set the previously defined auto-reload value */
+	WRITE_REG(TIM4->ARR, POWER_LED_PERIOD_MS);
 	
-	/* Enable OC channel 2, main output and timer */
+	/*!< TIM4: Enable OC channel 2, main output and timer */
 	HAL_TIM_OC_Start(&htim4, TIM_CHANNEL_2);
+
+	/*!< ADC1: Clear regular group conversion flag and overrun flag */
+	CLEAR_BIT(ADC1->SR, ADC_FLAG_EOC | ADC_FLAG_OVR);
+	
+	/*!< ADC1: Enable end of conversion interrupt for regular group */
+	SET_BIT(ADC1->CR1, ADC_IT_EOC | ADC_IT_OVR);
+	
+	/*!< ADC1: Enable ADC */
+	SET_BIT(ADC1->CR2, ADC_CR2_ADON);
+	
+	/*!< Write the battery level measurement period in ms to the auto-reload register of TIM6 */
+	WRITE_REG(TIM6->ARR, BATTERY_LVL_MEAS_PERIOD);
+	
+	/*!< Enable the TIM Update interrupt [DEBUG] */
+	// SET_BIT(TIM6->DIER, TIM_DIER_UIE);
+	
+	/*!< TIM6: Start timer */
+	SET_BIT(TIM6->CR1, TIM_CR1_CEN);
 
 	while(1) {
 		
-		/* Battery level measurement is not perfectly synchronous, as it would require a special thread
-		 * or an interruption and it doesn't justify such development effort or scheduling priority */
-		if (RTOS_GET_TIMESTAMP() >= tsBattLvlMeasurement + BATTERY_LVL_MEAS_PERIOD) {
+		/*!< If a conversion is complete, interpret it */
+		if (READ_BIT(ADC1->SR, ADC_FLAG_EOC)) {
 			
-			/*!< Keep current time stamp */
-			RTOS_KEEP_TIMESTAMP(tsBattLvlMeasurement);
+			CLEAR_BIT(ADC1->SR, ADC_FLAG_EOC);
 			
 			/*!< Read battery voltage and change led indicator accordingly */
 			if (THREADS_checkForLowBattery())
@@ -138,6 +148,8 @@ RTOS_TASK_FUN(zMain) {
 			else
 				htim4.Instance->CCR2 = POWER_LED_PULSE_NORMAL;
 		}
+		
+		RTOS_DELAY(50);
 		
 		/*!< Wait for other threads to stop working */
 		while(RTOS_SEMAPHORE_GET_COUNT(semWorking) != 0){};
@@ -164,6 +176,9 @@ RTOS_TASK_FUN(zGyroAccelerometerManager) {
 	RTOS_AWAIT(nConnected);
 	
 	while(1) {
+		
+			/*!< Declare the sleep mode entering */
+		RTOS_SEMAPHORE_INC(semWorking);
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
@@ -172,7 +187,7 @@ RTOS_TASK_FUN(zGyroAccelerometerManager) {
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
 		/*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, 5);
+		RTOS_DELAY_UNTIL(timestamp, 20);
 	}
 
 	vTaskDelete(NULL);
@@ -195,7 +210,10 @@ RTOS_TASK_FUN(zRFManager) {
 	RTOS_NOTIFY(zInferenceManager, nConnected);
 	RTOS_NOTIFY(zUltrasonicManager, nConnected);
 	
-	while(1) {
+	while(1) {	
+		
+		/*!< Declare the sleep mode entering */
+		RTOS_SEMAPHORE_INC(semWorking);
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
@@ -204,7 +222,7 @@ RTOS_TASK_FUN(zRFManager) {
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
     /*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, 5);
+		RTOS_DELAY_UNTIL(timestamp, 20);
 	}
 
 	vTaskDelete(NULL);
@@ -221,6 +239,9 @@ RTOS_TASK_FUN(zInferenceManager) {
 	RTOS_AWAIT(nConnected);
 	
 	while(1) {
+		
+		/*!< Declare the sleep mode entering */
+		RTOS_SEMAPHORE_INC(semWorking);
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
@@ -229,7 +250,7 @@ RTOS_TASK_FUN(zInferenceManager) {
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
     /*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, 5);
+		RTOS_DELAY_UNTIL(timestamp, 20);
 	}
 
 	vTaskDelete(NULL);
@@ -246,7 +267,10 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 	RTOS_AWAIT(nConnected);	
 	
 	while(1) {
-
+		
+		/*!< Declare the sleep mode entering */
+		RTOS_SEMAPHORE_INC(semWorking);
+		
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
 		
@@ -254,7 +278,7 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
     /*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, 5);
+		RTOS_DELAY_UNTIL(timestamp, 20);
 	}
 
 	vTaskDelete(NULL);

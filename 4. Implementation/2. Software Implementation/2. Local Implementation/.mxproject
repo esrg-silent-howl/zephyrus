@@ -27,6 +27,8 @@ HeaderFiles#8=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implement
 SourceFiles#9=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/2. Local Implementation/Core/Src/stm32f7xx_hal_msp.c
 HeaderFiles#9=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/2. Local Implementation/Core/Inc/main.h
 SourceFiles#10=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/2. Local Implementation/Core/Src/main.c
+HeaderFiles#10=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/2. Local Implementation/Core/Inc/main.h
+SourceFiles#11=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/2. Local Implementation/Core/Src/main.c
 HeaderFiles=;
 SourceFiles=;
 
