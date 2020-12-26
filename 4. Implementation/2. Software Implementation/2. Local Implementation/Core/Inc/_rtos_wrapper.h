@@ -28,10 +28,13 @@
 #define CAT(x, y) x ## y
 
 /*! Returned by some methods as a way to convey success in their operation */
-#define RTOS_TRUE pdTRUE
+#define RTOS_TRUE			pdTRUE
 
 /*! Returned by some methods as a way to convey failure in their operation */
-#define RTOS_FALSE pdFALSE
+#define RTOS_FALSE		pdFALSE
+
+/*! Returned by some methods as a way to convey a timeout in their operation */
+#define RTOS_TIMEOUT	pdFALSE
 
 /*! Converts a value from milliseconds to its equivalent in system ticks */
 #define RTOS_TOOLS_MS_TO_TICKS(__ms__)	pdMS_TO_TICKS(__ms__)
@@ -69,12 +72,15 @@ xTaskNotify(__task__, __notification__, eSetBits)
 
 /*!< Notifies a task */
 #define RTOS_NOTIFY_ISR(__task__, __notification__) \
-xTaskNotify(__task__, __notification__, eSetBits, NULL)
+xTaskNotifyFromISR(__task__, __notification__, eSetBits, NULL)
 
 /*!< Awaits a notification */
 #define RTOS_AWAIT(__notification__)		\
 xTaskNotifyWait(0, __notification__, NULL, portMAX_DELAY)
 
+/*!< Awaits a notification */
+#define RTOS_AWAIT_TIMEOUT(__notification__, __timeout__)		\
+xTaskNotifyWait(0, __notification__, NULL, RTOS_TOOLS_MS_TO_TICKS(__timeout__))
 
 /*!< ----------------------------------- SEMAPHORES ----------------------------------- */
 

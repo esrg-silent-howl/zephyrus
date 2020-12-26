@@ -98,6 +98,7 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM4_Init();
   MX_TIM6_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 	
 #if 0

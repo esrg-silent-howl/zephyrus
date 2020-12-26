@@ -82,29 +82,36 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define USER_Btn_Pin GPIO_PIN_13
-#define USER_Btn_GPIO_Port GPIOC
-#define USER_Btn_EXTI_IRQn EXTI15_10_IRQn
+#define BUTTON_DEBUG1_Pin GPIO_PIN_13
+#define BUTTON_DEBUG1_GPIO_Port GPIOC
+#define BUTTON_DEBUG1_EXTI_IRQn EXTI15_10_IRQn
 #define BATTERY_LEVEL_Pin GPIO_PIN_4
 #define BATTERY_LEVEL_GPIO_Port GPIOA
-#define LD1_Pin GPIO_PIN_0
-#define LD1_GPIO_Port GPIOB
-#define LD3_Pin GPIO_PIN_14
-#define LD3_GPIO_Port GPIOB
+#define LED_DEBUG1_Pin GPIO_PIN_0
+#define LED_DEBUG1_GPIO_Port GPIOB
+#define LED_DEBUG2_Pin GPIO_PIN_14
+#define LED_DEBUG2_GPIO_Port GPIOB
 #define NRF24L01_CE_Pin GPIO_PIN_2
 #define NRF24L01_CE_GPIO_Port GPIOG
 #define NRF24L01_INT_Pin GPIO_PIN_3
 #define NRF24L01_INT_GPIO_Port GPIOG
+#define NRF24L01_INT_EXTI_IRQn EXTI3_IRQn
 #define MPU_6050_INT_Pin GPIO_PIN_6
 #define MPU_6050_INT_GPIO_Port GPIOC
+#define USS_ECHO_START_Pin GPIO_PIN_15
+#define USS_ECHO_START_GPIO_Port GPIOA
 #define NRF24L01_SCK_Pin GPIO_PIN_10
 #define NRF24L01_SCK_GPIO_Port GPIOC
 #define NRF24L01_MISO_Pin GPIO_PIN_11
 #define NRF24L01_MISO_GPIO_Port GPIOC
 #define NRF24L01_MOSI_Pin GPIO_PIN_12
 #define NRF24L01_MOSI_GPIO_Port GPIOC
+#define USS_TRIGGER_Pin GPIO_PIN_1
+#define USS_TRIGGER_GPIO_Port GPIOD
 #define NRF24L01_CSN_Pin GPIO_PIN_2
 #define NRF24L01_CSN_GPIO_Port GPIOD
+#define USS_ECHO_STOP_Pin GPIO_PIN_3
+#define USS_ECHO_STOP_GPIO_Port GPIOB
 #define LED_POWER_Pin GPIO_PIN_7
 #define LED_POWER_GPIO_Port GPIOB
 #define MPU_6050_SCL_Pin GPIO_PIN_8

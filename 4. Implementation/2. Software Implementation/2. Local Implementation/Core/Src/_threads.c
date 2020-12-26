@@ -21,11 +21,11 @@
 #define PERIOD_ULTRASONIC_THREAD	xxxx
 
 /*!< System Threads Creation */
-RTOS_TASK_STATIC(zMain, 256, RP_REAL_TIME, "zMain");
-RTOS_TASK_STATIC(zGyroAccelerometerManager, 256, RP_NORMAL, "zGyroAccelerometerManager");
-RTOS_TASK_STATIC(zRFManager, 512, RP_ABOVE_NORMAL, "zRFManager");
-RTOS_TASK_STATIC(zInferenceManager, 256, RP_HIGH, "zInferenceManager");
-RTOS_TASK_STATIC(zUltrasonicManager, 256, RP_REAL_TIME, "zUltrasonicManager");
+RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL, "zMain");
+RTOS_TASK_STATIC(zGyroAccelerometerManager, 1024, RP_NORMAL, "zGyroAccelerometerManager");
+RTOS_TASK_STATIC(zRFManager, 1024, RP_ABOVE_NORMAL, "zRFManager");
+RTOS_TASK_STATIC(zInferenceManager, 1024, RP_HIGH, "zInferenceManager");
+RTOS_TASK_STATIC(zUltrasonicManager, 1024, RP_REAL_TIME, "zUltrasonicManager");
 
 /*!< System Mutexes Creation */
 RTOS_MUTEX_STATIC(mState);
@@ -39,15 +39,32 @@ RTOS_SEMAPHORE_STATIC(semWorking, 4);
 /*!< System Notifiations Creation */
 RTOS_NOTIFICATION(nConfig, 0);
 RTOS_NOTIFICATION(nConnected, 1);
+RTOS_NOTIFICATION(nUSSCapture, 2);
 
 /*!< Flags Container*/
-uint32_t flags = 0;
+volatile uint32_t flags = 0;
 
-/*!< System Timestamps Creation */
+volatile float uss_capture_value;
+
+/*!< System Common Timestamps Creation */
 RTOS_TIMESTAMP(tsZero);
 
 /*!< Current connection state */
 RF_ConnectionState_t connection_state;
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+	
+	if(htim->Instance == TIM2) {
+		
+		/*!< Disable TIM2's counter and reset it */
+		CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN);
+		TIM2->CNT = 0;
+		
+		/*!< Notify zUltrasonicManager about the available information */
+		RTOS_NOTIFY_ISR(zUltrasonicManager, nUSSCapture);
+		
+	}
+}
 
 static void THREADS_incSemConfig(void) {
 	
@@ -161,10 +178,10 @@ RTOS_TASK_FUN(zMain) {
 		}
 		
 		/*!< Wait for other threads to stop working */
-		while(RTOS_SEMAPHORE_GET_COUNT(semWorking) != 0){};
+		//while(RTOS_SEMAPHORE_GET_COUNT(semWorking) != 0){};
 		
 		/*!< Sleep until the next interruption */
-		THREADS_sleep(); 
+		//THREADS_sleep(); 
 	
 	}
 
@@ -270,7 +287,28 @@ RTOS_TASK_FUN(zInferenceManager) {
 
 RTOS_TASK_FUN(zUltrasonicManager) {
 
+#define TIMER_CLK												108000000.0
+#define Z_ULTRASONIC_MANAGER_PERIOD_MS	40
+#define USS_CAPTURE_TIMEOUT_MS					25
+#define USS_CORRECTION_FACTOR						2.2
+	
  	RTOS_TIMESTAMP(timestamp);
+	uint32_t cycles;
+	
+
+	volatile float distances[40];
+	uint32_t index = 0;
+	
+	// Stop TIM2 counter
+	TIM2->CR1 &= ~TIM_CR1_CEN;
+	// Reset TIM2 counter
+	TIM2->CNT = 0;
+	// Enable Capture/Compare 2 interrupt
+	TIM2->DIER |= TIM_IT_CC2;
+	// Enable the Input Capture channel 2
+	TIM2->CCER |= TIM_CCER_CC2E;
+	
+	uss_capture_value = 0;
 
 	/*!< Signal another configuration complete */
 	THREADS_incSemConfig();
@@ -278,19 +316,52 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 	/*!< Await the establishment of a connection to continue */
 	RTOS_AWAIT(nConnected);	
 	
+	/*!< Initial timing offset */
+	RTOS_DELAY_UNTIL(tsZero, 5);
+		
 	while(1) {
 		
-		/*!< Declare the sleep mode entering */
+		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
 		
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
+		 
+		HAL_GPIO_WritePin(USS_TRIGGER_GPIO_Port, USS_TRIGGER_Pin, GPIO_PIN_SET);
 		
-		/*!< Declare the sleep mode entering */
+		//////////////////// DELAY 15us
+		RTOS_DELAY(1);
+		///////////////////////////////
+
+		HAL_GPIO_WritePin(USS_TRIGGER_GPIO_Port, USS_TRIGGER_Pin, GPIO_PIN_RESET);
+		
+		/*!< Declare sleeping state */
 		RTOS_SEMAPHORE_DEC(semWorking);
+			
+		if (RTOS_AWAIT_TIMEOUT(nUSSCapture, USS_CAPTURE_TIMEOUT_MS) == RTOS_TIMEOUT) {
+			
+			uss_capture_value = 30;
+			
+		} else {
+			
+			/*!< Declare working state */
+			RTOS_SEMAPHORE_INC(semWorking);
+			
+			/*!< Retrieve total number of counted cycles and calculate respective distance */
+			cycles = TIM2->CCR2;
+			uss_capture_value = USS_CORRECTION_FACTOR * (cycles*1.0/TIMER_CLK) * 340 / 2;
+			
+			/*!< Clean up CCR2 register */
+			TIM2->CCR2 = 0;
+			
+			/*!< Declare sleeping state */
+			RTOS_SEMAPHORE_DEC(semWorking);
+		
+		}
+		
 		
     /*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, 20);
+		RTOS_DELAY_UNTIL(timestamp, Z_ULTRASONIC_MANAGER_PERIOD_MS);
 	}
 
 	vTaskDelete(NULL);
