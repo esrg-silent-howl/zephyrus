@@ -1,3 +1,6 @@
+#ifndef _imu_H
+#define _imu_H
+
 #include "stdint.h"
 #include "i2c.h"
 
@@ -42,3 +45,5 @@ void IMU_dataFetch(imu_t *data_struct);
 
 extern uint32_t i2c_tx_flag;
 extern uint32_t i2c_rx_flag;
+
+#endif

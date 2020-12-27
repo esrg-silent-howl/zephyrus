@@ -3,17 +3,9 @@
 
 #include "cmsis_os.h"
 
+/*!< --------------------------------- TOOLS -------------------------------- */
 
-/*!
- *	@brief	Concatenates x and y. It is meant to support other macro definitions
- *
- *	<b>Example: </b>\n
- *	<b>CAT(x, Task)</b> yields the result: \n
- *	<b>xTask</b>
- *
- *	@param	x
- *	@param	y
- */
+/*! Concatenates x and y. It is meant to support other macro definitions */
 #define CAT(x, y) x ## y
 
 /*! Returned by some methods as a way to convey success in their operation */
@@ -58,7 +50,7 @@
 
 /*!< Create a notification with an __id__ in the range [0, 31] */
 #define RTOS_NOTIFICATION(__notification__, __id__) \
-uint32_t __notification__ = 1 << __id__;
+uint32_t __notification__ = (1 << __id__);
 
 /*!< Notifies a task */
 #define RTOS_NOTIFY(__task__, __notification__) \
@@ -75,6 +67,7 @@ xTaskNotifyWait(0, __notification__, NULL, portMAX_DELAY)
 /*!< Awaits a notification */
 #define RTOS_AWAIT_TIMEOUT(__notification__, __timeout__)		\
 xTaskNotifyWait(0, __notification__, NULL, RTOS_TOOLS_MS_TO_TICKS(__timeout__))
+
 
 /*!< ------------------------------ SEMAPHORES ------------------------------ */
 

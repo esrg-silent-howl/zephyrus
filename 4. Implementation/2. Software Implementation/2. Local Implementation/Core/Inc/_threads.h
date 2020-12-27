@@ -9,14 +9,6 @@ typedef enum {
 } RF_ConnectionState_t;
 
 
-/* System Threads Methods Declaration */
-RTOS_TASK_FUN(zMain);
-RTOS_TASK_FUN(zGyroAccelerometerManager);
-RTOS_TASK_FUN(zRFManager);
-RTOS_TASK_FUN(zInferenceManager);
-RTOS_TASK_FUN(zUltrasonicManager);
-
-
 void THREADS_create(void);
 void THREADS_startScheduler(void);
 
