@@ -1,0 +1,12 @@
+		
+			volatile float front_distances[20];
+	volatile float back_distances[20];
+	volatile uint32_t index = 0;
+	
+	
+		front_distances[index%20] = front_distance;
+		back_distances[index%20] = back_distance;
+		
+		if (++index == 20)
+			while(1);
+		

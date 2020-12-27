@@ -99,6 +99,7 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM6_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 	
 #if 0

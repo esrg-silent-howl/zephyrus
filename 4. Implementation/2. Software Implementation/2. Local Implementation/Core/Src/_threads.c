@@ -246,20 +246,34 @@ RTOS_TASK_FUN(zRFManager) {
 RTOS_TASK_FUN(zInferenceManager) {
 
 #define Z_INFERENCE_MANAGER_PERIOD_MS	40
+#define MOTOR_PWM_PERIOD_US						10000
 
 	RTOS_TIMESTAMP(timestamp);
 	float front_distance;
 	float back_distance;
 	
-	volatile float front_distances[20];
-	volatile float back_distances[20];
-	volatile uint32_t index = 0;
+	uint32_t motor_r_speed;
+	uint32_t motor_l_speed;
+	uint32_t motor_r_dir_inv;
+	uint32_t motor_l_dir_inv;
+	
+	/*!< Stop TIM3 counter, reset it and set the appropriate autoreload value*/	
+	CLEAR_BIT(TIM3->CR1, TIM_CR1_CEN);
+	WRITE_REG(TIM3->CNT, 0);
+	WRITE_REG(TIM3->ARR, MOTOR_PWM_PERIOD_US-1);
 	
 	/*!< Signal another configuration complete */
 	THREADS_incSemConfig();
 	
 	/*!< Await the establishment of a connection to continue */
 	RTOS_AWAIT(nConnected);
+	
+	/*!< Enable the Input Capture channels 3 and 4 */
+	SET_BIT(TIM3->CCER, TIM_CCER_CC3E);
+	SET_BIT(TIM3->CCER, TIM_CCER_CC4E);
+	
+	/*!< Start TIM3 counter and reset it */	
+	SET_BIT(TIM3->CR1, TIM_CR1_CEN);
 	
 	while(1) {
 		
@@ -269,20 +283,26 @@ RTOS_TASK_FUN(zInferenceManager) {
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
 	
+		/*!< Get ultrasonic sensor readings */
 		RTOS_QUEUE_RECV(uss_queue, &front_distance);
 		RTOS_QUEUE_RECV(uss_queue, &back_distance);
-
-		front_distances[index%20] = front_distance;
-		back_distances[index%20] = back_distance;
 		
-		if (++index == 20)
-			while(1);
-		
-		
-		/*!< Declare sleeping state */
+		/*!< Sleep until the time to change the motor speed */
 		RTOS_SEMAPHORE_DEC(semWorking);
+		RTOS_DELAY_UNTIL(timestamp, Z_INFERENCE_MANAGER_PERIOD_MS - 5);
+		 
+		/*!< Change motor direction and speed */
+		motor_r_dir_inv = 0;
+		motor_l_dir_inv = 0;
+		SET_BIT(MOTOR_R_DIR_GPIO_Port->BSRR, MOTOR_R_DIR_Pin<<(16*motor_r_dir_inv));
+		SET_BIT(MOTOR_L_DIR_GPIO_Port->BSRR, MOTOR_L_DIR_Pin<<(16*motor_l_dir_inv));
+		motor_r_speed = 5000;
+		motor_l_speed = 5000;
+		WRITE_REG(TIM3->CCR3, motor_r_speed);
+		WRITE_REG(TIM3->CCR4, motor_l_speed);
 		
-    	/*!< Sleep */
+		/*!< Sleep */
+		RTOS_SEMAPHORE_DEC(semWorking);  
 		RTOS_DELAY_UNTIL(timestamp, Z_INFERENCE_MANAGER_PERIOD_MS);
 	}
 
