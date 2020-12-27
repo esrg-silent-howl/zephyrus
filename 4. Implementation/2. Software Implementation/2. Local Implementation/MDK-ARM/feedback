@@ -1,5 +1,20 @@
-;#<FEEDBACK># ARM Linker, 5060750: Last Updated: Sun Dec 27 03:14:10 2020
+;#<FEEDBACK># ARM Linker, 5060750: Last Updated: Sun Dec 27 16:27:00 2020
 ;VERSION 0.2
+;FILE _imu.o
+IMU_Init <= USED 0
+IMU_Init <= IW 0
+IMU_dataFetch <= USED 0
+IMU_dataFetch <= IW 0
+IMU_dataRequest <= USED 0
+IMU_dataRequest <= IW 0
+Kalman_getAngle <= USED 0
+Kalman_getAngle <= IW 0
+__asm___6__imu_c_76fc3386____REV16 <= USED 0
+__asm___6__imu_c_76fc3386____REV16 <= IW 0
+__asm___6__imu_c_76fc3386____REVSH <= USED 0
+__asm___6__imu_c_76fc3386____REVSH <= IW 0
+__asm___6__imu_c_76fc3386____RRX <= USED 0
+__asm___6__imu_c_76fc3386____RRX <= IW 0
 ;FILE _threads.o
 THREADS_create <= IW 0
 THREADS_startScheduler <= IW 0
@@ -192,6 +207,7 @@ __asm___6_gpio_c_62724882____REVSH <= IW 0
 __asm___6_gpio_c_62724882____RRX <= USED 0
 __asm___6_gpio_c_62724882____RRX <= IW 0
 ;FILE heap_4.o
+pvPortMalloc <= USED 0
 pvPortMalloc <= IW 0
 vPortFree <= IW 0
 vPortInitialiseBlocks <= USED 0
@@ -265,6 +281,7 @@ xQueueCreateCountingSemaphoreStatic <= IW 0
 xQueueCreateMutex <= USED 0
 xQueueCreateMutex <= IW 0
 xQueueCreateMutexStatic <= IW 0
+xQueueGenericCreate <= USED 0
 xQueueGenericCreate <= IW 0
 xQueueGenericCreateStatic <= IW 0
 xQueueGenericReset <= IW 0
@@ -618,7 +635,6 @@ HAL_I2C_DisableListen_IT <= USED 0
 HAL_I2C_DisableListen_IT <= IW 0
 HAL_I2C_ER_IRQHandler <= USED 0
 HAL_I2C_ER_IRQHandler <= IW 0
-HAL_I2C_EV_IRQHandler <= USED 0
 HAL_I2C_EV_IRQHandler <= IW 0
 HAL_I2C_EnableListen_IT <= USED 0
 HAL_I2C_EnableListen_IT <= IW 0
@@ -1199,6 +1215,7 @@ DebugMon_Handler <= IW 0
 EXTI15_10_IRQHandler <= IW 0
 EXTI3_IRQHandler <= IW 0
 HardFault_Handler <= IW 0
+I2C1_EV_IRQHandler <= IW 0
 MemManage_Handler <= IW 0
 NMI_Handler <= IW 0
 TIM2_IRQHandler <= IW 0

@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F767xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;                                   ../Drivers/STM32F7xx_HAL_Driver/Inc;                                   ../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy;                                   ../Middlewares/Third_Party/FreeRTOS/Source/include;                                   ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                                   ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;                                   ../Drivers/CMSIS/Device/ST/STM32F7xx/Include;                                   ../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;                                    ../Drivers/STM32F7xx_HAL_Driver/Inc;                                    ../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy;                                    ../Middlewares/Third_Party/FreeRTOS/Source/include;                                    ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                                    ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;                                    ../Drivers/CMSIS/Device/ST/STM32F7xx/Include;                                    ../Drivers/CMSIS/Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -511,6 +511,16 @@
               <FileName>stm32f7xx_hal_msp.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32f7xx_hal_msp.c</FilePath>
+            </File>
+            <File>
+              <FileName>_imu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\_imu.c</FilePath>
+            </File>
+            <File>
+              <FileName>_imu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\_imu.h</FilePath>
             </File>
           </Files>
         </Group>

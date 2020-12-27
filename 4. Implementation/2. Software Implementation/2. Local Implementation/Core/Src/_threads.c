@@ -1,7 +1,9 @@
 #include "_threads.h"
 #include "_uss.h"
+#include "_imu.h"
 #include "main.h"
 #include "adc.h"
+#include "i2c.h"
 
 /*!< Flag definitions */
 #define F_TASKS_CREATED					0
@@ -14,11 +16,6 @@
 /*!< Error in number of sets */
 #define E_SET_COUNT	(uint32_t)(-2)
 
-/*!< System Threads Period */
-#define PERIOD_GYRO_ACC_THREAD      xxxx
-#define PERIOD_RF_THREAD            xxxx
-#define PERIOD_INFERENCE_THREAD	    xxxx
-#define PERIOD_ULTRASONIC_THREAD	xxxx
 
 /*!< System Threads Creation */
 RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL, "zMain");
@@ -36,12 +33,12 @@ RTOS_MUTEX_STATIC(mUSS);
 RTOS_SEMAPHORE_STATIC(semConfig, 3);
 RTOS_SEMAPHORE_STATIC(semWorking, 4); 
 
-/*!< System Notifiations Creation */
+/*!< System Notifications Creation */
 RTOS_NOTIFICATION(nConfig, 0);
 RTOS_NOTIFICATION(nConnected, 1);
 
-QueueHandle_t uss_queue;
-
+/*!< System Queues Creation */
+RTOS_QUEUE_STATIC(uss_queue, float, 2);
 
 /*!< Flags Container*/
 volatile uint32_t flags = 0;
@@ -55,6 +52,12 @@ RTOS_TIMESTAMP(tsZero);
 
 /*!< Current connection state */
 RF_ConnectionState_t connection_state;
+
+/*!< Utility functions declaration */
+static void THREADS_incSemConfig(void);
+static void THREADS_sleep(void);
+static double THREADS_checkForLowBattery(void);
+
 
 /*!< TIM2 IRQ Handler function. Included in stm32_f7xx_it.h and called from 
  *   TIM2_IRQHandler() to maintain consistency with the rest of the program. 
@@ -86,66 +89,17 @@ void THREADS_tim2IRQHandler() {
 	}
 }
 
-static void THREADS_incSemConfig(void) {
-	
-	RTOS_SEMAPHORE_INC(semConfig);
-	
-	if (RTOS_SEMAPHORE_GET_COUNT(semConfig) == 3)
-		RTOS_NOTIFY(zRFManager, nConfig);
+/*
+void HAL_I2C_MemRxCpltCallback (I2C_HandleTypeDef *hi2c){
+	if(hi2c->Instance == I2C1)
+		i2c_rx_flag = 1;
 }
 
-static void THREADS_sleep(void){
-	
-	static uint32_t sleeps = 0;
-	
-	sleeps ++;
-	
-	/* Clear SLEEPDEEP bit of Cortex System Control Register */
-	CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
-	
-	/* Request Wait For Interrupt */
-	__WFI();
+void HAL_I2C_MemTxCpltCallback (I2C_HandleTypeDef *hi2c){
+	if(hi2c->Instance == I2C1)
+		i2c_tx_flag = 1;
 }
-
-
-static double THREADS_checkForLowBattery(){
-	
-#define EVAL_LOW				1
-#define EVAL_HIGH				0
-#define VBATT_RSCALE		3
-#define VBATT_MAX				8200
-#define VBATT_MIN				6000
-#define VBATT_EXCURSION	(VBATT_MAX-VBATT_MIN)
-#define LOW_BATT_THRSLD	15
-#define HYSTERESIS			2
-
-	static int last_evaluation = EVAL_HIGH;	/*!< Evaluation from last iteration */
-	int evaluation;			/*!< Evaluation to be made */
-	int adc_value;			/*!< Raw ADC reading	*/
-	int v_batt;					/*!< Battery voltage */
-	int batt_lvl;				/*!< Calculated battery level */
-	
-	/*!< Fetch ADC conversion value */
-	adc_value = READ_REG(ADC1->DR);
-
-	/*!< Calculate real battery voltage */
-	v_batt = adc_value * 3300 / 4096 * VBATT_RSCALE;
-	
-	/*!< Extrapolate 0-100 battery level assuming linear voltage drop */	
-	batt_lvl = 100 * (v_batt - VBATT_MIN) / VBATT_EXCURSION;
-		
-	/*!< If last evaluation was LOW, go to HIGH only once the hysteresis margin has been overcome in the UP direction
-	 * If last evaluation was HIGH, go to LOW only once the hysteresis margin has been overcome in the DOWN direction */
-	if (last_evaluation == EVAL_LOW)
-		evaluation = batt_lvl < LOW_BATT_THRSLD + HYSTERESIS;	
-	else
-		evaluation = (batt_lvl <= LOW_BATT_THRSLD - HYSTERESIS);
-
-	/*!< Keep calculated value for future reference */
-	last_evaluation = evaluation;
-
-	return evaluation;
-}
+*/
 	
 RTOS_TASK_FUN(zMain) {
  
@@ -155,7 +109,8 @@ RTOS_TASK_FUN(zMain) {
 #define POWER_LED_PULSE_NORMAL		POWER_LED_PERIOD_MS
 #define POWER_LED_PULSE_LOW_BATT	(POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100)
 	
-	/*!< Turn LED off (not making any assumptions about the current battery level) */
+	/*!< Turn LED off (not making any assumptions about the current 
+	 *   battery level) */
 	WRITE_REG(TIM4->CCR2, POWER_LED_PULSE_LOW_BATT);
 	
 	/*!< Set the previously defined auto-reload value */
@@ -173,7 +128,8 @@ RTOS_TASK_FUN(zMain) {
 	/*!< ADC1: Enable ADC */
 	SET_BIT(ADC1->CR2, ADC_CR2_ADON);
 	
-	/*!< Write the battery level measurement period in ms to the auto-reload register of TIM6 */
+	/*!< Write the battery level measurement period in ms to the auto-reload 
+	 *   register of TIM6 */
 	WRITE_REG(TIM6->ARR, BATTERY_LVL_MEAS_PERIOD);
 	
 	/*!< Enable the TIM Update interrupt [DEBUG] */
@@ -205,12 +161,18 @@ RTOS_TASK_FUN(zMain) {
 	
 	}
 
-	vTaskDelete(NULL);
+	RTOS_TASK_DELETE();
 }
 
 RTOS_TASK_FUN(zGyroAccelerometerManager) {
 
+#define Z_GYRO_ACC_MANAGER_PERIOD_MS	40
+	
 	RTOS_TIMESTAMP(timestamp);
+	
+	imu_t mpu6050;
+	
+	// while(!IMU_Init(&hi2c1));
 
 	/*!< Signal another configuration complete */
 	THREADS_incSemConfig();
@@ -220,20 +182,30 @@ RTOS_TASK_FUN(zGyroAccelerometerManager) {
 	
 	while(1) {
 		
-			/*!< Declare the sleep mode entering */
+		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
+/*		
+		IMU_dataRequest(&hi2c1);
 		
-		/*!< Declare the sleep mode entering */
+		while (!i2c_rx_flag);
+		i2c_rx_flag = 0;
+		
+		IMU_dataFetch(&mpu6050);
+		
+		double kx = mpu6050.KalmanAngleX;
+		double ky = mpu6050.KalmanAngleY;
+*/		
+		/*!< Declare sleeping state */
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
 		/*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, 20);
+		RTOS_DELAY_UNTIL(timestamp, Z_GYRO_ACC_MANAGER_PERIOD_MS);
 	}
 
-	vTaskDelete(NULL);
+	RTOS_TASK_DELETE();
 }
 
 RTOS_TASK_FUN(zRFManager) {
@@ -268,7 +240,7 @@ RTOS_TASK_FUN(zRFManager) {
 		RTOS_DELAY_UNTIL(timestamp, 20);
 	}
 
-	vTaskDelete(NULL);
+	RTOS_TASK_DELETE();
 }
 
 RTOS_TASK_FUN(zInferenceManager) {
@@ -296,12 +268,16 @@ RTOS_TASK_FUN(zInferenceManager) {
 
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
+	
+		RTOS_QUEUE_RECV(uss_queue, &front_distance);
+		RTOS_QUEUE_RECV(uss_queue, &back_distance);
 
-		xQueueReceive(uss_queue, &front_distance, portMAX_DELAY);
-		xQueueReceive(uss_queue, &back_distance, portMAX_DELAY);
-		
 		front_distances[index%20] = front_distance;
-		back_distances[(index++)%20] = back_distance;
+		back_distances[index%20] = back_distance;
+		
+		if (++index == 20)
+			while(1);
+		
 		
 		/*!< Declare sleeping state */
 		RTOS_SEMAPHORE_DEC(semWorking);
@@ -310,7 +286,7 @@ RTOS_TASK_FUN(zInferenceManager) {
 		RTOS_DELAY_UNTIL(timestamp, Z_INFERENCE_MANAGER_PERIOD_MS);
 	}
 
-	vTaskDelete(NULL);
+	RTOS_TASK_DELETE();
 }
 
 RTOS_TASK_FUN(zUltrasonicManager) {
@@ -320,10 +296,7 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 #define USS_CAPTURE_TIMEOUT_MS					25
 	
  	RTOS_TIMESTAMP(timestamp);
-	uint32_t cycles;
 
-	float front_value, back_value;
-	
 	/*!< Initialize sensor containers */
 	USS_init(&uss_front, 2.2, TIMER_CLK);
 	USS_init(&uss_back, 2.2, TIMER_CLK);
@@ -380,12 +353,12 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		/*!< Disable the Output Capture channel 2 */
 		CLEAR_BIT(TIM2->CCER, TIM_CCER_CC2E);
 			
-		/*!< Calculate distance of the sensors with ready values */
-		front_value = USS_calculateDistance(&uss_front);
-		back_value = USS_calculateDistance(&uss_back);
-		
-		xQueueSendToBack(uss_queue, (void*)&front_value, 0);
-		xQueueSendToBack(uss_queue, (void*)&back_value, 0);
+		/*!< Calculate distance of the sensors with ready values and send them to 
+		 *   the queue */
+		USS_calculateDistance(&uss_front);
+		USS_calculateDistance(&uss_back);
+		RTOS_QUEUE_SEND_BACK(uss_queue, (void*)&uss_front.distance);
+		RTOS_QUEUE_SEND_BACK(uss_queue, (void*)&uss_back.distance);
 		
 		/*!< Declare sleeping state */
 		RTOS_SEMAPHORE_DEC(semWorking);
@@ -394,7 +367,7 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		RTOS_DELAY_UNTIL(timestamp, Z_ULTRASONIC_MANAGER_PERIOD_MS);
 	}
 
-	vTaskDelete(NULL);
+	RTOS_TASK_DELETE();
 }
 
 
@@ -417,7 +390,7 @@ void THREADS_create(void) {
 	RTOS_SEMAPHORE_CREATE_STATIC(semConfig, 0);
 	RTOS_SEMAPHORE_CREATE_STATIC(semWorking, 0);
 	
-	uss_queue = xQueueCreate(2, sizeof(float));
+	RTOS_QUEUE_CREATE_STATIC(uss_queue);
 	
 	F_SET(F_TASKS_CREATED);
 }
@@ -427,7 +400,72 @@ void THREADS_startScheduler(void) {
 	if (!F_READ(F_TASKS_CREATED) || F_READ(F_SCHEDULER_STARTED))
 		return;
 
-	vTaskStartScheduler();
+	RTOS_SCHEDULER_START();
 
 	F_SET(F_SCHEDULER_STARTED);
 }
+
+
+static void THREADS_incSemConfig(void) {
+	
+	RTOS_SEMAPHORE_INC(semConfig);
+	
+	if (RTOS_SEMAPHORE_GET_COUNT(semConfig) == 3)
+		RTOS_NOTIFY(zRFManager, nConfig);
+}
+
+static void THREADS_sleep(void){
+	
+	static uint32_t sleeps = 0;
+	
+	sleeps ++;
+	
+	/* Clear SLEEPDEEP bit of Cortex System Control Register */
+	CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
+	
+	/* Request Wait For Interrupt */
+	__WFI();
+}
+
+
+static double THREADS_checkForLowBattery(void) {
+	
+#define EVAL_LOW				1
+#define EVAL_HIGH				0
+#define VBATT_RSCALE		3
+#define VBATT_MAX				8200
+#define VBATT_MIN				6000
+#define VBATT_EXCURSION	(VBATT_MAX-VBATT_MIN)
+#define LOW_BATT_THRSLD	15
+#define HYSTERESIS			2
+
+	static int last_evaluation = EVAL_HIGH;	/*!< Evaluation from last iteration */
+	int evaluation;			/*!< Evaluation to be made */
+	int adc_value;			/*!< Raw ADC reading	*/
+	int v_batt;					/*!< Battery voltage */
+	int batt_lvl;				/*!< Calculated battery level */
+	
+	/*!< Fetch ADC conversion value */
+	adc_value = READ_REG(ADC1->DR);
+
+	/*!< Calculate real battery voltage */
+	v_batt = adc_value * 3300 / 4096 * VBATT_RSCALE;
+	
+	/*!< Extrapolate 0-100 battery level assuming linear voltage drop */	
+	batt_lvl = 100 * (v_batt - VBATT_MIN) / VBATT_EXCURSION;
+		
+	/*!< If last evaluation was LOW, go to HIGH only once the hysteresis margin 
+	 *   has been overcome in the UP direction
+	 *   If last evaluation was HIGH, go to LOW only once the hysteresis margin 
+	 *   has been overcome in the DOWN direction */
+	if (last_evaluation == EVAL_LOW)
+		evaluation = batt_lvl < LOW_BATT_THRSLD + HYSTERESIS;	
+	else
+		evaluation = (batt_lvl <= LOW_BATT_THRSLD - HYSTERESIS);
+
+	/*!< Keep calculated value for future reference */
+	last_evaluation = evaluation;
+
+	return evaluation;
+}
+
