@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F767xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;                             ../Drivers/STM32F7xx_HAL_Driver/Inc;                             ../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy;                             ../Middlewares/Third_Party/FreeRTOS/Source/include;                             ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                             ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;                             ../Drivers/CMSIS/Device/ST/STM32F7xx/Include;                             ../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;                                   ../Drivers/STM32F7xx_HAL_Driver/Inc;                                   ../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy;                                   ../Middlewares/Third_Party/FreeRTOS/Source/include;                                   ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                                   ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;                                   ../Drivers/CMSIS/Device/ST/STM32F7xx/Include;                                   ../Drivers/CMSIS/Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -372,7 +372,7 @@
             <ScatterFile></ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc></Misc>
+            <Misc>--feedback=feedback --feedback_type=unused,noiw --feedback_type=unused,iw</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -446,6 +446,16 @@
               <FileName>_threads.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Core\Inc\_threads.h</FilePath>
+            </File>
+            <File>
+              <FileName>_uss.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\_uss.h</FilePath>
+            </File>
+            <File>
+              <FileName>_uss.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\_uss.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>

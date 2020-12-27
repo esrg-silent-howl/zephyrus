@@ -1,7 +1,7 @@
 #include "_threads.h"
+#include "_uss.h"
 #include "main.h"
 #include "adc.h"
-#include "tim.h"
 
 /*!< Flag definitions */
 #define F_TASKS_CREATED					0
@@ -39,12 +39,16 @@ RTOS_SEMAPHORE_STATIC(semWorking, 4);
 /*!< System Notifiations Creation */
 RTOS_NOTIFICATION(nConfig, 0);
 RTOS_NOTIFICATION(nConnected, 1);
-RTOS_NOTIFICATION(nUSSCapture, 2);
+
+QueueHandle_t uss_queue;
+
 
 /*!< Flags Container*/
 volatile uint32_t flags = 0;
 
-volatile float uss_capture_value;
+/*!< Ultrasonic Sensor Containers */
+USS_Sensor_t uss_front;
+USS_Sensor_t uss_back;
 
 /*!< System Common Timestamps Creation */
 RTOS_TIMESTAMP(tsZero);
@@ -52,17 +56,33 @@ RTOS_TIMESTAMP(tsZero);
 /*!< Current connection state */
 RF_ConnectionState_t connection_state;
 
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+/*!< TIM2 IRQ Handler function. Included in stm32_f7xx_it.h and called from 
+ *   TIM2_IRQHandler() to maintain consistency with the rest of the program. 
+ *   This serves as an alternative to the HAL-generated handler which reads 
+ *   the SR register before calling this one, clearing the interrupt flags */
+void THREADS_tim2IRQHandler() {
 	
-	if(htim->Instance == TIM2) {
+	/*!< Read the SR register only once as the interrupt flags are cleared 
+	 *   when this is done. */
+	uint32_t sr = TIM2->SR;
+	
+	/*!< If it is a channel 3 (front sensor) interrupt */
+	if (READ_BIT(sr, TIM_SR_CC3IF)) {
 		
-		/*!< Disable TIM2's counter and reset it */
-		CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN);
-		TIM2->CNT = 0;
+		/*!< In case of a rising edge, start counting */
+		if (READ_BIT(USS_ECHO_FRONT_GPIO_Port->IDR, USS_ECHO_FRONT_Pin))
+			USS_startCount(&uss_front, TIM2->CCR3);
+		else
+			USS_stopCount(&uss_front, TIM2->CCR3);
 		
-		/*!< Notify zUltrasonicManager about the available information */
-		RTOS_NOTIFY_ISR(zUltrasonicManager, nUSSCapture);
+	/*!< Else if it is a channel 4 (back sensor) interrupt */
+	} else if (READ_BIT(sr, TIM_SR_CC4IF)) {
 		
+		/*!< In case of a rising edge, start counting */
+		if (READ_BIT(USS_ECHO_BACK_GPIO_Port->IDR, USS_ECHO_BACK_Pin))
+			USS_startCount(&uss_back, TIM2->CCR4);
+		else
+			USS_stopCount(&uss_back, TIM2->CCR4);
 	}
 }
 
@@ -223,7 +243,7 @@ RTOS_TASK_FUN(zRFManager) {
 	/*!< Wait for all configurations to be complete */
 	RTOS_AWAIT(nConfig);
 	
-	RTOS_DELAY(1000);
+	RTOS_DELAY(200);
 	
 	/*!< Synchronization time stamp */
 	RTOS_KEEP_TIMESTAMP(tsZero);
@@ -256,7 +276,13 @@ RTOS_TASK_FUN(zInferenceManager) {
 #define Z_INFERENCE_MANAGER_PERIOD_MS	40
 
 	RTOS_TIMESTAMP(timestamp);
-
+	float front_distance;
+	float back_distance;
+	
+	volatile float front_distances[20];
+	volatile float back_distances[20];
+	volatile uint32_t index = 0;
+	
 	/*!< Signal another configuration complete */
 	THREADS_incSemConfig();
 	
@@ -271,9 +297,11 @@ RTOS_TASK_FUN(zInferenceManager) {
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
 
-
-		/* TODO: inference work */
-
+		xQueueReceive(uss_queue, &front_distance, portMAX_DELAY);
+		xQueueReceive(uss_queue, &back_distance, portMAX_DELAY);
+		
+		front_distances[index%20] = front_distance;
+		back_distances[(index++)%20] = back_distance;
 		
 		/*!< Declare sleeping state */
 		RTOS_SEMAPHORE_DEC(semWorking);
@@ -287,28 +315,33 @@ RTOS_TASK_FUN(zInferenceManager) {
 
 RTOS_TASK_FUN(zUltrasonicManager) {
 
-#define TIMER_CLK												108000000.0
+#define TIMER_CLK												108000000
 #define Z_ULTRASONIC_MANAGER_PERIOD_MS	40
 #define USS_CAPTURE_TIMEOUT_MS					25
-#define USS_CORRECTION_FACTOR						2.2
 	
  	RTOS_TIMESTAMP(timestamp);
 	uint32_t cycles;
-	
 
-	volatile float distances[40];
-	uint32_t index = 0;
+	float front_value, back_value;
 	
-	// Stop TIM2 counter
-	TIM2->CR1 &= ~TIM_CR1_CEN;
-	// Reset TIM2 counter
-	TIM2->CNT = 0;
-	// Enable Capture/Compare 2 interrupt
-	TIM2->DIER |= TIM_IT_CC2;
-	// Enable the Input Capture channel 2
-	TIM2->CCER |= TIM_CCER_CC2E;
+	/*!< Initialize sensor containers */
+	USS_init(&uss_front, 2.2, TIMER_CLK);
+	USS_init(&uss_back, 2.2, TIMER_CLK);
 	
-	uss_capture_value = 0;
+	/*!< Stop TIM2 counter and reset it */
+	CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN);
+	WRITE_REG(TIM2->CNT, 0);
+	
+	/*!< Enable Capture/Compare 3 and 4 interrupts */
+	SET_BIT(TIM2->DIER, TIM_IT_CC3);
+	SET_BIT(TIM2->DIER, TIM_IT_CC4);
+	
+	/*!< Enable the Input Capture channels 3 and 4 */
+	SET_BIT(TIM2->CCER, TIM_CCER_CC3E);
+	SET_BIT(TIM2->CCER, TIM_CCER_CC4E);
+	
+	/*!< Start- TIM2 counter */
+	SET_BIT(TIM2->CR1, TIM_CR1_CEN);
 
 	/*!< Signal another configuration complete */
 	THREADS_incSemConfig();
@@ -326,39 +359,36 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		
 		/*!< Keep current time stamp */
 		RTOS_KEEP_TIMESTAMP(timestamp);
-		 
-		HAL_GPIO_WritePin(USS_TRIGGER_GPIO_Port, USS_TRIGGER_Pin, GPIO_PIN_SET);
 		
-		//////////////////// DELAY 15us
-		RTOS_DELAY(1);
-		///////////////////////////////
-
-		HAL_GPIO_WritePin(USS_TRIGGER_GPIO_Port, USS_TRIGGER_Pin, GPIO_PIN_RESET);
+		/*!< Pull trigger pin HIGH */
+		USS_TRIGGER_GPIO_Port->BSRR = USS_TRIGGER_Pin;
+		
+		/*!< Enable the Output Capture channel 2 and write CNT + 15us 
+		 *   to CCR2 register */
+		SET_BIT(TIM2->CCER, TIM_CCER_CC2E);
+		WRITE_REG(TIM2->CCR2, TIM2->CNT + 1620);
 		
 		/*!< Declare sleeping state */
 		RTOS_SEMAPHORE_DEC(semWorking);
-			
-		if (RTOS_AWAIT_TIMEOUT(nUSSCapture, USS_CAPTURE_TIMEOUT_MS) == RTOS_TIMEOUT) {
-			
-			uss_capture_value = 30;
-			
-		} else {
-			
-			/*!< Declare working state */
-			RTOS_SEMAPHORE_INC(semWorking);
-			
-			/*!< Retrieve total number of counted cycles and calculate respective distance */
-			cycles = TIM2->CCR2;
-			uss_capture_value = USS_CORRECTION_FACTOR * (cycles*1.0/TIMER_CLK) * 340 / 2;
-			
-			/*!< Clean up CCR2 register */
-			TIM2->CCR2 = 0;
-			
-			/*!< Declare sleeping state */
-			RTOS_SEMAPHORE_DEC(semWorking);
 		
-		}
+		/*!< Initial timing offset */
+		RTOS_DELAY_UNTIL(timestamp, 25);
 		
+		/*!< Declare working state */
+		RTOS_SEMAPHORE_INC(semWorking);
+		
+		/*!< Disable the Output Capture channel 2 */
+		CLEAR_BIT(TIM2->CCER, TIM_CCER_CC2E);
+			
+		/*!< Calculate distance of the sensors with ready values */
+		front_value = USS_calculateDistance(&uss_front);
+		back_value = USS_calculateDistance(&uss_back);
+		
+		xQueueSendToBack(uss_queue, (void*)&front_value, 0);
+		xQueueSendToBack(uss_queue, (void*)&back_value, 0);
+		
+		/*!< Declare sleeping state */
+		RTOS_SEMAPHORE_DEC(semWorking);
 		
     /*!< Sleep */
 		RTOS_DELAY_UNTIL(timestamp, Z_ULTRASONIC_MANAGER_PERIOD_MS);
@@ -386,7 +416,9 @@ void THREADS_create(void) {
 
 	RTOS_SEMAPHORE_CREATE_STATIC(semConfig, 0);
 	RTOS_SEMAPHORE_CREATE_STATIC(semWorking, 0);
-
+	
+	uss_queue = xQueueCreate(2, sizeof(float));
+	
 	F_SET(F_TASKS_CREATED);
 }
 
