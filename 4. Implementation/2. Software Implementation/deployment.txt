@@ -1,1 +1,3 @@
-- 
+- Implement battery voltage level assessment with vbat pin and channel
+- Do oversampling in hardware, either by dma requests or programming the 
+mpu to sample automatically

@@ -2,7 +2,12 @@ Funcoes: MOD_funcName()
 Variables: var_name
 Defines: DEF_NAME
 Types(struct, etc.): MOD_TypeName_t
-Enumerations: ENUM_NAME
+Enumerations: 
+
+enum MOD_TypeName_t {
+	ENUM_1=0, ENUM_2, ...
+}
+
 Tasks: zTaskName
 Mutexes: mMutexName
 Semaphores: semSemaphoreName
