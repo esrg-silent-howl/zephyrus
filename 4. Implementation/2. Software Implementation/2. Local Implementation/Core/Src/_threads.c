@@ -18,7 +18,7 @@
 #define E_SET_COUNT	(uint32_t)(-2)
 
 #define MASTER_CYCLE_PERIOD_MS	40
-#define MASTER_INITIAL_DELAY_MS	15
+#define MASTER_INITIAL_DELAY_MS	10
 
 /*!< System Threads Creation */
 RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL, "zMain");
@@ -55,9 +55,7 @@ USS_Sensor_t uss_front;
 USS_Sensor_t uss_back;
 
 /*!< System Common Timestamps Creation */
-RTOS_TIMESTAMP(tsZero);
 RTOS_TIMESTAMP(tsConnect);
-RTOS_TIMESTAMP(tsUSSTimeoutStart);
 
 /*!< Current connection state */
 RF_ConnectionState_t connection_state;
@@ -142,7 +140,7 @@ RTOS_TASK_FUN(zMain) {
 	WRITE_REG(TIM6->ARR, BATTERY_LVL_MEAS_PERIOD);
 	
 	/*!< Enable the TIM Update interrupt [DEBUG] */
-	// SET_BIT(TIM6->DIER, TIM_DIER_UIE);
+	SET_BIT(TIM6->DIER, TIM_DIER_UIE);
 	
 	/*!< TIM6: Start timer */
 	SET_BIT(TIM6->CR1, TIM_CR1_CEN);
@@ -176,11 +174,11 @@ RTOS_TASK_FUN(zIMUManager) {
 
 #define N_SAMPLES				4
 #define N_SAMPELS_MASK	(N_SAMPLES - 1)
+#define	IMU_SAMPLE_REQUEST_DELAY_MS	10
 	
-	uint32_t cycles = 0;
-
+	RTOS_TIMESTAMP(tsIMUMan);
 	imu_t mpu6050;
-	uint32_t samples = 0;
+	volatile uint32_t samples = 0;
 	float accel_x[N_SAMPLES];
 	float accel_y[N_SAMPLES];
 	float angle_z[N_SAMPLES];
@@ -193,11 +191,12 @@ RTOS_TASK_FUN(zIMUManager) {
 	
 	/*!< Await the establishment of a connection to continue */
 	RTOS_AWAIT(nConnected);
+	tsIMUMan = tsConnect;
+
+	/*!< Initial timing offset */
+	RTOS_DELAY_UNTIL(tsIMUMan, MASTER_INITIAL_DELAY_MS);
 	
 	while(1) {
-		
-		RTOS_DELAY_UNTIL(tsZero, MASTER_CYCLE_PERIOD_MS*(cycles) + \
-			(MASTER_CYCLE_PERIOD_MS/N_SAMPLES)*samples);
 
 		/*!< Declare working state*/
 		RTOS_SEMAPHORE_INC(semWorking);
@@ -230,12 +229,11 @@ RTOS_TASK_FUN(zIMUManager) {
 			RTOS_QUEUE_SEND_BACK(qIMU, accel_x);
 			RTOS_QUEUE_SEND_BACK(qIMU, accel_y);
 			RTOS_QUEUE_SEND_BACK(qIMU, angle_z);
-
-			cycles++;
 		}
 		
 		/*!< Sleep */
 		RTOS_SEMAPHORE_DEC(semWorking);
+		RTOS_DELAY_UNTIL(tsIMUMan, IMU_SAMPLE_REQUEST_DELAY_MS);
 	}
 
 	RTOS_TASK_DELETE();
@@ -245,7 +243,7 @@ RTOS_TASK_FUN(zRFManager) {
 
 #define Z_RF_MANAGER_REQUEST_DELAY_MS	25
 
-	uint32_t cycles = 0;
+	RTOS_TIMESTAMP(tsRFMan);
 
 	/*!< Wait for all configurations to be complete */
 	RTOS_AWAIT(nConfig);
@@ -254,17 +252,18 @@ RTOS_TASK_FUN(zRFManager) {
 	
 	/*!< Synchronization time stamp */
 	RTOS_KEEP_TIMESTAMP(tsConnect);
-	tsZero = tsConnect + (TickType_t)(MASTER_INITIAL_DELAY_MS);
+	tsRFMan = tsConnect;
 	
 	/*!< Notify tasks of a successful connection */
 	RTOS_NOTIFY(zIMUManager, nConnected);
 	RTOS_NOTIFY(zInferenceManager, nConnected);
 	RTOS_NOTIFY(zUltrasonicManager, nConnected);
 	
+	/*!< Initial timing offset */
+	RTOS_DELAY_UNTIL(tsRFMan, MASTER_INITIAL_DELAY_MS + \
+		Z_RF_MANAGER_REQUEST_DELAY_MS);
+	
 	while(1) {	
-		
-		RTOS_DELAY_UNTIL(tsZero, MASTER_CYCLE_PERIOD_MS*(cycles) + \
-			Z_RF_MANAGER_REQUEST_DELAY_MS);
 
 		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
@@ -272,12 +271,9 @@ RTOS_TASK_FUN(zRFManager) {
 		/*!< Somewhere */
 		/*!< Timeout of RXmode */
 		
-		/*!< Declare sleeping state */
+		/*!< Sleep */
 		RTOS_SEMAPHORE_DEC(semWorking);
-		
-    /*!< Sleep */
-		cycles++;
-		
+		RTOS_DELAY_UNTIL(tsRFMan, MASTER_CYCLE_PERIOD_MS);
 	}
 
 	RTOS_TASK_DELETE();
@@ -288,7 +284,7 @@ RTOS_TASK_FUN(zInferenceManager) {
 #define Z_INFERENCE_MANAGER_DELAY_MS	35
 #define MOTOR_PWM_PERIOD_US						10000
 	
-	uint32_t cycles = 0;
+	RTOS_TIMESTAMP(tsInfMan);
 	
 	float front_distance;
 	float back_distance;
@@ -312,6 +308,7 @@ RTOS_TASK_FUN(zInferenceManager) {
 	
 	/*!< Await the establishment of a connection to continue */
 	RTOS_AWAIT(nConnected);
+	tsInfMan = tsConnect;
 	
 	/*!< Enable the Input Capture channels 3 and 4 */
 	SET_BIT(TIM3->CCER, TIM_CCER_CC3E);
@@ -320,10 +317,11 @@ RTOS_TASK_FUN(zInferenceManager) {
 	/*!< Start TIM3 counter and reset it */	
 	SET_BIT(TIM3->CR1, TIM_CR1_CEN);
 	
+	/*!< Initial timing offset */
+	RTOS_DELAY_UNTIL(tsInfMan, MASTER_INITIAL_DELAY_MS + \
+		Z_INFERENCE_MANAGER_DELAY_MS);
+	
 	while(1) {
-		
-		/*!< Initial timing offset */
-		RTOS_DELAY_UNTIL(tsZero, Z_INFERENCE_MANAGER_DELAY_MS*(cycles++));
 		
 		/*!< Declare working state and keep current time stamp*/
 		RTOS_SEMAPHORE_INC(semWorking);
@@ -350,10 +348,9 @@ RTOS_TASK_FUN(zInferenceManager) {
 		WRITE_REG(TIM3->CCR3, motor_r_speed);
 		WRITE_REG(TIM3->CCR4, motor_l_speed);
 		
-		/*!< Declare sleeping state */
-		RTOS_SEMAPHORE_DEC(semWorking);  
-		
 		/*!< Sleep */
+		RTOS_SEMAPHORE_DEC(semWorking);  
+		RTOS_DELAY_UNTIL(tsInfMan, MASTER_CYCLE_PERIOD_MS);
 	}
 
 	RTOS_TASK_DELETE();
@@ -365,7 +362,7 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 #define Z_ULTRASONIC_MANAGER_DELAY_MS		5
 #define USS_CAPTURE_TIMEOUT_MS					30
 	
-	uint32_t cycles = 0;
+	RTOS_TIMESTAMP(tsUSSMan);
 
 	/*!< Initialize sensor containers */
 	USS_init(&uss_front, 2.2, TIMER_CLK);
@@ -390,18 +387,17 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 	THREADS_incSemConfig();
 	
 	/*!< Await the establishment of a connection to continue */
-	RTOS_AWAIT(nConnected);	
-		
+	RTOS_AWAIT(nConnected);
+	tsUSSMan = tsConnect;
+	
+	/*!< Initial timing offset */
+	RTOS_DELAY_UNTIL(tsUSSMan, MASTER_INITIAL_DELAY_MS + \
+		Z_ULTRASONIC_MANAGER_DELAY_MS);
+
 	while(1) {
-		
-		/*!< Initial timing offset */
-		RTOS_DELAY_UNTIL(tsZero, Z_ULTRASONIC_MANAGER_DELAY_MS*(cycles++));
 		
 		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
-		
-		/*!< Keep current time stamp */
-		RTOS_KEEP_TIMESTAMP(tsUSSTimeoutStart);
 		
 		/*!< Pull trigger pin HIGH */
 		USS_TRIGGER_GPIO_Port->BSRR = USS_TRIGGER_Pin;
@@ -411,11 +407,9 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		SET_BIT(TIM2->CCER, TIM_CCER_CC2E);
 		WRITE_REG(TIM2->CCR2, TIM2->CNT + 1620);
 		
-		/*!< Declare sleeping state */
+		/*!< Sleep */
 		RTOS_SEMAPHORE_DEC(semWorking);
-		
-		/*!< Initial timing offset */
-		RTOS_DELAY_UNTIL(tsUSSTimeoutStart, USS_CAPTURE_TIMEOUT_MS);
+		RTOS_DELAY_UNTIL(tsUSSMan, USS_CAPTURE_TIMEOUT_MS);
 		
 		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
@@ -430,10 +424,9 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		RTOS_QUEUE_SEND_BACK(qUSS, (void*)&uss_front.distance);
 		RTOS_QUEUE_SEND_BACK(qUSS, (void*)&uss_back.distance);
 		
-		/*!< Declare sleeping state */
+		/*!< Sleep */
 		RTOS_SEMAPHORE_DEC(semWorking);
-		
-    /*!< Sleep */
+		RTOS_DELAY_UNTIL(tsUSSMan, MASTER_CYCLE_PERIOD_MS - USS_CAPTURE_TIMEOUT_MS);
 	}
 
 	RTOS_TASK_DELETE();
