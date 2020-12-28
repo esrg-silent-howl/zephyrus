@@ -17,12 +17,14 @@
 /*!< Error in number of sets */
 #define E_SET_COUNT	(uint32_t)(-2)
 
+#define MASTER_CYCLE_PERIOD_MS	40
+#define MASTER_INITIAL_DELAY_MS	15
 
 /*!< System Threads Creation */
 RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL, "zMain");
 RTOS_TASK_STATIC(zIMUManager, 1024, RP_NORMAL, "zIMUManager");
-RTOS_TASK_STATIC(zRFManager, 1024, RP_ABOVE_NORMAL, "zRFManager");
-RTOS_TASK_STATIC(zInferenceManager, 1024, RP_HIGH, "zInferenceManager");
+RTOS_TASK_STATIC(zRFManager, 1024, RP_HIGH, "zRFManager");
+RTOS_TASK_STATIC(zInferenceManager, 1024, RP_ABOVE_NORMAL, "zInferenceManager");
 RTOS_TASK_STATIC(zUltrasonicManager, 1024, RP_REAL_TIME, "zUltrasonicManager");
 
 /*!< System Mutexes Creation */
@@ -54,6 +56,7 @@ USS_Sensor_t uss_back;
 
 /*!< System Common Timestamps Creation */
 RTOS_TIMESTAMP(tsZero);
+RTOS_TIMESTAMP(tsConnect);
 
 /*!< Current connection state */
 RF_ConnectionState_t connection_state;
@@ -102,7 +105,7 @@ void HAL_I2C_MemRxCpltCallback (I2C_HandleTypeDef *hi2c){
 
 void HAL_I2C_MemTxCpltCallback (I2C_HandleTypeDef *hi2c){
 	if(hi2c->Instance == I2C1)
-		RTOS_NOTIFY_ISR(zIMUManager, nIMUTx);;
+		RTOS_NOTIFY_ISR(zIMUManager, nIMUTx);
 }
 
 	
@@ -172,16 +175,14 @@ RTOS_TASK_FUN(zIMUManager) {
 
 #define N_SAMPLES				4
 #define N_SAMPELS_MASK	(N_SAMPLES - 1)
-#define Z_GYRO_ACC_MANAGER_PERIOD_MS	40
 	
-	RTOS_TIMESTAMP(timestamp);
-	
+	uint32_t cycles = 0;
+
 	imu_t mpu6050;
 	uint32_t samples = 0;
 	float accel_x[N_SAMPLES];
 	float accel_y[N_SAMPLES];
-	float angle_x[N_SAMPLES];
-	float angle_y[N_SAMPLES];
+	float angle_z[N_SAMPLES];
 	
 	MODIFY_REG(I2C1->CR1, 0x000000FE, 0x00000001);
 	while(!IMU_Init(&hi2c1));
@@ -194,10 +195,12 @@ RTOS_TASK_FUN(zIMUManager) {
 	
 	while(1) {
 		
-		/*!< Declare working state and keep current time stamp*/
+		RTOS_DELAY_UNTIL(tsZero, MASTER_CYCLE_PERIOD_MS*(cycles) + \
+			(MASTER_CYCLE_PERIOD_MS/N_SAMPLES))*samples);
+
+		/*!< Declare working state*/
 		RTOS_SEMAPHORE_INC(semWorking);
-		RTOS_KEEP_TIMESTAMP(timestamp);
-		
+
 		/*!< Request sensor data */
 		IMU_dataRequest(&hi2c1);
 		
@@ -212,8 +215,7 @@ RTOS_TASK_FUN(zIMUManager) {
 		/*!< Keep samples in the arrays */
 		accel_x[samples] = mpu6050.Ax;
 		accel_y[samples] = mpu6050.Ay;
-		angle_x[samples] = mpu6050.Gx;
-		angle_y[samples] = mpu6050.Gy;
+		angle_z[samples] = mpu6050.Gz;
 		samples = (samples + 1) & N_SAMPELS_MASK;
 		
 		/*!< When a sampling cycle ends, calculate averages and notify 
@@ -222,18 +224,17 @@ RTOS_TASK_FUN(zIMUManager) {
 			
 			*accel_x = UTILS_calculateAverage(accel_x, N_SAMPLES);
 			*accel_y = UTILS_calculateAverage(accel_y, N_SAMPLES);
-			*angle_x = UTILS_calculateAverage(angle_x, N_SAMPLES);
-			*angle_y = UTILS_calculateAverage(angle_y, N_SAMPLES);
+			*angle_z = UTILS_calculateAverage(angle_z, N_SAMPLES);
 
 			RTOS_QUEUE_SEND_BACK(qIMU, accel_x);
 			RTOS_QUEUE_SEND_BACK(qIMU, accel_y);
-			RTOS_QUEUE_SEND_BACK(qIMU, angle_x);
-			RTOS_QUEUE_SEND_BACK(qIMU, angle_y);
+			RTOS_QUEUE_SEND_BACK(qIMU, angle_z);
+
+			cycles++;
 		}
 		
 		/*!< Sleep */
 		RTOS_SEMAPHORE_DEC(semWorking);
-		RTOS_DELAY_UNTIL(timestamp, Z_GYRO_ACC_MANAGER_PERIOD_MS/N_SAMPLES);
 	}
 
 	RTOS_TASK_DELETE();
@@ -241,15 +242,18 @@ RTOS_TASK_FUN(zIMUManager) {
 
 RTOS_TASK_FUN(zRFManager) {
 
-	RTOS_TIMESTAMP(timestamp);
-	
+#define Z_RF_MANAGER_REQUEST_DELAY_MS	25
+
+	uint32_t cycles = 0;
+
 	/*!< Wait for all configurations to be complete */
 	RTOS_AWAIT(nConfig);
 	
 	RTOS_DELAY(200);
 	
 	/*!< Synchronization time stamp */
-	RTOS_KEEP_TIMESTAMP(tsZero);
+	RTOS_KEEP_TIMESTAMP(tsConnect);
+	tsZero = tsConnect + (TickType_t)(MASTER_INITIAL_DELAY_MS);
 	
 	/*!< Notify tasks of a successful connection */
 	RTOS_NOTIFY(zIMUManager, nConnected);
@@ -258,15 +262,18 @@ RTOS_TASK_FUN(zRFManager) {
 	
 	while(1) {	
 		
-		/*!< Declare working state and keep current time stamp*/
+		RTOS_DELAY_UNTIL(tZero, MASTER_CYCLE_PERIOD_MS*(cycles) + \
+			Z_RF_MANAGER_REQUEST_DELAY_MS);
+
+		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
-		RTOS_KEEP_TIMESTAMP(timestamp);
 		
 		/*!< Declare the sleep mode entering */
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
-    /*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, 20);
+    	/*!< Sleep */
+		cycles++;
+		
 	}
 
 	RTOS_TASK_DELETE();
@@ -275,11 +282,16 @@ RTOS_TASK_FUN(zRFManager) {
 RTOS_TASK_FUN(zInferenceManager) {
 
 #define Z_INFERENCE_MANAGER_PERIOD_MS	40
-#define MOTOR_PWM_PERIOD_US						10000
+#define MOTOR_PWM_PERIOD_US				10000
 
 	RTOS_TIMESTAMP(timestamp);
+	
 	float front_distance;
 	float back_distance;
+
+	float meas_accel_x;
+	float meas_accel_y;
+	float meas_angle_z;
 	
 	uint32_t motor_r_speed;
 	uint32_t motor_l_speed;
@@ -316,6 +328,11 @@ RTOS_TASK_FUN(zInferenceManager) {
 		/*!< Get ultrasonic sensor readings */
 		RTOS_QUEUE_RECV(qUSS, &front_distance);
 		RTOS_QUEUE_RECV(qUSS, &back_distance);
+
+		/*!< Get imu readings */
+		RTOS_QUEUE_RECV(qIMU, &meas_accel_x);
+		RTOS_QUEUE_RECV(qIMU, &meas_accel_y);
+		RTOS_QUEUE_RECV(qIMU, &meas_angle_z);
 		
 		/*!< Sleep until the time to change the motor speed */
 		RTOS_SEMAPHORE_DEC(semWorking);

@@ -8,7 +8,6 @@ typedef enum {
 	NOT_CONNECTED
 } RF_ConnectionState_t;
 
-
 void THREADS_create(void);
 void THREADS_startScheduler(void);
 
