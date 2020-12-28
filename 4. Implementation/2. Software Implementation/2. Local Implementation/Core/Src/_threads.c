@@ -57,6 +57,7 @@ USS_Sensor_t uss_back;
 /*!< System Common Timestamps Creation */
 RTOS_TIMESTAMP(tsZero);
 RTOS_TIMESTAMP(tsConnect);
+RTOS_TIMESTAMP(tsUSSTimeoutStart);
 
 /*!< Current connection state */
 RF_ConnectionState_t connection_state;
@@ -112,8 +113,8 @@ void HAL_I2C_MemTxCpltCallback (I2C_HandleTypeDef *hi2c){
 RTOS_TASK_FUN(zMain) {
  
 #define BATTERY_LVL_MEAS_PERIOD		2000
-#define POWER_LED_PERIOD_MS			2000
-#define POWER_LED_DUTY_CYCLE		13
+#define POWER_LED_PERIOD_MS				2000
+#define POWER_LED_DUTY_CYCLE			13
 #define POWER_LED_PULSE_NORMAL		POWER_LED_PERIOD_MS
 #define POWER_LED_PULSE_LOW_BATT	(POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100)
 	
@@ -196,7 +197,7 @@ RTOS_TASK_FUN(zIMUManager) {
 	while(1) {
 		
 		RTOS_DELAY_UNTIL(tsZero, MASTER_CYCLE_PERIOD_MS*(cycles) + \
-			(MASTER_CYCLE_PERIOD_MS/N_SAMPLES))*samples);
+			(MASTER_CYCLE_PERIOD_MS/N_SAMPLES)*samples);
 
 		/*!< Declare working state*/
 		RTOS_SEMAPHORE_INC(semWorking);
@@ -262,16 +263,19 @@ RTOS_TASK_FUN(zRFManager) {
 	
 	while(1) {	
 		
-		RTOS_DELAY_UNTIL(tZero, MASTER_CYCLE_PERIOD_MS*(cycles) + \
+		RTOS_DELAY_UNTIL(tsZero, MASTER_CYCLE_PERIOD_MS*(cycles) + \
 			Z_RF_MANAGER_REQUEST_DELAY_MS);
 
 		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
 		
-		/*!< Declare the sleep mode entering */
+		/*!< Somewhere */
+		/*!< Timeout of RXmode */
+		
+		/*!< Declare sleeping state */
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
-    	/*!< Sleep */
+    /*!< Sleep */
 		cycles++;
 		
 	}
@@ -281,10 +285,10 @@ RTOS_TASK_FUN(zRFManager) {
 
 RTOS_TASK_FUN(zInferenceManager) {
 
-#define Z_INFERENCE_MANAGER_PERIOD_MS	40
-#define MOTOR_PWM_PERIOD_US				10000
-
-	RTOS_TIMESTAMP(timestamp);
+#define Z_INFERENCE_MANAGER_DELAY_MS	35
+#define MOTOR_PWM_PERIOD_US						10000
+	
+	uint32_t cycles = 0;
 	
 	float front_distance;
 	float back_distance;
@@ -316,14 +320,13 @@ RTOS_TASK_FUN(zInferenceManager) {
 	/*!< Start TIM3 counter and reset it */	
 	SET_BIT(TIM3->CR1, TIM_CR1_CEN);
 	
-	/*!< Initial timing offset */
-	RTOS_DELAY_UNTIL(tsZero, 40);
-	
 	while(1) {
+		
+		/*!< Initial timing offset */
+		RTOS_DELAY_UNTIL(tsZero, Z_INFERENCE_MANAGER_DELAY_MS*(cycles++));
 		
 		/*!< Declare working state and keep current time stamp*/
 		RTOS_SEMAPHORE_INC(semWorking);
-		RTOS_KEEP_TIMESTAMP(timestamp);
 	
 		/*!< Get ultrasonic sensor readings */
 		RTOS_QUEUE_RECV(qUSS, &front_distance);
@@ -336,7 +339,6 @@ RTOS_TASK_FUN(zInferenceManager) {
 		
 		/*!< Sleep until the time to change the motor speed */
 		RTOS_SEMAPHORE_DEC(semWorking);
-		RTOS_DELAY_UNTIL(timestamp, Z_INFERENCE_MANAGER_PERIOD_MS - 5);
 		 
 		/*!< Change motor direction and speed */
 		motor_r_dir_inv = 0;
@@ -348,9 +350,10 @@ RTOS_TASK_FUN(zInferenceManager) {
 		WRITE_REG(TIM3->CCR3, motor_r_speed);
 		WRITE_REG(TIM3->CCR4, motor_l_speed);
 		
-		/*!< Sleep */
+		/*!< Declare sleeping state */
 		RTOS_SEMAPHORE_DEC(semWorking);  
-		RTOS_DELAY_UNTIL(timestamp, Z_INFERENCE_MANAGER_PERIOD_MS);
+		
+		/*!< Sleep */
 	}
 
 	RTOS_TASK_DELETE();
@@ -359,10 +362,10 @@ RTOS_TASK_FUN(zInferenceManager) {
 RTOS_TASK_FUN(zUltrasonicManager) {
 
 #define TIMER_CLK												108000000
-#define Z_ULTRASONIC_MANAGER_PERIOD_MS	40
-#define USS_CAPTURE_TIMEOUT_MS					25
+#define Z_ULTRASONIC_MANAGER_DELAY_MS		5
+#define USS_CAPTURE_TIMEOUT_MS					30
 	
- 	RTOS_TIMESTAMP(timestamp);
+	uint32_t cycles = 0;
 
 	/*!< Initialize sensor containers */
 	USS_init(&uss_front, 2.2, TIMER_CLK);
@@ -388,17 +391,17 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 	
 	/*!< Await the establishment of a connection to continue */
 	RTOS_AWAIT(nConnected);	
-	
-	/*!< Initial timing offset */
-	RTOS_DELAY_UNTIL(tsZero, 5);
 		
 	while(1) {
+		
+		/*!< Initial timing offset */
+		RTOS_DELAY_UNTIL(tsZero, Z_ULTRASONIC_MANAGER_DELAY_MS*(cycles++));
 		
 		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
 		
 		/*!< Keep current time stamp */
-		RTOS_KEEP_TIMESTAMP(timestamp);
+		RTOS_KEEP_TIMESTAMP(tsUSSTimeoutStart);
 		
 		/*!< Pull trigger pin HIGH */
 		USS_TRIGGER_GPIO_Port->BSRR = USS_TRIGGER_Pin;
@@ -412,7 +415,7 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
 		/*!< Initial timing offset */
-		RTOS_DELAY_UNTIL(timestamp, 25);
+		RTOS_DELAY_UNTIL(tsUSSTimeoutStart, USS_CAPTURE_TIMEOUT_MS);
 		
 		/*!< Declare working state */
 		RTOS_SEMAPHORE_INC(semWorking);
@@ -431,7 +434,6 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		RTOS_SEMAPHORE_DEC(semWorking);
 		
     /*!< Sleep */
-		RTOS_DELAY_UNTIL(timestamp, Z_ULTRASONIC_MANAGER_PERIOD_MS);
 	}
 
 	RTOS_TASK_DELETE();
