@@ -20,7 +20,7 @@
 #define MASTER_INITIAL_DELAY_MS	10
 
 /*!< System Threads Creation */
-static RTOS_TASK_STATIC(zMain, 1024, RP_REAL_TIME/*RP_BELOW_NORMAL*/, "zMain");
+static RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL/*RP_BELOW_NORMAL*/, "zMain");
 static RTOS_TASK_STATIC(zIMUManager, 1024, RP_NORMAL, "zIMUManager");
 static RTOS_TASK_STATIC(zRFManager, 1024, RP_HIGH, "zRFManager");
 
@@ -60,7 +60,6 @@ void HAL_I2C_MemTxCpltCallback (I2C_HandleTypeDef *hi2c){
 		RTOS_NOTIFY_ISR(zIMUManager, nIMUTx);
 }
 
-	
 RTOS_TASK_FUN(zMain) {
  
 #define BATTERY_LVL_MEAS_PERIOD		1000
@@ -140,24 +139,24 @@ RTOS_TASK_FUN(zIMUManager) {
 #define	IMU_SAMPLE_REQUEST_DELAY_MS	10
 	
 	RTOS_TIMESTAMP(tsIMUMan);
-//	imu_t mpu6050;
-//	volatile uint32_t samples = 0;
-//	float accel_x[N_SAMPLES];
-//	float accel_y[N_SAMPLES];
-//	float angle_z[N_SAMPLES];
-//	
+	imu_t mpu6050;
+	volatile uint32_t samples = 0;
+	float accel_x[N_SAMPLES];
+	float accel_y[N_SAMPLES];
+	float angle_z[N_SAMPLES];
+	
 //	MODIFY_REG(I2C1->CR1, 0x000000FE, 0x00000001);
 //	while(!IMU_Init(&hi2c1));
-//	
-//	/*!< Signal another configuration complete */
-//	THREADS_incSemConfig();
-//	
-//	/*!< Await the establishment of a connection to continue */
-//	RTOS_AWAIT(nConnected);
-//	tsIMUMan = tsConnect;
+	
+	/*!< Signal configuration complete */
+	RTOS_NOTIFY(zRFManager, nConfig);
+	
+	/*!< Await the establishment of a connection to continue */
+	RTOS_AWAIT(nConnected);
+	tsIMUMan = tsConnect;
 
-//	/*!< Initial timing offset */
-//	RTOS_DELAY_UNTIL(tsIMUMan, MASTER_INITIAL_DELAY_MS);
+	/*!< Initial timing offset */
+	RTOS_DELAY_UNTIL(tsIMUMan, MASTER_INITIAL_DELAY_MS);
 	
 	while(1) {
 
@@ -204,27 +203,25 @@ RTOS_TASK_FUN(zIMUManager) {
 
 RTOS_TASK_FUN(zRFManager) {
 
-//#define Z_RF_MANAGER_REQUEST_DELAY_MS	25
+#define Z_RF_MANAGER_REQUEST_DELAY_MS	25
 
 	RTOS_TIMESTAMP(tsRFMan);
 
-//	/*!< Wait for all configurations to be complete */
-//	RTOS_AWAIT(nConfig);
-//	
-//	RTOS_DELAY(200);
-//	
-//	/*!< Synchronization time stamp */
-//	RTOS_KEEP_TIMESTAMP(tsConnect);
-//	tsRFMan = tsConnect;
-//	
-//	/*!< Notify tasks of a successful connection */
-//	RTOS_NOTIFY(zIMUManager, nConnected);
-//	RTOS_NOTIFY(zInferenceManager, nConnected);
-//	RTOS_NOTIFY(zUltrasonicManager, nConnected);
-//	
-//	/*!< Initial timing offset */
-//	RTOS_DELAY_UNTIL(tsRFMan, MASTER_INITIAL_DELAY_MS + \
-//		Z_RF_MANAGER_REQUEST_DELAY_MS);
+	/*!< Wait for all configurations to be complete */
+	RTOS_AWAIT(nConfig);
+	
+	RTOS_DELAY(200);
+	
+	/*!< Synchronization time stamp */
+	RTOS_KEEP_TIMESTAMP(tsConnect);
+	tsRFMan = tsConnect;
+	
+	/*!< Notify tasks of a successful connection */
+	RTOS_NOTIFY(zIMUManager, nConnected);
+	
+	/*!< Initial timing offset */
+	RTOS_DELAY_UNTIL(tsRFMan, MASTER_INITIAL_DELAY_MS + \
+		Z_RF_MANAGER_REQUEST_DELAY_MS);
 	
 	while(1) {	
 
@@ -267,8 +264,12 @@ void THREADS_startScheduler(void) {
 	F_SET(F_SCHEDULER_STARTED);
 }
 
+void vApplicationIdleHook( void )
+{
+	THREADS_sleep();
+}
 
-static void THREADS_sleep(void){
+void THREADS_sleep(void){
 	
 	static uint32_t sleeps = 0;
 	

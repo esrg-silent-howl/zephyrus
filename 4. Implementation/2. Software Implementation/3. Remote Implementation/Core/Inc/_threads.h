@@ -10,3 +10,5 @@ typedef enum {
 
 void THREADS_create(void);
 void THREADS_startScheduler(void);
+
+void THREADS_sleep(void);
