@@ -502,11 +502,11 @@ static double THREADS_checkForLowBattery(void) {
 #define LOW_BATT_THRSLD	15
 #define HYSTERESIS			2
 
-	static int last_evaluation = EVAL_HIGH;	/*!< Evaluation from last iteration */
-	int evaluation;			/*!< Evaluation to be made */
-	int adc_value;			/*!< Raw ADC reading	*/
-	int v_batt;					/*!< Battery voltage */
-	int batt_lvl;				/*!< Calculated battery level */
+	static uint32_t last_evaluation = EVAL_HIGH;	/*!< Evaluation from last iteration */
+	uint32_t evaluation;			/*!< Evaluation to be made */
+	int32_t adc_value;			/*!< Raw ADC reading	*/
+	int32_t v_batt;					/*!< Battery voltage */
+	int32_t batt_lvl;				/*!< Calculated battery level */
 	
 	/*!< Fetch ADC conversion value */
 	adc_value = READ_REG(ADC1->DR);
