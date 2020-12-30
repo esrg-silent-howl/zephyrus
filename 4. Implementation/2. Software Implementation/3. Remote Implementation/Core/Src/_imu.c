@@ -40,41 +40,42 @@ inline float to_degrees(float radians) {
 }
 
 uint8_t IMU_Init(I2C_HandleTypeDef* hI2C) {
-	
-    uint8_t check;
-    uint8_t data;
-	
-		HAL_I2C_Mem_Read(hI2C, IMU_ADDR, DEVICE_REG, 1, &check, 1, 0xFFFFFFFF);
 
-    if (check == IMU_ACK)  // 0x68 will be returned by the sensor if everything goes well
-    {
-			// power management register 0X6B we should write all 0's to wake the sensor up
-			data = 0;
-			HAL_StatusTypeDef state = HAL_I2C_Mem_Write(hI2C, IMU_ADDR, PWR_MGMT_1_REG, 1, &data, 1, 0xFFFFFFFF);
-			if (state != HAL_OK) goto error;
-			
-			// Set DATA RATE of 1KHz by writing SMPLRT_DIV register
-			data = 0x07;
-			state = HAL_I2C_Mem_Write(hI2C, IMU_ADDR, SMPLRT_DIV_REG, 1, &data, 1, 0xFFFFFFFF);
-			if (state != HAL_OK) goto error;
-			
-			// Set accelerometer configuration in ACCEL_CONFIG Register
-			// XA_ST=0,YA_ST=0,ZA_ST=0, FS_SEL=0
-			data = 0x00;
-			state = HAL_I2C_Mem_Write(hI2C, IMU_ADDR, ACCEL_CONFIG_REG, 1, &data, 1, 0xFFFFFFFF);
-			if (state != HAL_OK) goto error;
-			
-			// Set Gyroscopic configuration in GYRO_CONFIG Register
-			// XG_ST=0,YG_ST=0,ZG_ST=0, FS_SEL=0
-			data = 0x00;
-			state = HAL_I2C_Mem_Write(hI2C, IMU_ADDR, GYRO_CONFIG_REG, 1, &data, 1, 0xFFFFFFFF);
-			if (state != HAL_OK) goto error;
-			
-			return 1;
-    }
+#define IMU_CONFIG_TIMEOUT 	1
+	
+	uint8_t check;
+	uint8_t data;
+
+	HAL_I2C_Mem_Read(hI2C, IMU_ADDR, DEVICE_REG, 1, &check, 1, IMU_CONFIG_TIMEOUT);
+
+	if (check == IMU_ACK)  // 0x68 will be returned by the sensor if everything goes well
+	{
+		// power management register 0X6B we should write all 0's to wake the sensor up
+		data = 0;
+		if (HAL_I2C_Mem_Write(hI2C, IMU_ADDR, PWR_MGMT_1_REG, 1, &data, 1, IMU_CONFIG_TIMEOUT) != HAL_OK) 
+			return 0;
 		
-		error:
-    return 0;
+		// Set DATA RATE of 1KHz by writing SMPLRT_DIV register
+		data = 0x07;
+		if (HAL_I2C_Mem_Write(hI2C, IMU_ADDR, SMPLRT_DIV_REG, 1, &data, 1, IMU_CONFIG_TIMEOUT) != HAL_OK) 
+			return 0;
+		
+		// Set accelerometer configuration in ACCEL_CONFIG Register
+		// XA_ST=0,YA_ST=0,ZA_ST=0, FS_SEL=0
+		data = 0x00;
+		if (HAL_I2C_Mem_Write(hI2C, IMU_ADDR, ACCEL_CONFIG_REG, 1, &data, 1, IMU_CONFIG_TIMEOUT) != HAL_OK) 
+			return 0;
+		
+		// Set Gyroscopic configuration in GYRO_CONFIG Register
+		// XG_ST=0,YG_ST=0,ZG_ST=0, FS_SEL=0
+		data = 0x00;
+		if (HAL_I2C_Mem_Write(hI2C, IMU_ADDR, GYRO_CONFIG_REG, 1, &data, 1, IMU_CONFIG_TIMEOUT) != HAL_OK) 
+			return 0;
+		
+		return 1;
+	}
+
+	return 0;
 }
 
 float Kalman_getAngle(Kalman_t *Kalman, float newAngle, float newRate, float dt) {

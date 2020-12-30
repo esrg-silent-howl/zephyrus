@@ -50,6 +50,7 @@
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void TIM6_DAC_IRQHandler(void);
+void I2C1_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

@@ -34,7 +34,7 @@ static RTOS_NOTIFICATION(nIMURx, 2);
 static RTOS_NOTIFICATION(nIMUTx, 3);
 
 /*!< System Queues Creation */
-static RTOS_QUEUE_STATIC(qIMU, float, 4);
+static RTOS_QUEUE_STATIC(qIMU, float, 2);
 
 /*!< Flags Container*/
 static volatile uint32_t flags = 0;
@@ -140,13 +140,13 @@ RTOS_TASK_FUN(zIMUManager) {
 	
 	RTOS_TIMESTAMP(tsIMUMan);
 	imu_t mpu6050;
-	volatile uint32_t samples = 0;
-	float accel_x[N_SAMPLES];
-	float accel_y[N_SAMPLES];
-	float angle_z[N_SAMPLES];
 	
-//	MODIFY_REG(I2C1->CR1, 0x000000FE, 0x00000001);
-//	while(!IMU_Init(&hi2c1));
+	volatile uint32_t samples = 0;
+	float angle_x[N_SAMPLES];
+	float angle_y[N_SAMPLES];
+	
+	MODIFY_REG(I2C1->CR1, 0x000000FE, 0x00000001);
+	while(!IMU_Init(&hi2c1));
 	
 	/*!< Signal configuration complete */
 	RTOS_NOTIFY(zRFManager, nConfig);
@@ -160,41 +160,32 @@ RTOS_TASK_FUN(zIMUManager) {
 	
 	while(1) {
 
-//		/*!< Declare working state*/
-//		RTOS_SEMAPHORE_INC(semWorking);
+		/*!< Request sensor data */
+		IMU_dataRequest(&hi2c1);
+		
+		/*!< Await reception notification */
+		RTOS_AWAIT(nIMURx);
+		
+		/*!< Fetch received data */
+		IMU_dataFetch(&mpu6050);
+		
+		/*!< Keep samples in the arrays */
+		angle_x[samples] = mpu6050.Gx;
+		angle_y[samples] = mpu6050.Gy;
+		samples = (samples + 1) & N_SAMPELS_MASK;
+		
+		/*!< When a sampling cycle ends, calculate averages and notify 
+		 *   inference task*/
+		if (samples == 0) {
+			
+			*angle_x = UTILS_calculateAverage(angle_x, N_SAMPLES);
+			*angle_y = UTILS_calculateAverage(angle_y, N_SAMPLES);
 
-//		/*!< Request sensor data */
-//		IMU_dataRequest(&hi2c1);
-//		
-//		/*!< Await reception notification */
-//		RTOS_SEMAPHORE_DEC(semWorking);
-//		RTOS_AWAIT(nIMURx);
-//		RTOS_SEMAPHORE_INC(semWorking);
-//		
-//		/*!< Fetch received data */
-//		IMU_dataFetch(&mpu6050);
-//		
-//		/*!< Keep samples in the arrays */
-//		accel_x[samples] = mpu6050.Ax;
-//		accel_y[samples] = mpu6050.Ay;
-//		angle_z[samples] = mpu6050.Gz;
-//		samples = (samples + 1) & N_SAMPELS_MASK;
-//		
-//		/*!< When a sampling cycle ends, calculate averages and notify 
-//		 *   inference task*/
-//		if (samples == 0) {
-//			
-//			*accel_x = UTILS_calculateAverage(accel_x, N_SAMPLES);
-//			*accel_y = UTILS_calculateAverage(accel_y, N_SAMPLES);
-//			*angle_z = UTILS_calculateAverage(angle_z, N_SAMPLES);
-
-//			RTOS_QUEUE_SEND_BACK(qIMU, accel_x);
-//			RTOS_QUEUE_SEND_BACK(qIMU, accel_y);
-//			RTOS_QUEUE_SEND_BACK(qIMU, angle_z);
-//		}
-//		
-//		/*!< Sleep */
-//		RTOS_SEMAPHORE_DEC(semWorking);
+			RTOS_QUEUE_SEND_BACK(qIMU, angle_x);
+			RTOS_QUEUE_SEND_BACK(qIMU, angle_y);
+		}
+		
+		/*!< Sleep */
 		RTOS_DELAY_UNTIL(tsIMUMan, IMU_SAMPLE_REQUEST_DELAY_MS);
 	}
 
@@ -203,9 +194,13 @@ RTOS_TASK_FUN(zIMUManager) {
 
 RTOS_TASK_FUN(zRFManager) {
 
-#define Z_RF_MANAGER_REQUEST_DELAY_MS	25
+#define Z_RF_MANAGER_REQUEST_DELAY_MS	35
+#define QUEUE_IMU_TIMEOUT							5
 
 	RTOS_TIMESTAMP(tsRFMan);
+	
+	float meas_angle_x;
+	float meas_angle_y;
 
 	/*!< Wait for all configurations to be complete */
 	RTOS_AWAIT(nConfig);
@@ -223,16 +218,18 @@ RTOS_TASK_FUN(zRFManager) {
 	RTOS_DELAY_UNTIL(tsRFMan, MASTER_INITIAL_DELAY_MS + \
 		Z_RF_MANAGER_REQUEST_DELAY_MS);
 	
-	while(1) {	
-
-//		/*!< Declare working state */
-//		RTOS_SEMAPHORE_INC(semWorking);
-//		
-//		/*!< Somewhere */
-//		/*!< Timeout of RXmode */
-//		
-//		/*!< Sleep */
-//		RTOS_SEMAPHORE_DEC(semWorking);
+	while(1) {
+		
+		/*!< Get imu readings */
+		RTOS_QUEUE_RECV_TIMEOUT(qIMU, &meas_angle_x, QUEUE_IMU_TIMEOUT);
+		RTOS_QUEUE_RECV_TIMEOUT(qIMU, &meas_angle_y, QUEUE_IMU_TIMEOUT);
+		
+		/*!< Light up LED_CONN_PROB */ 
+		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
+		
+		/*!< Turn off LED_CONN_PROB */ 
+		SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
+		
 		RTOS_DELAY_UNTIL(tsRFMan, MASTER_CYCLE_PERIOD_MS);
 	}
 
@@ -307,7 +304,7 @@ static double THREADS_checkForLowBattery(void) {
 	 *   VDDA = 3.3 V x VREFIN_CAL / VREFINT_DATA */
 	v_batt = 3300*(*VREFINT_CAL_ADDR)/adc_value;
 	
-		/*!< Extrapolate 0-100 battery level assuming linear voltage drop */	
+	/*!< Extrapolate 0-100 battery level assuming linear voltage drop */	
 	batt_lvl = 100 * (v_batt - VBATT_MIN) / VBATT_EXCURSION;
 	
 	/*!< If last evaluation was LOW, go to HIGH only once the hysteresis margin 
