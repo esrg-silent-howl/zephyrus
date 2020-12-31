@@ -20,12 +20,12 @@
 #define MASTER_INITIAL_DELAY_MS	10
 
 /*!< System Threads Creation */
-static RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL/*RP_BELOW_NORMAL*/, "zMain");
+static RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL, "zMain");
 static RTOS_TASK_STATIC(zIMUManager, 1024, RP_NORMAL, "zIMUManager");
 static RTOS_TASK_STATIC(zRFManager, 1024, RP_HIGH, "zRFManager");
 
 /*!< System Semaphores Creation */
-static RTOS_SEMAPHORE_STATIC(semJoin, 2); 
+static RTOS_SEMAPHORE_STATIC(semTerminate, 4); 
 
 /*!< System Notifications Creation */
 static RTOS_NOTIFICATION(nConfig, 0);
@@ -60,14 +60,22 @@ void HAL_I2C_MemTxCpltCallback (I2C_HandleTypeDef *hi2c){
 		RTOS_NOTIFY_ISR(zIMUManager, nIMUTx);
 }
 
+void THREADS_shutdownIRQHandler (void) {
+	
+	/* Avoid another interruption action on further button presses */
+	if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 0) 
+		RTOS_SEMAPHORE_INC_ISR(semTerminate);		
+	
+}
+
 RTOS_TASK_FUN(zMain) {
  
-#define BATTERY_LVL_MEAS_PERIOD		1000
-#define POWER_LED_PERIOD_MS				1000
+#define BATTERY_LVL_MEAS_PERIOD		1000-1
+#define POWER_LED_PERIOD_MS				1000-1
 #define POWER_LED_DUTY_CYCLE			15
 #define POWER_LED_PULSE_NORMAL		POWER_LED_PERIOD_MS
-#define POWER_LED_PULSE_LOW_BATT	(POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100)
-#define MAIN_SAMPLE_CHECK_PERIOD	1000
+#define POWER_LED_PULSE_LOW_BATT	((POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100)-1)
+#define Z_MAIN_PERIOD_MS					200
 	
 	RTOS_TIMESTAMP(tsMain);
 	
@@ -77,9 +85,8 @@ RTOS_TASK_FUN(zMain) {
 	WRITE_REG(TIM3->CNT, 0);
 	WRITE_REG(TIM15->CNT, 0);
 	
-	/*!< Turn LED off (not making any assumptions about the current 
-	 *   battery level) */
-	WRITE_REG(TIM3->CCR1, 0);
+	/*!< Turn LED on to indicate power up */
+	WRITE_REG(TIM3->CCR1, POWER_LED_PERIOD_MS);
 	
 	/*!< Enable OC channel 1 and main output on PWR_LED timer */
 	SET_BIT(TIM3->CCER, TIM_CCER_CC1E);
@@ -91,9 +98,6 @@ RTOS_TASK_FUN(zMain) {
 	/*!< Write the battery level measurement period in ms to the auto-reload 
 	 *   register of TIM15 */
 	WRITE_REG(TIM15->ARR, BATTERY_LVL_MEAS_PERIOD);
-	
-	/*!< Start ADC conversions */
-	// HAL_ADC_Start(&hadc);
 
 	/*!< ADC1: Clear regular group conversion flag and overrun flag */
 	CLEAR_BIT(ADC1->ISR, ADC_FLAG_EOC | ADC_FLAG_OVR);
@@ -126,17 +130,24 @@ RTOS_TASK_FUN(zMain) {
 				WRITE_REG(TIM3->CCR1, POWER_LED_PULSE_NORMAL);
 		}
 		
-		RTOS_DELAY_UNTIL(tsMain, MAIN_SAMPLE_CHECK_PERIOD);
-	}
+		/*!< Sleep */
+		RTOS_DELAY_UNTIL(tsMain, Z_MAIN_PERIOD_MS);
 
+		if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 3)
+			goto cleanup;
+	}
+	
+	cleanup:
+	RTOS_SEMAPHORE_INC(semTerminate);
 	RTOS_TASK_DELETE();
 }
 
 RTOS_TASK_FUN(zIMUManager) {
 
-#define N_SAMPLES				4
-#define N_SAMPELS_MASK	(N_SAMPLES - 1)
-#define	IMU_SAMPLE_REQUEST_DELAY_MS	10
+#define N_SAMPLES										4
+#define N_SAMPLES_MASK							(N_SAMPLES - 1)
+#define	Z_IMU_PERIOD_MS							10
+#define IMU_QUEUE_TIMEOUT						5
 	
 	RTOS_TIMESTAMP(tsIMUMan);
 	imu_t mpu6050;
@@ -172,30 +183,40 @@ RTOS_TASK_FUN(zIMUManager) {
 		/*!< Keep samples in the arrays */
 		angle_x[samples] = mpu6050.Gx;
 		angle_y[samples] = mpu6050.Gy;
-		samples = (samples + 1) & N_SAMPELS_MASK;
+		samples = (samples + 1) & N_SAMPLES_MASK;
 		
 		/*!< When a sampling cycle ends, calculate averages and notify 
 		 *   inference task*/
 		if (samples == 0) {
-			
+				
+			/*!< Calculate averages of the oversampled values */
 			*angle_x = UTILS_calculateAverage(angle_x, N_SAMPLES);
 			*angle_y = UTILS_calculateAverage(angle_y, N_SAMPLES);
-
-			RTOS_QUEUE_SEND_BACK(qIMU, angle_x);
-			RTOS_QUEUE_SEND_BACK(qIMU, angle_y);
+		
+			/*!< Queue the angle values for zRFManager */
+			/*!< Timeout is meant to keep the task responsive in the case that 
+			zRFManager did not yet retrieve the previous items , such as when it has
+			reponded to the terminate signal */
+			RTOS_QUEUE_SEND_BACK_TIMEOUT(qIMU, angle_x, IMU_QUEUE_TIMEOUT);
+			RTOS_QUEUE_SEND_BACK_TIMEOUT(qIMU, angle_y, IMU_QUEUE_TIMEOUT);
 		}
 		
 		/*!< Sleep */
-		RTOS_DELAY_UNTIL(tsIMUMan, IMU_SAMPLE_REQUEST_DELAY_MS);
+		RTOS_DELAY_UNTIL(tsIMUMan, Z_IMU_PERIOD_MS);
+		
+		if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 2)
+			goto cleanup;
 	}
-
+	
+	cleanup:
+	RTOS_SEMAPHORE_INC(semTerminate);
 	RTOS_TASK_DELETE();
 }
 
 RTOS_TASK_FUN(zRFManager) {
 
-#define Z_RF_MANAGER_REQUEST_DELAY_MS	35
-#define QUEUE_IMU_TIMEOUT							5
+#define Z_RF_PERIOD_MS								35
+#define Z_RF_QUEUE_TIMEOUT						5
 
 	RTOS_TIMESTAMP(tsRFMan);
 	
@@ -216,23 +237,31 @@ RTOS_TASK_FUN(zRFManager) {
 	
 	/*!< Initial timing offset */
 	RTOS_DELAY_UNTIL(tsRFMan, MASTER_INITIAL_DELAY_MS + \
-		Z_RF_MANAGER_REQUEST_DELAY_MS);
+		Z_RF_PERIOD_MS);
 	
 	while(1) {
 		
 		/*!< Get imu readings */
-		RTOS_QUEUE_RECV_TIMEOUT(qIMU, &meas_angle_x, QUEUE_IMU_TIMEOUT);
-		RTOS_QUEUE_RECV_TIMEOUT(qIMU, &meas_angle_y, QUEUE_IMU_TIMEOUT);
+		RTOS_QUEUE_RECV_TIMEOUT(qIMU, &meas_angle_x, Z_RF_QUEUE_TIMEOUT);
+		RTOS_QUEUE_RECV_TIMEOUT(qIMU, &meas_angle_y, Z_RF_QUEUE_TIMEOUT);
 		
 		/*!< Light up LED_CONN_PROB */ 
-		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
+		SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
 		
 		/*!< Turn off LED_CONN_PROB */ 
-		SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
+		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
 		
+		/*!< Sleep */
 		RTOS_DELAY_UNTIL(tsRFMan, MASTER_CYCLE_PERIOD_MS);
+		
+		volatile int count = RTOS_SEMAPHORE_GET_COUNT(semTerminate);
+		
+		if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 1)
+			goto cleanup;
 	}
-
+	
+	cleanup:
+	RTOS_SEMAPHORE_INC(semTerminate);
 	RTOS_TASK_DELETE();
 }
 
@@ -248,6 +277,8 @@ void THREADS_create(void) {
 	
 	RTOS_QUEUE_CREATE_STATIC(qIMU);
 	
+	RTOS_SEMAPHORE_CREATE_STATIC(semTerminate, 0);
+	
 	F_SET(F_TASKS_CREATED);
 }
 
@@ -261,8 +292,12 @@ void THREADS_startScheduler(void) {
 	F_SET(F_SCHEDULER_STARTED);
 }
 
-void vApplicationIdleHook( void )
-{
+RTOS_IDLE_CALLBACK() {
+	
+	/*!< When all tasks have terminated, shut down */
+	if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == RTOS_SEMAPHORE_MAX_COUNT(semTerminate))
+		PWR_CLR_PULL_LOW();
+
 	THREADS_sleep();
 }
 

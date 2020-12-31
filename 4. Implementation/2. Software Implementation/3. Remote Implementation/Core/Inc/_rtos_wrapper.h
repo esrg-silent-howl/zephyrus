@@ -108,12 +108,12 @@ StaticSemaphore_t RTOS_SEMAPHORE_BUFFER(__semaphore__);
 	/*!< Wrapper macro for 'xSemaphoreTakeFromISR' for specific use for semaphores
  *	created through this API */
 #define RTOS_SEMAPHORE_INC_ISR(__semaphore__) \
-	xSemaphoreTakeFromISR(__semaphore__, NULL)
+	xSemaphoreGiveFromISR(__semaphore__, NULL)
 
 /*!< Wrapper macro for 'xSemaphoreGiveFromISR' for specific use for semaphores
  *	created through this API */
 #define RTOS_SEMAPHORE_DEC_ISR(__semaphore__) \
-	xSemaphoreGiveFromISR(__semaphore__, NULL)
+	xSemaphoreTakeFromISR(__semaphore__, NULL)
 
 /*!< Get count of __semaphore__ */
 #define RTOS_SEMAPHORE_GET_COUNT(__semaphore__) \
@@ -149,7 +149,6 @@ StaticSemaphore_t RTOS_SEMAPHORE_BUFFER(__semaphore__);
 			RTOS_QUEUE_TYPE_SIZE(__queue__), (uint8_t*)RTOS_QUEUE_STORAGE(__queue__), \
 			&RTOS_QUEUE_BUFFER(__queue__));
 
-
 #define RTOS_QUEUE_RECV(__queue__, __dest_ptr__) \
 	xQueueReceive(__queue__, __dest_ptr__, portMAX_DELAY)
 	
@@ -158,6 +157,9 @@ StaticSemaphore_t RTOS_SEMAPHORE_BUFFER(__semaphore__);
 
 #define RTOS_QUEUE_SEND_BACK(__queue__, __source__) \
 	xQueueSendToBack(__queue__, __source__, portMAX_DELAY)
+	
+#define RTOS_QUEUE_SEND_BACK_TIMEOUT(__queue__, __source__, __timeout__) \
+	xQueueSendToBack(__queue__, __source__, RTOS_TOOLS_MS_TO_TICKS(__timeout__))
 
 #define RTOS_QUEUE_SEND_BACK_ISR(__queue__) \
 	xQueueSendToBackFromISR(__queue__, __source__, NULL)
@@ -260,6 +262,8 @@ StaticSemaphore_t RTOS_MUTEX_BUFFER(__mutex__);
 #define RTOS_TASK_DELETE() \
 	vTaskDelete(NULL)
 	
+#define RTOS_IDLE_CALLBACK()	\
+	void vApplicationIdleHook(void)
 	
 /*! RTOS priorities enumeration */
 typedef enum RTOSPriorities {

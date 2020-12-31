@@ -25,6 +25,7 @@
 #include "task.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "_threads.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,6 +93,9 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+		
+		/*!< In case of an undetermined hard fault, shut down */
+		PWR_CLR_PULL_LOW();
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
 }
@@ -102,6 +106,28 @@ void HardFault_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f0xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles EXTI line 0 and 1 interrupts.
+  */
+void EXTI0_1_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI0_1_IRQn 0 */
+	if (READ_BIT(EXTI->PR, EXTI_PR_PIF1)) {
+		
+		/*!< Write 1 to the pendig interrupt flag 1 to clear it as instructed in 
+		 *   the datasheet */
+		SET_BIT(EXTI->PR, EXTI_PR_PIF1);
+		
+		/*!< Call shuitdown handler */
+		THREADS_shutdownIRQHandler();
+	}
+		
+  /* USER CODE END EXTI0_1_IRQn 0 */
+  /* USER CODE BEGIN EXTI0_1_IRQn 1 */
+
+  /* USER CODE END EXTI0_1_IRQn 1 */
+}
 
 /**
   * @brief This function handles TIM6 global and DAC underrun error interrupts.
