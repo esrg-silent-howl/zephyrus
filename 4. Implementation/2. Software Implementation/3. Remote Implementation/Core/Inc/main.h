@@ -100,6 +100,8 @@ void Error_Handler(void);
 #define NRF24L01_CSN_GPIO_Port GPIOB
 #define NRF24L01_CE_Pin GPIO_PIN_1
 #define NRF24L01_CE_GPIO_Port GPIOB
+#define LED_DEBUG_Pin GPIO_PIN_10
+#define LED_DEBUG_GPIO_Port GPIOA
 #define LED_CONN_PROB_Pin GPIO_PIN_3
 #define LED_CONN_PROB_GPIO_Port GPIOB
 #define LED_PWR_Pin GPIO_PIN_4

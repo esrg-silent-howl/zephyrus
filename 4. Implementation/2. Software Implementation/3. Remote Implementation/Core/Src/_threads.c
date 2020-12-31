@@ -70,34 +70,28 @@ void THREADS_shutdownIRQHandler (void) {
 
 RTOS_TASK_FUN(zMain) {
  
-#define BATTERY_LVL_MEAS_PERIOD		1000-1
-#define POWER_LED_PERIOD_MS				1000-1
+#define BATTERY_SAMPLE_PERIOD			(1000-1)
 #define POWER_LED_DUTY_CYCLE			15
-#define POWER_LED_PULSE_NORMAL		POWER_LED_PERIOD_MS
-#define POWER_LED_PULSE_LOW_BATT	((POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100)-1)
+#define POWER_LED_PULSE_NORMAL		BATTERY_SAMPLE_PERIOD
+#define POWER_LED_PULSE_LOW_BATT	\
+	(((BATTERY_SAMPLE_PERIOD + 1)*POWER_LED_DUTY_CYCLE/100)-1)
 #define Z_MAIN_PERIOD_MS					200
 	
 	RTOS_TIMESTAMP(tsMain);
 	
-	/*!< Stop LED_PWR and ADC trigger timers and reset counters */
+	/*!< TIM3: Stop power timer and reset counter */
 	CLEAR_BIT(TIM3->CR1, TIM_CR1_CEN);
-	CLEAR_BIT(TIM15->CR1, TIM_CR1_CEN);
 	WRITE_REG(TIM3->CNT, 0);
-	WRITE_REG(TIM15->CNT, 0);
 	
-	/*!< Turn LED on to indicate power up */
-	WRITE_REG(TIM3->CCR1, POWER_LED_PERIOD_MS);
+	/*!< TIM3: Turn LED on to indicate power up */
+	WRITE_REG(TIM3->CCR1, BATTERY_SAMPLE_PERIOD);
 	
-	/*!< Enable OC channel 1 and main output on PWR_LED timer */
+	/*!< Enable OC channel 1 and main output on the power timer */
 	SET_BIT(TIM3->CCER, TIM_CCER_CC1E);
 	SET_BIT(TIM3->BDTR, TIM_BDTR_MOE);
 	
-		/*!< Set the previously defined auto-reload value */
-	WRITE_REG(TIM3->ARR, POWER_LED_PERIOD_MS);
-	
-	/*!< Write the battery level measurement period in ms to the auto-reload 
-	 *   register of TIM15 */
-	WRITE_REG(TIM15->ARR, BATTERY_LVL_MEAS_PERIOD);
+	/*!< TIM3: Set the auto-reload value as the sampling and led blinking period*/
+	WRITE_REG(TIM3->ARR, BATTERY_SAMPLE_PERIOD);
 
 	/*!< ADC1: Clear regular group conversion flag and overrun flag */
 	CLEAR_BIT(ADC1->ISR, ADC_FLAG_EOC | ADC_FLAG_OVR);
@@ -109,11 +103,10 @@ RTOS_TASK_FUN(zMain) {
 	SET_BIT(ADC1->CR, ADC_CR_ADEN | ADC_CR_ADSTART);
 	
 	/*!< Enable the TIM Update interrupt [DEBUG] */
-	// SET_BIT(TIM15->DIER, TIM_DIER_UIE);
+	// SET_BIT(TIM3->DIER, TIM_DIER_UIE);
 	
-	/*!< Start LED_PWR and ADC trigger timers */
+	/*!< TIM3: Start */
 	SET_BIT(TIM3->CR1, TIM_CR1_CEN);
-	SET_BIT(TIM15->CR1, TIM_CR1_CEN);
 	
 	while(1) {
 		

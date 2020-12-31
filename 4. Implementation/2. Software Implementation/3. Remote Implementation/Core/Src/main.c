@@ -97,7 +97,6 @@ int main(void)
   MX_SPI1_Init();
   MX_ADC_Init();
   MX_TIM3_Init();
-  MX_TIM15_Init();
   /* USER CODE BEGIN 2 */
 	
 #if 0
