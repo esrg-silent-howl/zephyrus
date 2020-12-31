@@ -171,7 +171,6 @@ NRF_RESULT nrf_write_tx_payload(nrf24l01* dev, const uint8_t* data) {
                          dev->config.payload_length) != NRF_OK) {
         return NRF_ERROR;
     }
-		dev->tx_busy = 0;
 		return NRF_OK;
 }
 
@@ -539,7 +538,7 @@ NRF_RESULT nrf_send_packet(nrf24l01* dev, const uint8_t* data) {
     nrf_write_tx_payload(dev, data);
     ce_set(dev);
 
-    //while (dev->tx_busy == 1) {} // wait for end of transmittion
+    while (dev->tx_busy == 1) {} // wait for end of transmittion
 
     return dev->tx_result;
 }

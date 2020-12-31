@@ -1,26 +1,26 @@
 [PreviousGenFiles]
 AdvancedFolderStructure=true
 HeaderFileListSize=7
-HeaderFiles#0=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/gpio.h
-HeaderFiles#1=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/spi.h
-HeaderFiles#2=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/sys.h
-HeaderFiles#3=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/tim.h
-HeaderFiles#4=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/stm32f7xx_it.h
+HeaderFiles#0=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/gpio.h
+HeaderFiles#1=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/spi.h
+HeaderFiles#2=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/sys.h
+HeaderFiles#3=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/tim.h
+HeaderFiles#4=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/stm32f7xx_it.h
 HeaderFolderListSize=1
-HeaderPath#0=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc
+HeaderPath#0=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc
 SourceFileListSize=8
-SourceFiles#0=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/gpio.c
-SourceFiles#1=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/spi.c
-SourceFiles#2=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/sys.c
-SourceFiles#3=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/stm32f7xx_hal_timebase_tim.c
-SourceFiles#4=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/tim.c
+SourceFiles#0=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/gpio.c
+SourceFiles#1=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/spi.c
+SourceFiles#2=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/sys.c
+SourceFiles#3=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/stm32f7xx_hal_timebase_tim.c
+SourceFiles#4=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/tim.c
 SourceFolderListSize=1
-SourcePath#0=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src
-HeaderFiles#5=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/stm32f7xx_hal_conf.h
-SourceFiles#5=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/stm32f7xx_it.c
-HeaderFiles#6=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/main.h
-SourceFiles#6=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/stm32f7xx_hal_msp.c
-SourceFiles#7=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/main.c
+SourcePath#0=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src
+HeaderFiles#5=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/stm32f7xx_hal_conf.h
+SourceFiles#5=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/stm32f7xx_it.c
+HeaderFiles#6=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/main.h
+SourceFiles#6=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/stm32f7xx_hal_msp.c
+SourceFiles#7=C:/Users/hugoc/Desktop/SEC/ESRG_Git/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/main.c
 HeaderFiles#7=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Inc/main.h
 SourceFiles#8=D:/Repo/school/4th year/Project 1/Repository/zephyrus/4. Implementation/2. Software Implementation/1. Testing/zephyrus_testing/Core/Src/main.c
 
@@ -31,4 +31,7 @@ LibFiles=Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_cortex.h;Drivers/STM32F7
 SourceFiles=..\Core\Src\main.c;..\Core\Src\gpio.c;..\Core\Src\spi.c;..\Core\Src\sys.c;..\Core\Src\stm32f7xx_hal_timebase_tim.c;..\Core\Src\tim.c;..\Core\Src\stm32f7xx_it.c;..\Core\Src\stm32f7xx_hal_msp.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_spi.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_spi_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c;..\Core\Src/system_stm32f7xx.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_spi.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_spi_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_flash_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c;..\Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c;..\Core\Src/system_stm32f7xx.c;..\Drivers/CMSIS/Device/ST/STM32F7xx/Source/Templates/system_stm32f7xx.c;;
 HeaderPath=..\Drivers\STM32F7xx_HAL_Driver\Inc;..\Drivers\STM32F7xx_HAL_Driver\Inc\Legacy;..\Drivers\CMSIS\Device\ST\STM32F7xx\Include;..\Drivers\CMSIS\Include;..\Core\Inc;
 CDefines=USE_HAL_DRIVER;STM32F767xx;USE_HAL_DRIVER;USE_HAL_DRIVER;
+
+[]
+SourceFiles=;;
 

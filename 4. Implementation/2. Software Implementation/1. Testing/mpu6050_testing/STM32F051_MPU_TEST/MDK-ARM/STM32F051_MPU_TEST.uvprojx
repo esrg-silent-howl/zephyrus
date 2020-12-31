@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>STM32F051K8Tx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F0xx_DFP.2.0.0</PackID>
+          <PackID>Keil.STM32F0xx_DFP.2.1.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000-0x20001FFF) IROM(0x8000000-0x800FFFF)  CLOCK(8000000) CPUTYPE("Cortex-M0")</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -134,11 +134,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4107</DriverSelection>
+            <DriverSelection>4101</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>4</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F051x8</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc; ../Drivers/STM32F0xx_HAL_Driver/Inc; ../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy; ../Drivers/CMSIS/Device/ST/STM32F0xx/Include; ../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;          ../Drivers/STM32F0xx_HAL_Driver/Inc;          ../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy;          ../Drivers/CMSIS/Device/ST/STM32F0xx/Include;          ../Drivers/CMSIS/Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -390,11 +390,73 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>::CMSIS</GroupName>
-        </Group>
-        <Group>
           <GroupName>Application/User/Core</GroupName>
           <Files>
+            <File>
+              <FileName>tm_stm32_nrf24l01.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\tm_stm32_nrf24l01.c</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\tm_stm32_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_nrf24l01.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\tm_stm32_nrf24l01.h</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_spi.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\tm_stm32_spi.h</FilePath>
+            </File>
+            <File>
+              <FileName>attributes.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\..\..\..\..\..\..\TM Libraries\attributes.h</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\..\..\..\TM Libraries\tm_stm32_exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_exti.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\..\..\..\..\..\..\TM Libraries\tm_stm32_exti.h</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_gpio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\tm_stm32_gpio.h</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\tm_stm32_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_delay.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\tm_stm32_delay.h</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\tm_stm32_delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_buffer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\..\..\..\..\TM Libraries\tm_stm32_buffer.c</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_buffer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\..\..\..\..\..\..\TM Libraries\tm_stm32_buffer.h</FilePath>
+            </File>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
@@ -411,14 +473,19 @@
               <FilePath>../Core/Src/i2c.c</FilePath>
             </File>
             <File>
+              <FileName>spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/spi.c</FilePath>
+            </File>
+            <File>
               <FileName>sys.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/sys.c</FilePath>
             </File>
             <File>
-              <FileName>usart.c</FileName>
+              <FileName>tim.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../Core/Src/usart.c</FilePath>
+              <FilePath>../Core/Src/tim.c</FilePath>
             </File>
             <File>
               <FileName>stm32f0xx_it.c</FileName>
@@ -431,14 +498,14 @@
               <FilePath>../Core/Src/stm32f0xx_hal_msp.c</FilePath>
             </File>
             <File>
-              <FileName>mpu6050.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\MPU6050\Core\Src\mpu6050.c</FilePath>
+              <FileName>tm_stm32_rcc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\tm_stm32_rcc.h</FilePath>
             </File>
             <File>
-              <FileName>mpu6050.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\MPU6050\Core\Inc\mpu6050.h</FilePath>
+              <FileName>tm_stm32_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\tm_stm32_rcc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -511,6 +578,16 @@
               <FilePath>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_exti.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f0xx_hal_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f0xx_hal_spi_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi_ex.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f0xx_hal_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.c</FilePath>
@@ -519,16 +596,6 @@
               <FileName>stm32f0xx_hal_tim_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim_ex.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f0xx_hal_uart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f0xx_hal_uart_ex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart_ex.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -541,6 +608,9 @@
               <FilePath>../Core/Src/system_stm32f0xx.c</FilePath>
             </File>
           </Files>
+        </Group>
+        <Group>
+          <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
     </Target>
