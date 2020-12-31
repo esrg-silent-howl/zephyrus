@@ -87,6 +87,7 @@ void Error_Handler(void);
 #define PWR_CLR_GPIO_Port GPIOA
 #define PWR_INT_Pin GPIO_PIN_1
 #define PWR_INT_GPIO_Port GPIOA
+#define PWR_INT_EXTI_IRQn EXTI0_1_IRQn
 #define NRF24L01_IRQ_Pin GPIO_PIN_4
 #define NRF24L01_IRQ_GPIO_Port GPIOA
 #define NRF24L01_SCK_Pin GPIO_PIN_5

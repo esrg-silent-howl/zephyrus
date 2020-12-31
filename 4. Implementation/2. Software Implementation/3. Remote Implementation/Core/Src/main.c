@@ -71,7 +71,7 @@ void MX_FREERTOS_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	
   /* USER CODE END 1 */
   
 
@@ -99,7 +99,7 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM15_Init();
   /* USER CODE BEGIN 2 */
-
+	
 #if 0
   /* USER CODE END 2 */
 
@@ -115,7 +115,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	
 #endif
-
+	
+	/*!< Pull PWR_CLR line high to avoid automatic shutdown */
+	PWR_CLR_PULL_HIGH();
+	
+	/*!< Create all static kernel objects and start scheduler*/
 	THREADS_create();
 	THREADS_startScheduler();
 	
