@@ -36,14 +36,15 @@ typedef struct {
 } Kalman_t;
 
 extern uint8_t imuRX[IMU_REG_COUNT];
+extern uint32_t i2c_tx_flag;
+extern uint32_t i2c_rx_flag;
 
 uint8_t IMU_Init(I2C_HandleTypeDef *I2Cx);
 
 HAL_StatusTypeDef IMU_dataRequest(I2C_HandleTypeDef *I2Cx);
-
 void IMU_dataFetch(imu_t *data_struct);
 
-extern uint32_t i2c_tx_flag;
-extern uint32_t i2c_rx_flag;
+HAL_StatusTypeDef IMU_enterLowPowerMode(I2C_HandleTypeDef *hI2C);
+HAL_StatusTypeDef IMU_exitLowPowerMode(I2C_HandleTypeDef *hI2C);
 
 #endif

@@ -5,8 +5,10 @@
 #define M_PI   3.14159265358979323846264338327950288
 #define RAD_TO_DEG(x) (x*180/M_PI)
 
+/*!< Important registers */
 #define DEVICE_REG					0x75
 #define PWR_MGMT_1_REG			0x6B
+#define PWR_MGMT_2_REG			0x6C
 #define SMPLRT_DIV_REG			0x19
 #define ACCEL_CONFIG_REG		0x1C
 #define ACCEL_XOUT_H_REG		0x3B
@@ -16,6 +18,20 @@
 /*!< Setup MPU6050 */
 #define IMU_ADDR 						0xD0
 #define IMU_ACK  						0x68
+
+/*!< PWR_MGMT register bits */
+/*!< PWR_MGMT_1 */
+#define DEVICE_RESET				0x80
+#define SLEEP								0x40
+#define TEMP_DIS						0x08
+/*!< PWR_MGMT_2 */
+#define STBY_XA							0x20
+#define STBY_YA							0x10
+#define STBY_ZA							0x08
+#define STBY_XG							0x04
+#define STBY_YG							0x02
+#define STBY_ZG							0x01
+
 
 const float Accel_Z_corrector = 14418.0;
 
@@ -107,10 +123,44 @@ float Kalman_getAngle(Kalman_t *Kalman, float newAngle, float newRate, float dt)
     return Kalman->angle;
 };
 
-HAL_StatusTypeDef IMU_dataRequest(I2C_HandleTypeDef *I2Cx){
+HAL_StatusTypeDef IMU_dataRequest(I2C_HandleTypeDef *hI2C){
 	
-/*!< Read 14 bytes of data starting from the first register (ACCEL_XOUT_H) */
-return HAL_I2C_Mem_Read_IT(I2Cx, IMU_ADDR, ACCEL_XOUT_H_REG, 1, imuRX, IMU_REG_COUNT);
+	/*!< Read 14 bytes of data starting from the first register (ACCEL_XOUT_H) */
+	return HAL_I2C_Mem_Read_IT(hI2C, IMU_ADDR, ACCEL_XOUT_H_REG, 1, imuRX, IMU_REG_COUNT);
+}
+
+HAL_StatusTypeDef IMU_enterLowPowerMode(I2C_HandleTypeDef *hI2C) {
+	
+		/*!< Enable sleep and disable temperature sensor */
+		uint8_t data = SLEEP | TEMP_DIS;
+		if (HAL_I2C_Mem_Write(hI2C, IMU_ADDR, PWR_MGMT_1_REG, 1, &data, 1, \
+			IMU_CONFIG_TIMEOUT) != HAL_OK) 
+			return HAL_ERROR;
+		
+		/*!< Put the accelerometer and gyroscope in stanby mode */
+		data = STBY_XA | STBY_YA | STBY_ZA | STBY_XG | STBY_YG | STBY_ZG;
+		if (HAL_I2C_Mem_Write(hI2C, IMU_ADDR, PWR_MGMT_2_REG, 1, &data, 1, \
+			IMU_CONFIG_TIMEOUT) != HAL_OK) 
+			return HAL_ERROR;
+		
+		return HAL_OK;
+}
+
+HAL_StatusTypeDef IMU_exitLowPowerMode(I2C_HandleTypeDef *hI2C) {
+	
+		/*!< Disable sleep and keep the temperature sensor disable */
+		uint8_t data = TEMP_DIS;
+		if (HAL_I2C_Mem_Write(hI2C, IMU_ADDR, PWR_MGMT_1_REG, 1, &data, 1, \
+			IMU_CONFIG_TIMEOUT) != HAL_OK) 
+			return HAL_ERROR;
+		
+		/*!< Get the accelerometer and gyroscope out of stanby mode */
+		data = 0;
+		if (HAL_I2C_Mem_Write(hI2C, IMU_ADDR, PWR_MGMT_2_REG, 1, &data, 1, \
+			IMU_CONFIG_TIMEOUT) != HAL_OK) 
+			return HAL_ERROR;
+		
+		return HAL_OK;
 }
 
 void IMU_dataFetch(imu_t *data_struct) {

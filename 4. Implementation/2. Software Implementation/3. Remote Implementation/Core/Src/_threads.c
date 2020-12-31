@@ -163,7 +163,10 @@ RTOS_TASK_FUN(zIMUManager) {
 	RTOS_DELAY_UNTIL(tsIMUMan, MASTER_INITIAL_DELAY_MS);
 	
 	while(1) {
-
+		
+		/*!< Exit low power mode */
+		IMU_exitLowPowerMode(&hi2c1);
+		
 		/*!< Request sensor data */
 		IMU_dataRequest(&hi2c1);
 		
@@ -172,6 +175,9 @@ RTOS_TASK_FUN(zIMUManager) {
 		
 		/*!< Fetch received data */
 		IMU_dataFetch(&mpu6050);
+		
+		/*!< Enter low power mode */
+		IMU_enterLowPowerMode(&hi2c1);
 		
 		/*!< Keep samples in the arrays */
 		angle_x[samples] = mpu6050.Gx;
