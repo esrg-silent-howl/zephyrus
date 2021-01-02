@@ -1,0 +1,4 @@
+load STM32F051K8Tx 
+project name STCubeGenerated 
+project toolchain "MDK-ARM V5" 
+project path "D:\Repo\school\4th year\Project 1\Repository\zephyrus\4. Implementation\2. Software Implementation\6. Libraries\stm32fxxx-hal-libraries-master\25-STM32Fxxx_NRF24L01P_RECEIVER_IRQ\RTE\Device\STM32F051K8Tx\" 
