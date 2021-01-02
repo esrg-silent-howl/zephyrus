@@ -1,6 +1,6 @@
 /**	
  * |----------------------------------------------------------------------
- * | Copyright (c) 2016 Tilen Majerle
+ * | Copyright (c) 2016 Tilen MAJERLE
  * |  
  * | Permission is hereby granted, free of charge, to any person
  * | obtaining a copy of this software and associated documentation
@@ -127,8 +127,8 @@
 
 /* RF setup register*/
 #define NRF24L01_PLL_LOCK		4
-#define NRF24L01_RF_DR_LOW	5
-#define NRF24L01_RF_DR_HIGH	3
+#define NRF24L01_RF_DR_LOW		5
+#define NRF24L01_RF_DR_HIGH		3
 #define NRF24L01_RF_DR			3
 #define NRF24L01_RF_PWR			1 //2 bits   
 
@@ -145,7 +145,7 @@
 
 /* FIFO status*/
 #define NRF24L01_TX_REUSE		6
-#define NRF24L01_FIFO_FULL	5
+#define NRF24L01_FIFO_FULL		5
 #define NRF24L01_TX_EMPTY		4
 #define NRF24L01_RX_FULL		1
 #define NRF24L01_RX_EMPTY		0
@@ -162,7 +162,7 @@
 #define NRF24L01_M18DBM			0 //-18 dBm
 #define NRF24L01_M12DBM			1 //-12 dBm
 #define NRF24L01_M6DBM			2 //-6 dBm
-#define NRF24L01_0DBM				3 //0 dBm
+#define NRF24L01_0DBM			3 //0 dBm
 
 /* Data rates */
 #define NRF24L01_2MBPS			0
@@ -187,8 +187,25 @@
 #define NRF24L01_NOP_MASK					0xFF
 
 /* Flush FIFOs */
-#define NRF24L01_FLUSH_TX					do { NRF24L01_CSN_LOW; TM_SPI_Send(NRF24L01_SPI, NRF24L01_FLUSH_TX_MASK); NRF24L01_CSN_HIGH; } while (0)
-#define NRF24L01_FLUSH_RX					do { NRF24L01_CSN_LOW; TM_SPI_Send(NRF24L01_SPI, NRF24L01_FLUSH_RX_MASK); NRF24L01_CSN_HIGH; } while (0)
+// #define NRF24L01_FLUSH_TX					do { NRF24L01_CSN_LOW; TM_SPI_Send(NRF24L01_SPI, NRF24L01_FLUSH_TX_MASK); NRF24L01_CSN_HIGH; } while (0)
+// #define NRF24L01_FLUSH_RX					do { NRF24L01_CSN_LOW; TM_SPI_Send(NRF24L01_SPI, NRF24L01_FLUSH_RX_MASK); NRF24L01_CSN_HIGH; } while (0)
+
+#define NRF24L01_FLUSH_TX					\
+	do { \
+		uint8_t datatx = NRF24L01_FLUSH_TX_MASK; \
+		NRF24L01_CSN_LOW; \
+		HAL_SPI_Transmit(&hspi1, &datatx, 1, 5); \
+		NRF24L01_CSN_HIGH; \
+	} while (0)
+	
+#define NRF24L01_FLUSH_RX					\
+	do { \
+		uint8_t datarx = NRF24L01_FLUSH_RX_MASK; \
+		NRF24L01_CSN_LOW; \
+		HAL_SPI_Transmit(&hspi1, &datarx, 1, 5); \
+		NRF24L01_CSN_HIGH; \
+	} while (0)
+
 
 #define NRF24L01_TRANSMISSON_OK 			0
 #define NRF24L01_MESSAGE_LOST   			1
@@ -218,11 +235,11 @@ static TM_NRF24L01_t TM_NRF24L01_Struct;
 void TM_NRF24L01_InitPins(void) {
 	/* Init pins */
 	/* CNS pin */
-	TM_GPIO_Init(NRF24L01_CSN_PORT, NRF24L01_CSN_PIN, TM_GPIO_Mode_OUT, TM_GPIO_OType_PP, TM_GPIO_PuPd_UP, TM_GPIO_Speed_Low);
-	
-	/* CE pin */
-	TM_GPIO_Init(NRF24L01_CE_PORT, NRF24L01_CE_PIN, TM_GPIO_Mode_OUT, TM_GPIO_OType_PP, TM_GPIO_PuPd_UP, TM_GPIO_Speed_Low);
-	
+//	TM_GPIO_Init(NRF24L01_CSN_PORT, NRF24L01_CSN_PIN, TM_GPIO_Mode_OUT, TM_GPIO_OType_PP, TM_GPIO_PuPd_UP, TM_GPIO_Speed_Low);
+//	
+//	/* CE pin */
+//	TM_GPIO_Init(NRF24L01_CE_PORT, NRF24L01_CE_PIN, TM_GPIO_Mode_OUT, TM_GPIO_OType_PP, TM_GPIO_PuPd_UP, TM_GPIO_Speed_Low);
+
 	/* CSN high = disable SPI */
 	NRF24L01_CSN_HIGH;
 	
@@ -235,7 +252,7 @@ uint8_t TM_NRF24L01_Init(uint8_t channel, uint8_t payload_size) {
 	TM_NRF24L01_InitPins();
 	
 	/* Initialize SPI */
-	TM_SPI_Init(NRF24L01_SPI, NRF24L01_SPI_PINS);
+//	TM_SPI_Init(NRF24L01_SPI, NRF24L01_SPI_PINS);
 	
 	/* Max payload is 32bytes */
 	if (payload_size > 32) {
@@ -330,32 +347,43 @@ uint8_t TM_NRF24L01_ReadBit(uint8_t reg, uint8_t bit) {
 
 uint8_t TM_NRF24L01_ReadRegister(uint8_t reg) {
 	uint8_t value;
+	uint8_t regist = NRF24L01_READ_REGISTER_MASK(reg);
 	NRF24L01_CSN_LOW;
-	TM_SPI_Send(NRF24L01_SPI, NRF24L01_READ_REGISTER_MASK(reg));
-	value = TM_SPI_Send(NRF24L01_SPI, NRF24L01_NOP_MASK);
+	HAL_SPI_TransmitReceive(&hspi1, &regist, &value, 1, 5);
+	//TM_SPI_Send(NRF24L01_SPI, NRF24L01_READ_REGISTER_MASK(reg));
+	//value = TM_SPI_Send(NRF24L01_SPI, NRF24L01_NOP_MASK);
 	NRF24L01_CSN_HIGH;
 	
 	return value;
 }
 
 void TM_NRF24L01_ReadRegisterMulti(uint8_t reg, uint8_t* data, uint8_t count) {
+	uint8_t regist = NRF24L01_READ_REGISTER_MASK(reg);
 	NRF24L01_CSN_LOW;
-	TM_SPI_Send(NRF24L01_SPI, NRF24L01_READ_REGISTER_MASK(reg));
-	TM_SPI_ReadMulti(NRF24L01_SPI, data, NRF24L01_NOP_MASK, count);
+	HAL_SPI_Transmit(&hspi1, &regist, 1, 5);
+	HAL_SPI_Receive(&hspi1, data, count, 5);
+	// TM_SPI_Send(NRF24L01_SPI, NRF24L01_READ_REGISTER_MASK(reg));
+	// TM_SPI_ReadMulti(NRF24L01_SPI, data, NRF24L01_NOP_MASK, count);
 	NRF24L01_CSN_HIGH;
 }
 
 void TM_NRF24L01_WriteRegister(uint8_t reg, uint8_t value) {
+	uint8_t regist = NRF24L01_WRITE_REGISTER_MASK(reg);
 	NRF24L01_CSN_LOW;
-	TM_SPI_Send(NRF24L01_SPI, NRF24L01_WRITE_REGISTER_MASK(reg));
-	TM_SPI_Send(NRF24L01_SPI, value);
+	HAL_SPI_Transmit(&hspi1, &regist, 1, 5);
+	HAL_SPI_Transmit(&hspi1, &value, 1, 5);
+	// TM_SPI_Send(NRF24L01_SPI, NRF24L01_WRITE_REGISTER_MASK(reg));
+	// TM_SPI_Send(NRF24L01_SPI, value);
 	NRF24L01_CSN_HIGH;
 }
 
 void TM_NRF24L01_WriteRegisterMulti(uint8_t reg, uint8_t *data, uint8_t count) {
+	uint8_t regist = NRF24L01_WRITE_REGISTER_MASK(reg);
 	NRF24L01_CSN_LOW;
-	TM_SPI_Send(NRF24L01_SPI, NRF24L01_WRITE_REGISTER_MASK(reg));
-	TM_SPI_WriteMulti(NRF24L01_SPI, data, count);
+	HAL_SPI_Transmit(&hspi1, &regist, 1, 5);
+	HAL_SPI_Transmit(&hspi1, data, count, 5);
+	// TM_SPI_Send(NRF24L01_SPI, NRF24L01_WRITE_REGISTER_MASK(reg));
+	// TM_SPI_WriteMulti(NRF24L01_SPI, data, count);
 	NRF24L01_CSN_HIGH;
 }
 
@@ -384,7 +412,7 @@ void TM_NRF24L01_PowerDown(void) {
 
 void TM_NRF24L01_Transmit(uint8_t *data) {
 	uint8_t count = TM_NRF24L01_Struct.PayloadSize;
-
+	uint8_t value = NRF24L01_W_TX_PAYLOAD_MASK;
 	/* Chip enable put to low, disable it */
 	NRF24L01_CE_LOW;
 	
@@ -397,9 +425,11 @@ void TM_NRF24L01_Transmit(uint8_t *data) {
 	/* Send payload to nRF24L01+ */
 	NRF24L01_CSN_LOW;
 	/* Send write payload command */
-	TM_SPI_Send(NRF24L01_SPI, NRF24L01_W_TX_PAYLOAD_MASK);
+	HAL_SPI_Transmit(&hspi1, &value, 1, 5);
+	// TM_SPI_Send(NRF24L01_SPI, NRF24L01_W_TX_PAYLOAD_MASK);
 	/* Fill payload with data*/
-	TM_SPI_WriteMulti(NRF24L01_SPI, data, count);
+	HAL_SPI_Transmit(&hspi1, data, count, 5);
+	// TM_SPI_WriteMulti(NRF24L01_SPI, data, count);
 	/* Disable SPI */
 	NRF24L01_CSN_HIGH;
 	
@@ -410,10 +440,12 @@ void TM_NRF24L01_Transmit(uint8_t *data) {
 void TM_NRF24L01_GetData(uint8_t* data) {
 	/* Pull down chip select */
 	NRF24L01_CSN_LOW;
+	uint8_t value = NRF24L01_R_RX_PAYLOAD_MASK;
 	/* Send read payload command*/
-	TM_SPI_Send(NRF24L01_SPI, NRF24L01_R_RX_PAYLOAD_MASK);
+	HAL_SPI_Transmit(&hspi1, &value, 1, 5);
 	/* Read payload */
-	TM_SPI_SendMulti(NRF24L01_SPI, data, data, TM_NRF24L01_Struct.PayloadSize);
+	HAL_SPI_Receive(&hspi1, data, TM_NRF24L01_Struct.PayloadSize, 5);
+	// TM_SPI_SendMulti(NRF24L01_SPI, data, data, TM_NRF24L01_Struct.PayloadSize);
 	/* Pull up chip select */
 	NRF24L01_CSN_HIGH;
 	
@@ -437,10 +469,12 @@ uint8_t TM_NRF24L01_RxFifoEmpty(void) {
 
 uint8_t TM_NRF24L01_GetStatus(void) {
 	uint8_t status;
+	uint8_t dummy = NRF24L01_NOP_MASK;
 	
 	NRF24L01_CSN_LOW;
 	/* First received byte is always status register */
-	status = TM_SPI_Send(NRF24L01_SPI, NRF24L01_NOP_MASK);
+	 HAL_SPI_TransmitReceive(&hspi1, &dummy, &status, 1, 5);
+	// status = TM_SPI_Send(NRF24L01_SPI, NRF24L01_NOP_MASK);
 	/* Pull up chip select */
 	NRF24L01_CSN_HIGH;
 	

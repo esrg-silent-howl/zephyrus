@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -142,16 +142,16 @@ void SysTick_Handler(void)
 /**
   * @brief This function handles EXTI line 4 to 15 interrupts.
   */
-//void EXTI4_15_IRQHandler(void)
-//{
-//  /* USER CODE BEGIN EXTI4_15_IRQn 0 */
+void EXTI4_15_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI4_15_IRQn 0 */
 
-//  /* USER CODE END EXTI4_15_IRQn 0 */
-//  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
-//  /* USER CODE BEGIN EXTI4_15_IRQn 1 */
+  /* USER CODE END EXTI4_15_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+  /* USER CODE BEGIN EXTI4_15_IRQn 1 */
 
-//  /* USER CODE END EXTI4_15_IRQn 1 */
-//}
+  /* USER CODE END EXTI4_15_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 

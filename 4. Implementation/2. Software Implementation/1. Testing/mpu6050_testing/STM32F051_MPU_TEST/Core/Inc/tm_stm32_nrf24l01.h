@@ -1,5 +1,5 @@
 /**
- * @author  Tilen Majerle
+ * @author  Tilen MAJERLE
  * @email   tilen@majerle.eu
  * @website http://stm32f4-discovery.net
  * @link    http://stm32f4-discovery.net/2015/09/hal-library-25-nrf24l01-for-stm32fxxx/
@@ -10,7 +10,7 @@
  *	
 \verbatim
    ----------------------------------------------------------------------
-    Copyright (c) 2016 Tilen Majerle
+    Copyright (c) 2016 Tilen MAJERLE
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation
@@ -41,6 +41,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "spi.h"
+#include "gpio.h"
 
 /**
  * @addtogroup TM_STM32Fxxx_HAL_Libraries
@@ -112,9 +115,6 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
 \endverbatim
  */
 #include "stm32f0xx_hal.h"
-//#include "defines.h"
-#include "tm_stm32_spi.h"
-#include "tm_stm32_gpio.h"
 
 /**
  * @defgroup TM_NRF24L01P_Macros
@@ -124,14 +124,14 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
 
 /* Default SPI used */
 #ifndef NRF24L01_SPI
-#define NRF24L01_SPI					SPI1
-#define NRF24L01_SPI_PINS			TM_SPI_PinsPack_2
+#define NRF24L01_SPI				SPI1
+#define NRF24L01_SPI_PINS			TM_SPI_PinsPack_1
 #endif
 
 /* SPI chip enable pin */
 #ifndef NRF24L01_CSN_PIN
-#define NRF24L01_CSN_PORT			GPIOB
-#define NRF24L01_CSN_PIN			GPIO_PIN_0
+#define NRF24L01_CSN_PORT			GPIOA
+#define NRF24L01_CSN_PIN			GPIO_PIN_4
 #endif
 
 /* Chip enable for transmitting */
@@ -141,10 +141,10 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
 #endif
 
 /* Pins configuration */
-#define NRF24L01_CE_LOW				TM_GPIO_SetPinLow(NRF24L01_CE_PORT, NRF24L01_CE_PIN)
-#define NRF24L01_CE_HIGH			TM_GPIO_SetPinHigh(NRF24L01_CE_PORT, NRF24L01_CE_PIN)
-#define NRF24L01_CSN_LOW			TM_GPIO_SetPinLow(NRF24L01_CSN_PORT, NRF24L01_CSN_PIN)
-#define NRF24L01_CSN_HIGH			TM_GPIO_SetPinHigh(NRF24L01_CSN_PORT, NRF24L01_CSN_PIN)
+#define NRF24L01_CE_LOW				HAL_GPIO_WritePin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin, 0)
+#define NRF24L01_CE_HIGH			HAL_GPIO_WritePin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin, 1)
+#define NRF24L01_CSN_LOW			HAL_GPIO_WritePin(NRF24L01_CSN_GPIO_Port, NRF24L01_CSN_Pin, 0)
+#define NRF24L01_CSN_HIGH			HAL_GPIO_WritePin(NRF24L01_CSN_GPIO_Port, NRF24L01_CSN_Pin, 1)
 
 /* Interrupt masks */
 #define NRF24L01_IRQ_DATA_READY     0x40 /*!< Data ready for receive */
