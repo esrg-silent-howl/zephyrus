@@ -79,6 +79,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BATTERY_SAMPLE_PERIOD (1000-1)
 #define STM32F051_CRYSTAL1_Pin GPIO_PIN_0
 #define STM32F051_CRYSTAL1_GPIO_Port GPIOF
 #define STM32F051_CRYSTAL2_Pin GPIO_PIN_1

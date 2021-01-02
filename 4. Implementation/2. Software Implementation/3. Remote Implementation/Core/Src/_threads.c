@@ -70,7 +70,7 @@ void THREADS_shutdownIRQHandler (void) {
 
 RTOS_TASK_FUN(zMain) {
  
-#define BATTERY_SAMPLE_PERIOD			(1000-1)
+// #define BATTERY_SAMPLE_PERIOD			(1000-1)
 #define POWER_LED_DUTY_CYCLE			15
 #define POWER_LED_PULSE_NORMAL		BATTERY_SAMPLE_PERIOD
 #define POWER_LED_PULSE_LOW_BATT	\
@@ -79,9 +79,9 @@ RTOS_TASK_FUN(zMain) {
 	
 	RTOS_TIMESTAMP(tsMain);
 	
-	/*!< TIM3: Stop power timer and reset counter */
+	/*!< TIM3: Stop power timer and set counter to the value of CCR1 */
 	CLEAR_BIT(TIM3->CR1, TIM_CR1_CEN);
-	WRITE_REG(TIM3->CNT, 0);
+	WRITE_REG(TIM3->CNT, BATTERY_SAMPLE_PERIOD);
 	
 	/*!< TIM3: Turn LED on to indicate power up */
 	WRITE_REG(TIM3->CCR1, BATTERY_SAMPLE_PERIOD);
@@ -91,8 +91,11 @@ RTOS_TASK_FUN(zMain) {
 	SET_BIT(TIM3->BDTR, TIM_BDTR_MOE);
 	
 	/*!< TIM3: Set the auto-reload value as the sampling and led blinking period*/
-	WRITE_REG(TIM3->ARR, BATTERY_SAMPLE_PERIOD);
-
+	// WRITE_REG(TIM3->ARR, BATTERY_SAMPLE_PERIOD);
+	
+	/*!< TIM3: Start */
+	SET_BIT(TIM3->CR1, TIM_CR1_CEN);
+	
 	/*!< ADC1: Clear regular group conversion flag and overrun flag */
 	CLEAR_BIT(ADC1->ISR, ADC_FLAG_EOC | ADC_FLAG_OVR);
 	
@@ -104,9 +107,7 @@ RTOS_TASK_FUN(zMain) {
 	
 	/*!< Enable the TIM Update interrupt [DEBUG] */
 	// SET_BIT(TIM3->DIER, TIM_DIER_UIE);
-	
-	/*!< TIM3: Start */
-	SET_BIT(TIM3->CR1, TIM_CR1_CEN);
+
 	
 	while(1) {
 		
@@ -137,7 +138,7 @@ RTOS_TASK_FUN(zMain) {
 
 RTOS_TASK_FUN(zIMUManager) {
 
-#define N_SAMPLES										4
+#define N_SAMPLES										1
 #define N_SAMPLES_MASK							(N_SAMPLES - 1)
 #define	Z_IMU_PERIOD_MS							10
 #define IMU_QUEUE_TIMEOUT						5
@@ -151,6 +152,9 @@ RTOS_TASK_FUN(zIMUManager) {
 	
 	MODIFY_REG(I2C1->CR1, 0x000000FE, 0x00000001);
 	while(!IMU_Init(&hi2c1));
+	
+	/*!< Enter low power mode */
+	IMU_enterLowPowerMode(&hi2c1);
 	
 	/*!< Signal configuration complete */
 	RTOS_NOTIFY(zRFManager, nConfig);
@@ -182,24 +186,29 @@ RTOS_TASK_FUN(zIMUManager) {
 		/*!< Keep samples in the arrays */
 		angle_x[samples] = mpu6050.Gx;
 		angle_y[samples] = mpu6050.Gy;
+	
+#if (NSAMPLES > 1)
 		samples = (samples + 1) & N_SAMPLES_MASK;
-		
 		/*!< When a sampling cycle ends, calculate averages and notify 
 		 *   inference task*/
 		if (samples == 0) {
-				
-			/*!< Calculate averages of the oversampled values */
-			*angle_x = UTILS_calculateAverage(angle_x, N_SAMPLES);
-			*angle_y = UTILS_calculateAverage(angle_y, N_SAMPLES);
-		
-			/*!< Queue the angle values for zRFManager */
-			/*!< Timeout is meant to keep the task responsive in the case that 
-			zRFManager did not yet retrieve the previous items , such as when it has
-			reponded to the terminate signal */
-			RTOS_QUEUE_SEND_BACK_TIMEOUT(qIMU, angle_x, IMU_QUEUE_TIMEOUT);
-			RTOS_QUEUE_SEND_BACK_TIMEOUT(qIMU, angle_y, IMU_QUEUE_TIMEOUT);
+#endif
+
+		/*!< Calculate averages of the oversampled values */
+		*angle_x = UTILS_calculateAverage(angle_x, N_SAMPLES);
+		*angle_y = UTILS_calculateAverage(angle_y, N_SAMPLES);
+	
+		/*!< Queue the angle values for zRFManager */
+		/*!< Timeout is meant to keep the task responsive in the case that 
+		zRFManager did not yet retrieve the previous items , such as when it has
+		reponded to the terminate signal */
+		RTOS_QUEUE_SEND_BACK_TIMEOUT(qIMU, angle_x, IMU_QUEUE_TIMEOUT);
+		RTOS_QUEUE_SEND_BACK_TIMEOUT(qIMU, angle_y, IMU_QUEUE_TIMEOUT);
+
+#if (NSAMPLES > 1)	
 		}
-		
+#endif
+
 		/*!< Sleep */
 		RTOS_DELAY_UNTIL(tsIMUMan, Z_IMU_PERIOD_MS);
 		
@@ -301,10 +310,6 @@ RTOS_IDLE_CALLBACK() {
 }
 
 void THREADS_sleep(void){
-	
-	static uint32_t sleeps = 0;
-	
-	sleeps++;
 	
 	/* Clear SLEEPDEEP bit of Cortex System Control Register */
 	CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
