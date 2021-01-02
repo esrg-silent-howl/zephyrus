@@ -99,13 +99,17 @@ RTOS_TASK_FUN(zMain) {
 	/*!< ADC1: Clear regular group conversion flag and overrun flag */
 	CLEAR_BIT(ADC1->ISR, ADC_FLAG_EOC | ADC_FLAG_OVR);
 	
+	/*!< Calibrate the ADC */
+	WRITE_REG(ADC1->CR, 0);
+	SET_BIT(ADC1->CR, ADC_CR_ADCAL);
+	
 	/*!< ADC1: Enable end of conversion interrupt for regular group */
 	SET_BIT(ADC1->CR, ADC_IT_EOC | ADC_IT_OVR);
 	
 	/*!< ADC1: Enable ADC */
 	SET_BIT(ADC1->CR, ADC_CR_ADEN | ADC_CR_ADSTART);
 	
-	/*!< Enable the TIM Update interrupt [DEBUG] */
+	/*!< [DEBUG] Enable the TIM Update interrupt */
 	// SET_BIT(TIM3->DIER, TIM_DIER_UIE);
 
 	
@@ -113,6 +117,9 @@ RTOS_TASK_FUN(zMain) {
 		
 		/*!< If a conversion is complete, interpret it */
 		if (READ_BIT(ADC1->ISR, ADC_FLAG_EOC)) {
+			
+			/*!< [DEBUG] Toggle pin to indicate entrance in battery calculation routine */
+			HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 			
 			/* Clear EOC flag */
 			CLEAR_BIT(ADC1->ISR, ADC_FLAG_EOC);
