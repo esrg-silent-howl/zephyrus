@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F051x8</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;                                                     ../Drivers/STM32F0xx_HAL_Driver/Inc;                                                     ../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy;                                                     ../Middlewares/Third_Party/FreeRTOS/Source/include;                                                     ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                                                     ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM0;                                                     ../Drivers/CMSIS/Device/ST/STM32F0xx/Include;                                                     ../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;                                                        ../Drivers/STM32F0xx_HAL_Driver/Inc;                                                        ../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy;                                                        ../Middlewares/Third_Party/FreeRTOS/Source/include;                                                        ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                                                        ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM0;                                                        ../Drivers/CMSIS/Device/ST/STM32F0xx/Include;                                                        ../Drivers/CMSIS/Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -426,6 +426,16 @@
               <FileName>_utils.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\Src\_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>_rf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\_rf.c</FilePath>
+            </File>
+            <File>
+              <FileName>_rf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\_rf.h</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>

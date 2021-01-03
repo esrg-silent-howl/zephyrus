@@ -4,6 +4,7 @@
 #include "_threads.h"
 #include "_imu.h"
 #include "_utils.h"
+#include "_rf.h"
 
 /*!< Flag definitions */
 #define F_TASKS_CREATED					0
@@ -32,18 +33,41 @@ static RTOS_NOTIFICATION(nConfig, 0);
 static RTOS_NOTIFICATION(nConnected, 1);
 static RTOS_NOTIFICATION(nIMURx, 2);
 static RTOS_NOTIFICATION(nIMUTx, 3);
+static RTOS_NOTIFICATION(nRFRx, 4);
+static RTOS_NOTIFICATION(nRFTx, 5);
 
 /*!< System Queues Creation */
 static RTOS_QUEUE_STATIC(qIMU, float, 2);
 
-/*!< Flags Container*/
+/*!< Flags Container */
 static volatile uint32_t flags = 0;
 
 /*!< System Common Timestamps Creation */
 RTOS_TIMESTAMP(tsConnect);
 
-/*!< Current connection state */
+/*!< RF module containers */
+RF_Transmit_Status_t transmission_status;
+RF_IRQ_t nrf_irq;
 RF_ConnectionState_t connection_state;
+uint8_t dataIn[32];
+uint8_t dataOut[32] = "HELLOSTM32HELLOSTM32hellostm32F0";
+
+/*!< My address */
+uint8_t MyAddress[] = {
+	0xE7,
+	0xE7,
+	0xE7,
+	0xE7,
+	0xE7
+};
+/*!< Receiver address */
+uint8_t TxAddress[] = {
+	0x7E,
+	0x7E,
+	0x7E,
+	0x7E,
+	0x7E
+};
 
 /*!< Utility functions declaration */
 static void THREADS_sleep(void);
@@ -60,12 +84,47 @@ void HAL_I2C_MemTxCpltCallback (I2C_HandleTypeDef *hi2c){
 		RTOS_NOTIFY_ISR(zIMUManager, nIMUTx);
 }
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	
+	/*!< Check for proper interrupt pin */
+	if (GPIO_Pin == IRQ_PIN) {
+		/*!< Read interrupts */
+		RF_Read_Interrupts(&nrf_irq);
+		
+		/*!< Check if transmitted OK */
+		if (nrf_irq.F.DataSent) {
+			/*!< Save transmission status */
+			transmission_status = RF_Transmit_Status_Ok;
+			
+			/*!< Go back to RX mode */
+			RF_PowerUpRx();
+		}
+		
+		/*!< Check if max retransmission reached and last transmission failed */
+		if (nrf_irq.F.MaxRT) {
+			/*!< Save transmission status */
+			transmission_status = RF_Transmit_Status_Lost;
+			RTOS_NOTIFY_ISR(zRFManager, nRFRx);	
+			/*!< Go back to RX mode */
+			RF_PowerUpRx();
+		}
+		 
+		/*!< If data is ready on NRF24L01+ */
+		if (nrf_irq.F.DataReady) {
+			RTOS_NOTIFY_ISR(zRFManager, nRFRx);			
+			
+			/*!< Get data from NRF24L01+ */
+			RF_GetData(dataIn);
+		}
+	}
+
+}
+
 void THREADS_shutdownIRQHandler (void) {
 	
-	/* Avoid another interruption action on further button presses */
+	/*!< Avoid another interruption action on further button presses */
 	if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 0) 
 		RTOS_SEMAPHORE_INC_ISR(semTerminate);		
-	
 }
 
 RTOS_TASK_FUN(zMain) {
@@ -119,9 +178,9 @@ RTOS_TASK_FUN(zMain) {
 		if (READ_BIT(ADC1->ISR, ADC_FLAG_EOC)) {
 			
 			/*!< [DEBUG] Toggle pin to indicate entrance in battery calculation routine */
-			HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
+			// HAL_GPIO_TogglePin(LED_DEBUG_GPIO_Port, LED_DEBUG_Pin);
 			
-			/* Clear EOC flag */
+			/*!< Clear EOC flag */
 			CLEAR_BIT(ADC1->ISR, ADC_FLAG_EOC);
 			
 			/*!< Read battery voltage and change led indicator accordingly */
@@ -241,7 +300,47 @@ RTOS_TASK_FUN(zRFManager) {
 	/*!< Wait for all configurations to be complete */
 	RTOS_AWAIT(nConfig);
 	
-	RTOS_DELAY(200);
+	for (int i = 0; i < 32 ; i++)
+		dataIn[i] = 0xAA;		
+	
+	/*!< Initialize NRF24L01+ on channel 15 and 32bytes of payload */
+	/*!< By default 2Mbps data rate and 0dBm output power */
+	/*!< NRF24L01 goes to RX mode by default */
+	RF_Init(15, 32);
+	
+	/*!<  Set 2MBps data rate and -18dBm output power */
+	RF_SetRF(RF_DataRate_2M, RF_OutputPower_0dBm);
+
+	/*!<  Set my address, 5 bytes */
+	RF_SetMyAddress(MyAddress);
+	
+	/*!< Set TX address, 5 bytes */
+	RF_SetTxAddress(TxAddress);
+	
+	volatile uint8_t status = RF_GetStatus();
+	
+	// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
+	SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin);
+	
+	transmission_status = RF_Transmit_Status_Sending;
+	status = RF_GetStatus();
+	/*!< Transmit data, goes automatically to TX mode */
+	RF_Transmit(dataOut);
+	
+	RTOS_AWAIT(nRFTx);
+	
+	if (transmission_status == RF_Transmit_Status_Ok) {
+		
+		/*!< Turn off LED_CONN_PROB */
+		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
+		SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin<<16);
+		
+	} else {
+		
+		/*!< Signal connection problem */
+		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
+		SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin);
+	}
 	
 	/*!< Synchronization time stamp */
 	RTOS_KEEP_TIMESTAMP(tsConnect);
@@ -251,8 +350,7 @@ RTOS_TASK_FUN(zRFManager) {
 	RTOS_NOTIFY(zIMUManager, nConnected);
 	
 	/*!< Initial timing offset */
-	RTOS_DELAY_UNTIL(tsRFMan, MASTER_INITIAL_DELAY_MS + \
-		Z_RF_PERIOD_MS);
+	RTOS_DELAY_UNTIL(tsRFMan, MASTER_INITIAL_DELAY_MS + Z_RF_PERIOD_MS);
 	
 	while(1) {
 		
@@ -313,15 +411,15 @@ RTOS_IDLE_CALLBACK() {
 	if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == RTOS_SEMAPHORE_MAX_COUNT(semTerminate))
 		PWR_CLR_PULL_LOW();
 
-	THREADS_sleep();
+	//THREADS_sleep();
 }
 
 void THREADS_sleep(void){
 	
-	/* Clear SLEEPDEEP bit of Cortex System Control Register */
+	/*!< Clear SLEEPDEEP bit of Cortex System Control Register */
 	CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
-	
-	/* Request Wait For Interrupt */
+
+	/*!< Request Wait For Interrupt */
 	__WFI();
 }
 

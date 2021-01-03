@@ -91,6 +91,7 @@ void Error_Handler(void);
 #define PWR_INT_EXTI_IRQn EXTI0_1_IRQn
 #define NRF24L01_IRQ_Pin GPIO_PIN_4
 #define NRF24L01_IRQ_GPIO_Port GPIOA
+#define NRF24L01_IRQ_EXTI_IRQn EXTI4_15_IRQn
 #define NRF24L01_SCK_Pin GPIO_PIN_5
 #define NRF24L01_SCK_GPIO_Port GPIOA
 #define NRF24L01_MISO_Pin GPIO_PIN_6
@@ -109,6 +110,7 @@ void Error_Handler(void);
 #define LED_PWR_GPIO_Port GPIOB
 #define MPU_6050_INT_Pin GPIO_PIN_5
 #define MPU_6050_INT_GPIO_Port GPIOB
+#define MPU_6050_INT_EXTI_IRQn EXTI4_15_IRQn
 #define MPU_6050_SCL_Pin GPIO_PIN_6
 #define MPU_6050_SCL_GPIO_Port GPIOB
 #define MPU_6050_SDA_Pin GPIO_PIN_7
