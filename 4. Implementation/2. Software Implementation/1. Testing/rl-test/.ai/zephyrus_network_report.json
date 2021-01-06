@@ -1,7 +1,7 @@
 {
     "_allocate_inputs": 0,
     "_allocate_outputs": 0,
-    "cli_parameters": "generate --name zephyrus_network -m C:/Users/hugoc/Desktop/Notebook v1/zephyrus-rl-model.tflite --type tflite --compression 1 --verbosity 1 --workspace C:\\Users\\hugoc\\AppData\\Local\\Temp\\mxAI_workspace132201746809001627918911320911937 --output C:\\Users\\hugoc\\.stm32cubemx",
+    "cli_parameters": "generate --name zephyrus_network -m C:/Users/hugoc/Desktop/Notebook v1/zephyrus-rl-model.tflite --type tflite --compression 1 --verbosity 1 --workspace C:\\Users\\hugoc\\AppData\\Local\\Temp\\mxAI_workspace45883356938005434700659456499492 --output C:\\Users\\hugoc\\.stm32cubemx",
     "cli_version": {
         "major": 1,
         "micro": 0,
@@ -12,13 +12,13 @@
         "factor": null,
         "layers": {}
     },
-    "date_time": "Tue Jan  5 00:48:33 2021",
+    "date_time": "Wed Jan  6 15:17:06 2021",
     "error": 0,
     "error_str": [],
     "evaluation_measures": [],
     "evaluation_status": "NOT EVALUATED",
     "exec_cmd": "generate",
-    "exec_duration": 0.4166443347930908,
+    "exec_duration": 0.471127986907959,
     "hash": "57b00d90346238f8b78e36822ec88de3",
     "inputs": [
         "input_1"

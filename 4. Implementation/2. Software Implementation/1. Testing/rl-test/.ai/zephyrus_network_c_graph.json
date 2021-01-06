@@ -399,7 +399,7 @@
     "c_name": "zephyrus_network",
     "c_nodes_n": 4,
     "c_tensors_n": 11,
-    "date_time": "Tue Jan  5 00:48:33 2021",
+    "date_time": "Wed Jan  6 15:17:06 2021",
     "inputs": [
         "input_1_output"
     ],

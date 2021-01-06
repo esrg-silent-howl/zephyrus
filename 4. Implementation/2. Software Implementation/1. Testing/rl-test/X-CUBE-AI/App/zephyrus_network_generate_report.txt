@@ -1,15 +1,15 @@
 Neural Network Tools for STM32 v1.4.0 (AI tools v5.2.0)
-Created date       : 2021-01-05 00:48:33
-Parameters         : generate --name zephyrus_network -m C:/Users/hugoc/Desktop/Notebook v1/zephyrus-rl-model.tflite --type tflite --compression 1 --verbosity 1 --workspace C:\Users\hugoc\AppData\Local\Temp\mxAI_workspace132201746809001627918911320911937 --output C:\Users\hugoc\.stm32cubemx
+Created date       : 2021-01-06 15:17:06
+Parameters         : generate --name zephyrus_network -m C:/Users/hugoc/Desktop/Notebook v1/zephyrus-rl-model.tflite --type tflite --compression 1 --verbosity 1 --workspace C:\Users\hugoc\AppData\Local\Temp\mxAI_workspace45883356938005434700659456499492 --output C:\Users\hugoc\.stm32cubemx
 
-Exec/report summary (generate dur=0.42s err=0)
+Exec/report summary (generate dur=0.47s err=0)
 ------------------------------------------------------------------------------------------------------------------------
 model file         : C:\Users\hugoc\Desktop\Notebook v1\zephyrus-rl-model.tflite
 type               : tflite (tflite) 
 c_name             : zephyrus_network
 compression        : None
 quantize           : None
-workspace dir      : C:\Users\hugoc\AppData\Local\Temp\mxAI_workspace132201746809001627918911320911937
+workspace dir      : C:\Users\hugoc\AppData\Local\Temp\mxAI_workspace45883356938005434700659456499492
 output dir         : C:\Users\hugoc\.stm32cubemx
 
 model_name         : zephyrusrlmodel

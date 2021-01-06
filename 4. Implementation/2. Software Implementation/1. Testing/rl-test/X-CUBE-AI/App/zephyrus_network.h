@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    zephyrus_network.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    Tue Jan  5 00:48:33 2021
+  * @date    Wed Jan  6 15:17:06 2021
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention

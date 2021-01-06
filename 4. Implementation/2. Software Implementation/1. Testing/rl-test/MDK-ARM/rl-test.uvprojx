@@ -10,6 +10,7 @@
       <TargetName>rl-test</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -337,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F767xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../X-CUBE-AI/App;../Middlewares/ST/AI/Inc;../Drivers/STM32F7xx_HAL_Driver/Inc;../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F7xx/Include;../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc; ../X-CUBE-AI/App; ../Middlewares/ST/AI/Inc; ../Drivers/STM32F7xx_HAL_Driver/Inc; ../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy; ../Drivers/CMSIS/Device/ST/STM32F7xx/Include; ../Drivers/CMSIS/Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -389,9 +390,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>::CMSIS</GroupName>
-        </Group>
-        <Group>
           <GroupName>Application/User/X-CUBE-AI/App</GroupName>
           <Files>
             <File>
@@ -438,6 +436,11 @@
               <FileName>tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/usart.c</FilePath>
             </File>
             <File>
               <FileName>stm32f7xx_it.c</FileName>
@@ -554,6 +557,16 @@
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim_ex.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f7xx_hal_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f7xx_hal_uart_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -575,6 +588,9 @@
               <FilePath>../Middlewares/ST/AI/Lib/NetworkRuntime520_CM7_Keil.lib</FilePath>
             </File>
           </Files>
+        </Group>
+        <Group>
+          <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
     </Target>

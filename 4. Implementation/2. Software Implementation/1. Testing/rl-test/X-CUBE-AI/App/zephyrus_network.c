@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    zephyrus_network.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    Tue Jan  5 00:48:33 2021
+  * @date    Wed Jan  6 15:17:06 2021
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -55,7 +55,7 @@
 #endif
 
 #undef AI_TOOLS_DATE_TIME
-#define AI_TOOLS_DATE_TIME   "Tue Jan  5 00:48:33 2021"
+#define AI_TOOLS_DATE_TIME   "Wed Jan  6 15:17:06 2021"
 
 #undef AI_TOOLS_COMPILE_TIME
 #define AI_TOOLS_COMPILE_TIME    __DATE__ " " __TIME__
