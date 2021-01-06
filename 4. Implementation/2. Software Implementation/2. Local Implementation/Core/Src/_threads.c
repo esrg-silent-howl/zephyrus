@@ -490,6 +490,10 @@ static void THREADS_sleep(void){
 	__WFI();
 }
 
+RTOS_IDLE_CALLBACK() {
+	
+	THREADS_sleep();
+}
 
 static double THREADS_checkForLowBattery(void) {
 	
