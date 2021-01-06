@@ -1,3 +1,5 @@
 - microcontroller will shut the system off in 2 different situations:
 	- user request, peacefully
 	- undetermined hard fault
+
+- check memory footprint
