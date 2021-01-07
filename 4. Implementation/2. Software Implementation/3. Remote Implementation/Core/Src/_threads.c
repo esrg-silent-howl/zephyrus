@@ -33,8 +33,7 @@ static RTOS_NOTIFICATION(nConfig, 0);
 static RTOS_NOTIFICATION(nConnected, 1);
 static RTOS_NOTIFICATION(nIMURx, 2);
 static RTOS_NOTIFICATION(nIMUTx, 3);
-static RTOS_NOTIFICATION(nRFRx, 4);
-static RTOS_NOTIFICATION(nRFTx, 5);
+static RTOS_NOTIFICATION(nRF, 4);
 
 /*!< System Queues Creation */
 static RTOS_QUEUE_STATIC(qIMU, float, 2);
@@ -44,30 +43,6 @@ static volatile uint32_t flags = 0;
 
 /*!< System Common Timestamps Creation */
 RTOS_TIMESTAMP(tsConnect);
-
-/*!< RF module containers */
-RF_Transmit_Status_t transmission_status;
-RF_IRQ_t nrf_irq;
-RF_ConnectionState_t connection_state;
-uint8_t dataIn[32];
-uint8_t dataOut[32] = "HELLOSTM32HELLOSTM32hellostm32F0";
-
-/*!< My address */
-uint8_t MyAddress[] = {
-	0xE7,
-	0xE7,
-	0xE7,
-	0xE7,
-	0xE7
-};
-/*!< Receiver address */
-uint8_t TxAddress[] = {
-	0x7E,
-	0x7E,
-	0x7E,
-	0x7E,
-	0x7E
-};
 
 /*!< Utility functions declaration */
 static void THREADS_sleep(void);
@@ -84,40 +59,9 @@ void HAL_I2C_MemTxCpltCallback (I2C_HandleTypeDef *hi2c){
 		RTOS_NOTIFY_ISR(zIMUManager, nIMUTx);
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	
-	/*!< Check for proper interrupt pin */
-	if (GPIO_Pin == IRQ_PIN) {
-		/*!< Read interrupts */
-		RF_Read_Interrupts(&nrf_irq);
-		
-		/*!< Check if transmitted OK */
-		if (nrf_irq.F.DataSent) {
-			/*!< Save transmission status */
-			transmission_status = RF_Transmit_Status_Ok;
-			
-			/*!< Go back to RX mode */
-			RF_PowerUpRx();
-		}
-		
-		/*!< Check if max retransmission reached and last transmission failed */
-		if (nrf_irq.F.MaxRT) {
-			/*!< Save transmission status */
-			transmission_status = RF_Transmit_Status_Lost;
-			RTOS_NOTIFY_ISR(zRFManager, nRFRx);	
-			/*!< Go back to RX mode */
-			RF_PowerUpRx();
-		}
-		 
-		/*!< If data is ready on NRF24L01+ */
-		if (nrf_irq.F.DataReady) {
-			RTOS_NOTIFY_ISR(zRFManager, nRFRx);			
-			
-			/*!< Get data from NRF24L01+ */
-			RF_GetData(dataIn);
-		}
-	}
+void THREADS_rfIRQHandler (void) {
 
+	RTOS_NOTIFY_ISR(zRFManager, nRF);		
 }
 
 void THREADS_shutdownIRQHandler (void) {
@@ -289,10 +233,30 @@ RTOS_TASK_FUN(zIMUManager) {
 
 RTOS_TASK_FUN(zRFManager) {
 
+#define Z_RF_BROADCAST_PERIOD					500
+#define Z_RF_HS_RESPONSE_TIMEOUT			5
+#define Z_RF_PAYLOAD_SIZE							9
 #define Z_RF_PERIOD_MS								35
 #define Z_RF_QUEUE_TIMEOUT						5
-
+#define Z_RF_C_CONN_ACPT							0xAA
+#define Z_RF_MY_ADDRESS								{0xE7, 0xE7, 0xE7, 0xE7, 0xE7}
+#define Z_RF_CAR_ADDRESS							{0x7E, 0x7E, 0x7E, 0x7E, 0x7E}
+#define Z_RF_HS_MY_CODE								{0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55}
+#define Z_RF_HS_CAR_CODE							{0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA}
+	
 	RTOS_TIMESTAMP(tsRFMan);
+	
+	const uint8_t my_address[5] = Z_RF_MY_ADDRESS;
+	const uint8_t car_address[5] = Z_RF_CAR_ADDRESS;
+	
+	const uint8_t my_code[Z_RF_PAYLOAD_SIZE] = Z_RF_HS_MY_CODE;
+	const uint8_t car_code[Z_RF_PAYLOAD_SIZE] = Z_RF_HS_CAR_CODE;
+
+	uint8_t data_in[Z_RF_PAYLOAD_SIZE];
+	uint8_t data_out[Z_RF_PAYLOAD_SIZE];
+
+	RF_IRQ_t nrf_irq;
+	RF_ConnectionState_t conn_state = NOT_CONNECTED;
 	
 	float meas_angle_x;
 	float meas_angle_y;
@@ -300,48 +264,84 @@ RTOS_TASK_FUN(zRFManager) {
 	/*!< Wait for all configurations to be complete */
 	RTOS_AWAIT(nConfig);
 	
-	for (int i = 0; i < 32 ; i++)
-		dataIn[i] = 0xAA;		
+	for (int i = 0; i < Z_RF_PAYLOAD_SIZE ; i++)
+		data_in[i] = 0xFF;		
 	
-	/*!< Initialize NRF24L01+ on channel 15 and 32bytes of payload */
-	/*!< By default 2Mbps data rate and 0dBm output power */
-	/*!< NRF24L01 goes to RX mode by default */
-	RF_Init(15, 32);
+	/*!< Initialize NRF24L01+ on channel 15 and with a fixed payload size*/
+	RF_Init(15, Z_RF_PAYLOAD_SIZE);
 	
-	/*!<  Set 2MBps data rate and -18dBm output power */
+	/*!<  Set 2MBps data rate and 0Bm output power */
 	RF_SetRF(RF_DataRate_2M, RF_OutputPower_0dBm);
 
-	/*!<  Set my address, 5 bytes */
-	RF_SetMyAddress(MyAddress);
-	
-	/*!< Set TX address, 5 bytes */
-	RF_SetTxAddress(TxAddress);
-	
-	volatile uint8_t status = RF_GetStatus();
+	/*!<  Set both addresses */
+	RF_SetMyAddress((uint8_t *) my_address);
+	RF_SetTxAddress((uint8_t *) car_address);
 	
 	// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
 	SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin);
 	
-	transmission_status = RF_Transmit_Status_Sending;
-	status = RF_GetStatus();
-	/*!< Transmit data, goes automatically to TX mode */
-	RF_Transmit(dataOut);
+	RTOS_KEEP_TIMESTAMP(tsRFMan);
 	
-	RTOS_AWAIT(nRFTx);
-	
-	if (transmission_status == RF_Transmit_Status_Ok) {
+	/*!< Send request while not connected */
+	while(conn_state == NOT_CONNECTED) {
 		
-		/*!< Turn off LED_CONN_PROB */
-		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
-		SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin<<16);
+		/*!< Send continuous requests until one message is acknowledged */
+		do {
+			
+			/*!< Transmit data, goes automatically to TX mode */
+			RF_Transmit((uint8_t*)my_code);
+			
+			/*!< Await acknowledgement or timeout */
+			RTOS_AWAIT(nRF);
+			
+			/*!< Read interrupt flags */
+			RF_Read_Interrupts(&nrf_irq);
+			
+			/*!< If an acknowledgement was received, stop sending */
+			if (nrf_irq.F.DataSent)
+				break;
+			
+			/*!< Send RF module to sleep mode */
+			RF_PowerDown();
+			
+			/*!< Wait for the next broadcasting point */
+			RTOS_DELAY_UNTIL(tsRFMan, Z_RF_BROADCAST_PERIOD);
+			
+		} while (!nrf_irq.F.DataSent);
 		
-	} else {
+		/*!< Enter RX mode */
+		RF_PowerUpRx();
 		
-		/*!< Signal connection problem */
-		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
-		SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin);
+		/*!< Await reception of the response*/
+		RTOS_AWAIT_TIMEOUT(nRF, Z_RF_HS_RESPONSE_TIMEOUT);
+						
+		/*!< Read interrupt flags */
+		RF_Read_Interrupts(&nrf_irq);
+		
+		/*!< If an acknowledgement was received, stop sending */
+		if (nrf_irq.F.DataReady) {
+		
+			int32_t it;
+			
+			RF_GetData(data_in);
+			
+			// TODO: Implement strcmp algo function */
+			for (it = Z_RF_PAYLOAD_SIZE; it >= 0; it--) {
+				if (data_in[it] != car_code[it]) {
+					it++;
+					break;
+				}
+			}
+			
+			if (it == 0)
+				break;
+		}
 	}
-	
+
+	/*!< Turn off LED_CONN_PROB */
+	// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
+	SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin<<16);
+		
 	/*!< Synchronization time stamp */
 	RTOS_KEEP_TIMESTAMP(tsConnect);
 	tsRFMan = tsConnect;
@@ -411,7 +411,7 @@ RTOS_IDLE_CALLBACK() {
 	if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == RTOS_SEMAPHORE_MAX_COUNT(semTerminate))
 		PWR_CLR_PULL_LOW();
 
-	//THREADS_sleep();
+	THREADS_sleep();
 }
 
 void THREADS_sleep(void){

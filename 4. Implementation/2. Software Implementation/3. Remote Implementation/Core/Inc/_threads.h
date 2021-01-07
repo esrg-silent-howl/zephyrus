@@ -8,3 +8,4 @@ void THREADS_startScheduler(void);
 
 
 void THREADS_shutdownIRQHandler (void);
+void THREADS_rfIRQHandler (void);

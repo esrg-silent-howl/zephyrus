@@ -119,7 +119,7 @@ void EXTI0_1_IRQHandler(void)
 		 *   the datasheet */
 		SET_BIT(EXTI->PR, EXTI_PR_PIF1);
 		
-		/*!< Call shuitdown handler */
+		/*!< Call shutdown handler */
 		THREADS_shutdownIRQHandler();
 	}
 		
@@ -135,10 +135,20 @@ void EXTI0_1_IRQHandler(void)
 void EXTI4_15_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI4_15_IRQn 0 */
-
+	
+	/*!< Interrupt on pin PA4(NRF24L01) */
+	if (READ_BIT(EXTI->PR, EXTI_PR_PIF4)) {
+		
+		/*!< Write 1 to the pendig interrupt flag 1 to clear it as instructed in 
+		 *   the datasheet */
+		SET_BIT(EXTI->PR, EXTI_PR_PIF4);
+		
+		/*!< Call RF TX/RX handler */
+		THREADS_rfIRQHandler();
+	}
   /* USER CODE END EXTI4_15_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
+	
+
   /* USER CODE BEGIN EXTI4_15_IRQn 1 */
 
   /* USER CODE END EXTI4_15_IRQn 1 */
@@ -166,6 +176,11 @@ void I2C1_IRQHandler(void)
   /* USER CODE BEGIN I2C1_IRQn 0 */
 
   /* USER CODE END I2C1_IRQn 0 */
+  if (hi2c1.Instance->ISR & (I2C_FLAG_BERR | I2C_FLAG_ARLO | I2C_FLAG_OVR)) {
+    HAL_I2C_ER_IRQHandler(&hi2c1);
+  } else {
+    HAL_I2C_EV_IRQHandler(&hi2c1);
+  }
   /* USER CODE BEGIN I2C1_IRQn 1 */
 
   /* USER CODE END I2C1_IRQn 1 */

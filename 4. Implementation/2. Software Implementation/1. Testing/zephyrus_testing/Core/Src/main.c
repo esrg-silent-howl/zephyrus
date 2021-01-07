@@ -32,24 +32,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 /* Receiver address */
-uint8_t TxAddress[] = {
-	0xE7,
-	0xE7,
-	0xE7,
-	0xE7,
-	0xE7
-};
-/* My address */
-uint8_t MyAddress[] = {
-	0x7E,
-	0x7E,
-	0x7E,
-	0x7E,
-	0x7E
-};
 
-/* Data received and data for send */
-volatile uint8_t dataIn[32] = {0};
 
 /* Interrupt pin settings */
 #define IRQ_PORT    GPIOF
@@ -58,6 +41,7 @@ volatile uint8_t dataIn[32] = {0};
 /* NRF transmission status */
 TM_NRF24L01_Transmit_Status_t transmissionStatus;
 TM_NRF24L01_IRQ_t NRF_IRQ;
+uint32_t interrupt;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -70,36 +54,7 @@ TM_NRF24L01_IRQ_t NRF_IRQ;
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	/* Check for proper interrupt pin */
-	if (GPIO_Pin == IRQ_PIN) {
-		/* Read interrupts */
-		TM_NRF24L01_Read_Interrupts(&NRF_IRQ);
-		
-		/* Check if transmitted OK */
-		if (NRF_IRQ.F.DataSent) {
-			/* Save transmission status */
-			transmissionStatus = TM_NRF24L01_Transmit_Status_Ok;
-			
-			/* Go back to RX mode */
-			TM_NRF24L01_PowerUpRx();
-		}
-		
-		/* Check if max retransmission reached and last transmission failed */
-		if (NRF_IRQ.F.MaxRT) {
-			/* Save transmission status */
-			transmissionStatus = TM_NRF24L01_Transmit_Status_Lost;
-			
-					
-			/* Go back to RX mode */
-			TM_NRF24L01_PowerUpRx();
-		}
-		
-		/* If data is ready on NRF24L01+ */
-		if (NRF_IRQ.F.DataReady) {
-			/* Get data from NRF24L01+ */
-			TM_NRF24L01_GetData((uint8_t*)dataIn);		
-		}
-	}
+	interrupt = 1;
 }
 /* USER CODE END PM */
 
@@ -128,7 +83,24 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  /* USER CODE END 1 */
+#define Z_RF_BROADCAST_PERIOD					500
+#define Z_RF_HS_RESPONSE_TIMEOUT			5
+#define Z_RF_PAYLOAD_SIZE							9
+#define Z_RF_PERIOD_MS								35
+#define Z_RF_QUEUE_TIMEOUT						5
+#define Z_RF_C_CONN_ACPT							0xAA
+#define Z_RF_MY_ADDRESS								{0x7E, 0x7E, 0x7E, 0x7E, 0x7E}
+#define Z_RF_WB_ADDRESS								{0xE7, 0xE7, 0xE7, 0xE7, 0xE7}
+#define Z_RF_HS_WB_CODE								{0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55}
+#define Z_RF_HS_MY_CODE								{0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA}
+	
+	volatile uint8_t my_address[5] = Z_RF_MY_ADDRESS;
+	volatile uint8_t wb_address[5] = Z_RF_WB_ADDRESS;
+	volatile const uint8_t my_code[Z_RF_PAYLOAD_SIZE] = Z_RF_HS_MY_CODE;
+	volatile const uint8_t wb_code[Z_RF_PAYLOAD_SIZE] = Z_RF_HS_WB_CODE;
+	volatile uint8_t data_in[Z_RF_PAYLOAD_SIZE];
+	volatile uint8_t data_out[Z_RF_PAYLOAD_SIZE];
+	/* USER CODE END 1 */
   
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -161,33 +133,70 @@ int main(void)
 	/* Initialize NRF24L01+ on channel 15 and 32bytes of payload */
 	/* By default 2Mbps data rate and 0dBm output power */
 	/* NRF24L01 goes to RX mode by default */
-	TM_NRF24L01_Init(15, 32);
+	TM_NRF24L01_Init(15, Z_RF_PAYLOAD_SIZE);
 	
 	/* Set 2MBps data rate and -18dBm output power */
 	TM_NRF24L01_SetRF(TM_NRF24L01_DataRate_2M, TM_NRF24L01_OutputPower_0dBm);
 
 	
 	/* Set my address, 5 bytes */
-	TM_NRF24L01_SetMyAddress(MyAddress);
+	TM_NRF24L01_SetMyAddress(my_address);
 	
 	/* Set TX address, 5 bytes */
-	TM_NRF24L01_SetTxAddress(TxAddress);
+	TM_NRF24L01_SetTxAddress(wb_address);
 	
 	/* Go back to RX mode */
-		TM_NRF24L01_PowerUpRx();
-			
+	TM_NRF24L01_PowerUpRx();
+		
+
+	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 	
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+	interrupt = 0;
 		
    while (1)
   {
+		int32_t it = 0;
+		
+		while(!interrupt);
+		interrupt = 0;
+		
 		TM_NRF24L01_Read_Interrupts(&NRF_IRQ);
 		
-		if(NRF_IRQ.F.DataReady || NRF_IRQ.F.DataSent || NRF_IRQ.F.MaxRT) {
-			__nop();
+		if(NRF_IRQ.F.DataReady) {
+			TM_NRF24L01_GetData(data_in);
+			
+			for (it = Z_RF_PAYLOAD_SIZE-1; it >= 0; it--) {
+				if (data_in[it] != wb_code[it])
+					break;
+			}
+			
+			it++;
+			
+			HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+			
+			HAL_Delay(5);
+			
+			// code correct
+			if (it == 0) {
+				interrupt = 0;
+				TM_NRF24L01_PowerUpTx();
+				TM_NRF24L01_Transmit((uint8_t*)my_code);
+				while(!interrupt);
+				interrupt = 0;
+				TM_NRF24L01_Read_Interrupts(&NRF_IRQ);
+				
+				if(NRF_IRQ.F.DataSent) {
+					HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+				}
+			}
 		}
+		
+		
+			while(1);
 	}
+	
+	
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

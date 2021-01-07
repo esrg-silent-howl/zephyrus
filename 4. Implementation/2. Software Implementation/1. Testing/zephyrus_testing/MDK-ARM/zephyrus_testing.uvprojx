@@ -393,14 +393,14 @@
           <GroupName>Application/User/Core</GroupName>
           <Files>
             <File>
-              <FileName>tm_stm32_nrf24l01.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Core\Inc\tm_stm32_nrf24l01.h</FilePath>
-            </File>
-            <File>
               <FileName>tm_stm32_nrf24l01.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\Src\tm_stm32_nrf24l01.c</FilePath>
+            </File>
+            <File>
+              <FileName>tm_stm32_nrf24l01.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Inc\tm_stm32_nrf24l01.h</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
