@@ -1,0 +1,339 @@
+{
+    "_allocate_inputs": 0,
+    "_allocate_outputs": 0,
+    "cli_parameters": "generate --name zephyrus_network -m C:/Users/hugoc/Desktop/Notebook v1/zephyrus-rl-model.tflite --type tflite --compression 1 --verbosity 1 --workspace C:\\Users\\hugoc\\AppData\\Local\\Temp\\mxAI_workspace45883356938005434700659456499492 --output C:\\Users\\hugoc\\.stm32cubemx",
+    "cli_version": {
+        "major": 1,
+        "micro": 0,
+        "minor": 4
+    },
+    "cli_version_str": "1.4.0",
+    "compression": {
+        "factor": null,
+        "layers": {}
+    },
+    "date_time": "Wed Jan  6 15:17:06 2021",
+    "error": 0,
+    "error_str": [],
+    "evaluation_measures": [],
+    "evaluation_status": "NOT EVALUATED",
+    "exec_cmd": "generate",
+    "exec_duration": 0.471127986907959,
+    "hash": "57b00d90346238f8b78e36822ec88de3",
+    "inputs": [
+        "input_1"
+    ],
+    "l2_error": -1.0,
+    "l2_status": "NOT EVALUATED",
+    "layers": [
+        {
+            "extras": {
+                "c_l2_error": 0,
+                "c_l2_id": -1,
+                "n_macc": 0,
+                "n_params": 0,
+                "psize": 0,
+                "rom_n_params": 0,
+                "rom_output": {
+                    "c_size": 16,
+                    "fmt": {
+                        "c_bits": [
+                            32,
+                            0
+                        ],
+                        "c_format": "AI_ARRAY_FORMAT_FLOAT",
+                        "c_size": 4,
+                        "c_type": "ai_float",
+                        "format": "FLOAT32"
+                    },
+                    "shape": [
+                        1,
+                        1,
+                        4,
+                        1
+                    ]
+                },
+                "rom_size": 0,
+                "rom_size_params": 0,
+                "rom_trans": null
+            },
+            "id": 0,
+            "inputs": [],
+            "name": "input_1",
+            "out_shapes": [
+                [
+                    4
+                ]
+            ],
+            "outputs": [
+                "input_1"
+            ],
+            "shape": [
+                4
+            ],
+            "type": "Input"
+        },
+        {
+            "extras": {
+                "c_l2_error": 0,
+                "c_l2_id": -1,
+                "n_macc": 512,
+                "n_params": 640,
+                "psize": 2560,
+                "rom_n_params": 640,
+                "rom_output": {
+                    "c_size": 512,
+                    "fmt": {
+                        "c_bits": [
+                            32,
+                            0
+                        ],
+                        "c_format": "AI_ARRAY_FORMAT_FLOAT",
+                        "c_size": 4,
+                        "c_type": "ai_float",
+                        "format": "FLOAT32"
+                    },
+                    "shape": [
+                        1,
+                        1,
+                        128,
+                        1
+                    ]
+                },
+                "rom_size": 2560,
+                "rom_size_params": 2560,
+                "rom_trans": null
+            },
+            "id": 0,
+            "inputs": [
+                "input_1"
+            ],
+            "name": "dense_0",
+            "num_units": 128,
+            "out_shapes": [
+                [
+                    128
+                ]
+            ],
+            "outputs": [
+                "dense_0"
+            ],
+            "type": "Dense",
+            "use_bias": true
+        },
+        {
+            "extras": {
+                "c_l2_error": 0,
+                "c_l2_id": -1,
+                "n_macc": 128,
+                "n_params": 0,
+                "psize": 0,
+                "rom_n_params": 0,
+                "rom_output": {
+                    "c_size": 512,
+                    "fmt": {
+                        "c_bits": [
+                            32,
+                            0
+                        ],
+                        "c_format": "AI_ARRAY_FORMAT_FLOAT",
+                        "c_size": 4,
+                        "c_type": "ai_float",
+                        "format": "FLOAT32"
+                    },
+                    "shape": [
+                        1,
+                        1,
+                        128,
+                        1
+                    ]
+                },
+                "rom_size": 0,
+                "rom_size_params": 0,
+                "rom_trans": null
+            },
+            "id": 0,
+            "inputs": [
+                "dense_0"
+            ],
+            "name": "nl_0",
+            "nonlinearity": "relu",
+            "out_shapes": [
+                [
+                    128
+                ]
+            ],
+            "outputs": [
+                "nl_0"
+            ],
+            "type": "Nonlinearity"
+        },
+        {
+            "extras": {
+                "c_l2_error": 0,
+                "c_l2_id": -1,
+                "n_macc": 256,
+                "n_params": 258,
+                "psize": 1032,
+                "rom_n_params": 258,
+                "rom_output": {
+                    "c_size": 8,
+                    "fmt": {
+                        "c_bits": [
+                            32,
+                            0
+                        ],
+                        "c_format": "AI_ARRAY_FORMAT_FLOAT",
+                        "c_size": 4,
+                        "c_type": "ai_float",
+                        "format": "FLOAT32"
+                    },
+                    "shape": [
+                        1,
+                        1,
+                        2,
+                        1
+                    ]
+                },
+                "rom_size": 1032,
+                "rom_size_params": 1032,
+                "rom_trans": null
+            },
+            "id": 1,
+            "inputs": [
+                "nl_0"
+            ],
+            "name": "dense_1",
+            "num_units": 2,
+            "out_shapes": [
+                [
+                    2
+                ]
+            ],
+            "outputs": [
+                "dense_1"
+            ],
+            "type": "Dense",
+            "use_bias": true
+        },
+        {
+            "extras": {
+                "c_l2_error": 0,
+                "c_l2_id": -1,
+                "n_macc": 128,
+                "n_params": 129,
+                "psize": 516,
+                "rom_n_params": 129,
+                "rom_output": {
+                    "c_size": 4,
+                    "fmt": {
+                        "c_bits": [
+                            32,
+                            0
+                        ],
+                        "c_format": "AI_ARRAY_FORMAT_FLOAT",
+                        "c_size": 4,
+                        "c_type": "ai_float",
+                        "format": "FLOAT32"
+                    },
+                    "shape": [
+                        1,
+                        1,
+                        1,
+                        1
+                    ]
+                },
+                "rom_size": 516,
+                "rom_size_params": 516,
+                "rom_trans": null
+            },
+            "id": 2,
+            "inputs": [
+                "nl_0"
+            ],
+            "name": "dense_2",
+            "num_units": 1,
+            "out_shapes": [
+                [
+                    1
+                ]
+            ],
+            "outputs": [
+                "dense_2"
+            ],
+            "type": "Dense",
+            "use_bias": true
+        }
+    ],
+    "maxlen_name": 19,
+    "md5": "57b00d90346238f8b78e36822ec88de3",
+    "model_files": [
+        "C:\\Users\\hugoc\\Desktop\\Notebook v1\\zephyrus-rl-model.tflite"
+    ],
+    "model_n_params": 1027,
+    "model_name": "zephyrusrlmodel",
+    "model_size": 4108,
+    "model_type": "tflite (tflite)",
+    "name": "zephyrus_network",
+    "outputs": [
+        "dense_1",
+        "dense_2"
+    ],
+    "ram_io_size": [
+        16,
+        12
+    ],
+    "ram_size": [
+        1024,
+        1024
+    ],
+    "report_version": 1.0,
+    "rom_cfact": null,
+    "rom_heap": [
+        0,
+        0
+    ],
+    "rom_heap_inspector": 1024,
+    "rom_inputs": [
+        {
+            "c_size": 16,
+            "c_type": "ai_float",
+            "name": "input_1"
+        }
+    ],
+    "rom_l2_error_max": 0.0,
+    "rom_n_c_nodes": 4,
+    "rom_n_macc": 1024,
+    "rom_n_macc_max": 512,
+    "rom_outputs": [
+        {
+            "c_size": 8,
+            "c_type": "ai_float",
+            "name": "dense_1"
+        },
+        {
+            "c_size": 4,
+            "c_type": "ai_float",
+            "name": "dense_2"
+        }
+    ],
+    "rom_size": 4108,
+    "rom_size_max": 2560,
+    "rom_stack": [
+        0,
+        0
+    ],
+    "strategy": "heap_overlay_pool",
+    "tools_api_version": {
+        "major": 1,
+        "micro": 0,
+        "minor": 3
+    },
+    "tools_version": {
+        "extra": null,
+        "major": 5,
+        "micro": 0,
+        "minor": 2
+    },
+    "version": "0.2"
+}

@@ -259,7 +259,9 @@ StaticSemaphore_t RTOS_MUTEX_BUFFER(__mutex__);
 
 #define RTOS_TASK_DELETE() \
 	vTaskDelete(NULL)
-	
+
+#define RTOS_IDLE_CALLBACK()	\
+	void vApplicationIdleHook(void)
 	
 /*! RTOS priorities enumeration */
 typedef enum RTOSPriorities {
