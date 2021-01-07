@@ -18,7 +18,7 @@
 #define E_SET_COUNT	(uint32_t)(-2)
 
 #define MASTER_CYCLE_PERIOD_MS	40
-#define MASTER_INITIAL_DELAY_MS	10
+#define MASTER_INITIAL_DELAY_MS	0
 
 /*!< System Threads Creation */
 static RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL, "zMain");
@@ -234,7 +234,7 @@ RTOS_TASK_FUN(zIMUManager) {
 RTOS_TASK_FUN(zRFManager) {
 
 #define Z_RF_BROADCAST_PERIOD					500
-#define Z_RF_HS_RESPONSE_TIMEOUT			5
+#define Z_RF_HS_RESPONSE_TIMEOUT			50
 #define Z_RF_PAYLOAD_SIZE							9
 #define Z_RF_PERIOD_MS								35
 #define Z_RF_QUEUE_TIMEOUT						5
@@ -281,6 +281,8 @@ RTOS_TASK_FUN(zRFManager) {
 	
 	RTOS_KEEP_TIMESTAMP(tsRFMan);
 	
+	////////////////////////////// HANDSHAKE /////////////////////////////////////
+		
 	/*!< Send request while not connected */
 	while(conn_state == NOT_CONNECTED) {
 		
@@ -308,6 +310,9 @@ RTOS_TASK_FUN(zRFManager) {
 			
 		} while (!nrf_irq.F.DataSent);
 		
+		/*!< Read interrupt flags */
+		//RF_Read_Interrupts(&nrf_irq);
+		
 		/*!< Enter RX mode */
 		RF_PowerUpRx();
 		
@@ -326,17 +331,23 @@ RTOS_TASK_FUN(zRFManager) {
 			
 			// TODO: Implement strcmp algo function */
 			for (it = Z_RF_PAYLOAD_SIZE; it >= 0; it--) {
-				if (data_in[it] != car_code[it]) {
-					it++;
+			
+				if (data_in[it] != car_code[it])
 					break;
-				}
 			}
+			
+			it++;
 			
 			if (it == 0)
 				break;
 		}
 	}
-
+	
+	//////////////////////////////////////////////////////////////////////////////
+	
+	/*!< Send RF module to sleep mode */
+	RF_PowerDown();
+	
 	/*!< Turn off LED_CONN_PROB */
 	// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
 	SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin<<16);
@@ -358,15 +369,17 @@ RTOS_TASK_FUN(zRFManager) {
 		RTOS_QUEUE_RECV_TIMEOUT(qIMU, &meas_angle_y, Z_RF_QUEUE_TIMEOUT);
 		
 		/*!< Light up LED_CONN_PROB */ 
-		SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
+		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
 		
 		/*!< Turn off LED_CONN_PROB */ 
 		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
 		
+		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin);
+		RTOS_DELAY(5);
+		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin<<16);
+		
 		/*!< Sleep */
 		RTOS_DELAY_UNTIL(tsRFMan, MASTER_CYCLE_PERIOD_MS);
-		
-		volatile int count = RTOS_SEMAPHORE_GET_COUNT(semTerminate);
 		
 		if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 1)
 			goto cleanup;

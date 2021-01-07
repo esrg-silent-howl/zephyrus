@@ -170,7 +170,7 @@ RTOS_TASK_FUN(zMain) {
 		//while(RTOS_SEMAPHORE_GET_COUNT(semWorking) != 0){};
 		
 		/*!< Sleep until the next interruption */
-		//THREADS_sleep(); 
+		// THREADS_sleep(); 
 	}
 
 	RTOS_TASK_DELETE();
@@ -269,7 +269,7 @@ RTOS_TASK_FUN(zRFManager) {
 	uint8_t data_out[Z_RF_PAYLOAD_SIZE];
 
 	RF_IRQ_t nrf_irq;
-	RF_ConnectionState_t conn_state = NOT_CONNECTED;
+	volatile RF_ConnectionState_t conn_state = NOT_CONNECTED;
 
 	RTOS_TIMESTAMP(tsRFMan);
 
@@ -296,7 +296,7 @@ RTOS_TASK_FUN(zRFManager) {
 	
 	volatile uint8_t st = RF_GetStatus();
 	
-	////////////////////////////// HANDSHAKE //////////////////////////////
+	////////////////////////////// HANDSHAKE /////////////////////////////////////
 	
 	/*!< Loop while not connected */
 	while(conn_state == NOT_CONNECTED) {
@@ -315,29 +315,26 @@ RTOS_TASK_FUN(zRFManager) {
 			/*!< Read the code sent by the other device */
 			RF_GetData(data_in);
 			
-			/*!< Check te received mesage or the code */
+			/*!< Check the received message or the code */
 			for (it = Z_RF_PAYLOAD_SIZE-1; it >= 0; it--) {
 				if (data_in[it] != wb_code[it])
 					break;
 			}
 			
-			/*!< Increment it to compare it with 0 down the line */
+			/*!< Increment it to compare it with 0 */
 			it++;
-			
-			/*!< Give the remote time to respond */
-			RTOS_DELAY(5);
 			
 			// If code correct
 			if (it == 0) {
 				
+				/*!< Give the remote time to notice the result of the last communication */
+				RTOS_DELAY(10);
+				
 				/*!< Respond with the car's own code */
 				RF_Transmit((uint8_t*)my_code);
 				
-				/*!< Give the remote time to respond */
-				RTOS_DELAY(5);
-				
 				/*!< Await message */
-				RTOS_AWAIT(nRF);
+				RTOS_AWAIT_TIMEOUT(nRF, 10);
 				
 				/*!< Read interrupt flags */
 				RF_Read_Interrupts(&nrf_irq);
@@ -350,7 +347,7 @@ RTOS_TASK_FUN(zRFManager) {
 		}
 	}
 	
-	///////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
 	
 	/*!< Synchronization time stamp */
 	RTOS_KEEP_TIMESTAMP(tsConnect);
@@ -371,6 +368,9 @@ RTOS_TASK_FUN(zRFManager) {
 		RTOS_SEMAPHORE_INC(semWorking);
 		
 		/*!< Somewhere */
+		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin);
+		RTOS_DELAY(5);
+		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin<<16);
 		/*!< Timeout of RXmode */
 		
 		/*!< Sleep */
