@@ -1,4 +1,4 @@
-;#<FEEDBACK># ARM Linker, 5060750: Last Updated: Thu Jan 07 18:40:43 2021
+;#<FEEDBACK># ARM Linker, 5060750: Last Updated: Thu Jan 07 23:29:37 2021
 ;VERSION 0.2
 ;FILE _imu.o
 IMU_Init <= USED 0
@@ -67,6 +67,7 @@ __asm___10__threads_c_34d0dc26____REVSH <= USED 0
 __asm___10__threads_c_34d0dc26____REVSH <= IW 0
 __asm___10__threads_c_34d0dc26____RRX <= USED 0
 __asm___10__threads_c_34d0dc26____RRX <= IW 0
+vApplicationIdleHook <= IW 0
 zIMUManager_Fun <= IW 0
 zInferenceManager_Fun <= IW 0
 zMain_Fun <= IW 0
@@ -241,12 +242,12 @@ MX_FREERTOS_Init <= USED 0
 MX_FREERTOS_Init <= IW 0
 StartDefaultTask <= USED 0
 StartDefaultTask <= IW 0
-__asm___10_freertos_c_aac03fdb____REV16 <= USED 0
-__asm___10_freertos_c_aac03fdb____REV16 <= IW 0
-__asm___10_freertos_c_aac03fdb____REVSH <= USED 0
-__asm___10_freertos_c_aac03fdb____REVSH <= IW 0
-__asm___10_freertos_c_aac03fdb____RRX <= USED 0
-__asm___10_freertos_c_aac03fdb____RRX <= IW 0
+__asm___10_freertos_c_008d6c67____REV16 <= USED 0
+__asm___10_freertos_c_008d6c67____REV16 <= IW 0
+__asm___10_freertos_c_008d6c67____REVSH <= USED 0
+__asm___10_freertos_c_008d6c67____REVSH <= IW 0
+__asm___10_freertos_c_008d6c67____RRX <= USED 0
+__asm___10_freertos_c_008d6c67____RRX <= IW 0
 vApplicationGetIdleTaskMemory <= IW 0
 ;FILE gpio.o
 MX_GPIO_Init <= IW 0
@@ -349,6 +350,7 @@ xQueuePeekFromISR <= IW 0
 xQueueReceive <= IW 0
 xQueueReceiveFromISR <= USED 0
 xQueueReceiveFromISR <= IW 0
+xQueueSemaphoreTake <= USED 0
 xQueueSemaphoreTake <= IW 0
 ;FILE spi.o
 HAL_SPI_MspDeInit <= USED 0
@@ -1312,6 +1314,7 @@ __asm___18_system_stm32f7xx_c_5d646a67____RRX <= IW 0
 ;FILE tasks.o
 pcTaskGetName <= USED 0
 pcTaskGetName <= IW 0
+pvTaskIncrementMutexHeldCount <= USED 0
 pvTaskIncrementMutexHeldCount <= IW 0
 ulTaskNotifyTake <= USED 0
 ulTaskNotifyTake <= IW 0
@@ -1336,6 +1339,7 @@ vTaskNotifyGiveFromISR <= IW 0
 vTaskPlaceOnEventList <= IW 0
 vTaskPlaceOnUnorderedEventList <= USED 0
 vTaskPlaceOnUnorderedEventList <= IW 0
+vTaskPriorityDisinheritAfterTimeout <= USED 0
 vTaskPriorityDisinheritAfterTimeout <= IW 0
 vTaskPrioritySet <= USED 0
 vTaskPrioritySet <= IW 0
@@ -1367,6 +1371,7 @@ xTaskNotifyStateClear <= USED 0
 xTaskNotifyStateClear <= IW 0
 xTaskNotifyWait <= IW 0
 xTaskPriorityDisinherit <= IW 0
+xTaskPriorityInherit <= USED 0
 xTaskPriorityInherit <= IW 0
 xTaskRemoveFromEventList <= IW 0
 xTaskResumeAll <= IW 0

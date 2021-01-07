@@ -19,14 +19,14 @@
 #define E_SET_COUNT	(uint32_t)(-2)
 
 #define MASTER_CYCLE_PERIOD_MS	40
-#define MASTER_INITIAL_DELAY_MS	10
+#define MASTER_INITIAL_DELAY_MS	15
 
 /*!< System Threads Creation */
 RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL, "zMain");
 RTOS_TASK_STATIC(zIMUManager, 1024, RP_NORMAL, "zIMUManager");
-RTOS_TASK_STATIC(zRFManager, 1024, RP_HIGH, "zRFManager");
+RTOS_TASK_STATIC(zRFManager, 1024, RP_REAL_TIME/*RP_HIGH*/, "zRFManager");
 RTOS_TASK_STATIC(zInferenceManager, 1024, RP_ABOVE_NORMAL, "zInferenceManager");
-RTOS_TASK_STATIC(zUltrasonicManager, 1024, RP_REAL_TIME, "zUltrasonicManager");
+RTOS_TASK_STATIC(zUltrasonicManager, 1024, RP_HIGH/*RP_REAL_TIME*/, "zUltrasonicManager");
 
 /*!< System Mutexes Creation */
 RTOS_MUTEX_STATIC(mState);
@@ -35,7 +35,6 @@ RTOS_MUTEX_STATIC(mUSS);
 
 /*!< System Semaphores Creation */
 RTOS_SEMAPHORE_STATIC(semConfig, 3);
-RTOS_SEMAPHORE_STATIC(semWorking, 4); 
 
 /*!< System Notifications Creation */
 RTOS_NOTIFICATION(nConfig, 0);
@@ -120,7 +119,10 @@ RTOS_TASK_FUN(zMain) {
 #define POWER_LED_PERIOD_MS				2000
 #define POWER_LED_DUTY_CYCLE			13
 #define POWER_LED_PULSE_NORMAL		POWER_LED_PERIOD_MS
-#define POWER_LED_PULSE_LOW_BATT	(POWER_LED_PERIOD_MS*POWER_LED_DUTY_CYCLE/100)
+#define POWER_LED_PULSE_LOW_BATT	((POWER_LED_PERIOD_MS+1)*POWER_LED_DUTY_CYCLE/100)
+#define Z_MAIN_PERIOD_MS					200
+	
+	RTOS_TIMESTAMP(tsMain);
 	
 	/*!< Turn LED off (not making any assumptions about the current 
 	 *   battery level) */
@@ -166,11 +168,8 @@ RTOS_TASK_FUN(zMain) {
 				WRITE_REG(TIM4->CCR2, POWER_LED_PULSE_NORMAL);
 		}
 		
-		/*!< Wait for other threads to stop working */
-		//while(RTOS_SEMAPHORE_GET_COUNT(semWorking) != 0){};
-		
 		/*!< Sleep until the next interruption */
-		// THREADS_sleep(); 
+		RTOS_DELAY_UNTIL(tsMain, Z_MAIN_PERIOD_MS);
 	}
 
 	RTOS_TASK_DELETE();
@@ -206,16 +205,11 @@ RTOS_TASK_FUN(zIMUManager) {
 	
 	while(1) {
 
-		/*!< Declare working state*/
-		RTOS_SEMAPHORE_INC(semWorking);
-
 		/*!< Request sensor data */
 		IMU_dataRequest(&hi2c1);
 		
 		/*!< Await reception notification */
-		RTOS_SEMAPHORE_DEC(semWorking);
 		RTOS_AWAIT(nIMURx);
-		RTOS_SEMAPHORE_INC(semWorking);
 		
 		/*!< Fetch received data */
 		IMU_dataFetch(&mpu6050);
@@ -240,7 +234,6 @@ RTOS_TASK_FUN(zIMUManager) {
 		}
 		
 		/*!< Sleep */
-		RTOS_SEMAPHORE_DEC(semWorking);
 		RTOS_DELAY_UNTIL(tsIMUMan, IMU_SAMPLE_REQUEST_DELAY_MS);
 	}
 
@@ -328,7 +321,7 @@ RTOS_TASK_FUN(zRFManager) {
 			if (it == 0) {
 				
 				/*!< Give the remote time to notice the result of the last communication */
-				RTOS_DELAY(10);
+				RTOS_DELAY(5);
 				
 				/*!< Respond with the car's own code */
 				RF_Transmit((uint8_t*)my_code);
@@ -353,6 +346,9 @@ RTOS_TASK_FUN(zRFManager) {
 	RTOS_KEEP_TIMESTAMP(tsConnect);
 	tsRFMan = tsConnect;
 	
+	
+	LED_CONNECT_GPIO_Port->BSRR = LED_CONNECT_Pin;
+	
 	/*!< Notify tasks of a successful connection */
 	RTOS_NOTIFY(zIMUManager, nConnected);
 	RTOS_NOTIFY(zInferenceManager, nConnected);
@@ -363,9 +359,6 @@ RTOS_TASK_FUN(zRFManager) {
 		Z_RF_MANAGER_REQUEST_DELAY_MS);
 	
 	while(1) {	
-
-		/*!< Declare working state */
-		RTOS_SEMAPHORE_INC(semWorking);
 		
 		/*!< Somewhere */
 		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin);
@@ -374,7 +367,6 @@ RTOS_TASK_FUN(zRFManager) {
 		/*!< Timeout of RXmode */
 		
 		/*!< Sleep */
-		RTOS_SEMAPHORE_DEC(semWorking);
 		RTOS_DELAY_UNTIL(tsRFMan, MASTER_CYCLE_PERIOD_MS);
 	}
 
@@ -425,9 +417,6 @@ RTOS_TASK_FUN(zInferenceManager) {
 	
 	while(1) {
 		
-		/*!< Declare working state and keep current time stamp*/
-		RTOS_SEMAPHORE_INC(semWorking);
-	
 		/*!< Get ultrasonic sensor readings */
 		RTOS_QUEUE_RECV(qUSS, &front_distance);
 		RTOS_QUEUE_RECV(qUSS, &back_distance);
@@ -437,8 +426,6 @@ RTOS_TASK_FUN(zInferenceManager) {
 		RTOS_QUEUE_RECV(qIMU, &meas_accel_y);
 		RTOS_QUEUE_RECV(qIMU, &meas_angle_z);
 		
-		/*!< Sleep until the time to change the motor speed */
-		RTOS_SEMAPHORE_DEC(semWorking);
 		 
 		/*!< Change motor direction and speed */
 		motor_r_dir_inv = 0;
@@ -450,8 +437,7 @@ RTOS_TASK_FUN(zInferenceManager) {
 		WRITE_REG(TIM3->CCR3, motor_r_speed);
 		WRITE_REG(TIM3->CCR4, motor_l_speed);
 		
-		/*!< Sleep */
-		RTOS_SEMAPHORE_DEC(semWorking);  
+		/*!< Sleep */ 
 		RTOS_DELAY_UNTIL(tsInfMan, MASTER_CYCLE_PERIOD_MS);
 	}
 
@@ -498,9 +484,6 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 
 	while(1) {
 		
-		/*!< Declare working state */
-		RTOS_SEMAPHORE_INC(semWorking);
-		
 		/*!< Pull trigger pin HIGH */
 		USS_TRIGGER_GPIO_Port->BSRR = USS_TRIGGER_Pin;
 		
@@ -510,11 +493,8 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		WRITE_REG(TIM2->CCR2, TIM2->CNT + 1620);
 		
 		/*!< Sleep */
-		RTOS_SEMAPHORE_DEC(semWorking);
 		RTOS_DELAY_UNTIL(tsUSSMan, USS_CAPTURE_TIMEOUT_MS);
-		
-		/*!< Declare working state */
-		RTOS_SEMAPHORE_INC(semWorking);
+	
 		
 		/*!< Disable the Output Capture channel 2 */
 		CLEAR_BIT(TIM2->CCER, TIM_CCER_CC2E);
@@ -527,7 +507,6 @@ RTOS_TASK_FUN(zUltrasonicManager) {
 		RTOS_QUEUE_SEND_BACK(qUSS, (void*)&uss_back.distance);
 		
 		/*!< Sleep */
-		RTOS_SEMAPHORE_DEC(semWorking);
 		RTOS_DELAY_UNTIL(tsUSSMan, MASTER_CYCLE_PERIOD_MS - USS_CAPTURE_TIMEOUT_MS);
 	}
 
@@ -552,7 +531,6 @@ void THREADS_create(void) {
 	RTOS_MUTEX_CREATE_STATIC(mUSS);
 
 	RTOS_SEMAPHORE_CREATE_STATIC(semConfig, 0);
-	RTOS_SEMAPHORE_CREATE_STATIC(semWorking, 0);
 	
 	RTOS_QUEUE_CREATE_STATIC(qUSS);
 	RTOS_QUEUE_CREATE_STATIC(qIMU);

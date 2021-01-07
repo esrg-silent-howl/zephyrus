@@ -18,7 +18,7 @@
 #define E_SET_COUNT	(uint32_t)(-2)
 
 #define MASTER_CYCLE_PERIOD_MS	40
-#define MASTER_INITIAL_DELAY_MS	0
+#define MASTER_INITIAL_DELAY_MS	5
 
 /*!< System Threads Creation */
 static RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL, "zMain");
@@ -310,9 +310,6 @@ RTOS_TASK_FUN(zRFManager) {
 			
 		} while (!nrf_irq.F.DataSent);
 		
-		/*!< Read interrupt flags */
-		//RF_Read_Interrupts(&nrf_irq);
-		
 		/*!< Enter RX mode */
 		RF_PowerUpRx();
 		
@@ -341,6 +338,10 @@ RTOS_TASK_FUN(zRFManager) {
 			if (it == 0)
 				break;
 		}
+		
+		/*!< Termination response */
+		if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 1)
+			goto cleanup;
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////
@@ -378,11 +379,12 @@ RTOS_TASK_FUN(zRFManager) {
 		RTOS_DELAY(5);
 		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin<<16);
 		
-		/*!< Sleep */
-		RTOS_DELAY_UNTIL(tsRFMan, MASTER_CYCLE_PERIOD_MS);
-		
+		/*!< Termination response */
 		if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 1)
 			goto cleanup;
+		
+		/*!< Sleep */
+		RTOS_DELAY_UNTIL(tsRFMan, MASTER_CYCLE_PERIOD_MS);
 	}
 	
 	cleanup:
@@ -427,6 +429,10 @@ RTOS_IDLE_CALLBACK() {
 }
 
 void THREADS_sleep(void){
+	
+	static uint32_t sleeps = 0;
+	
+	sleeps++;
 	
 	/*!< Clear SLEEPDEEP bit of Cortex System Control Register */
 	CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);

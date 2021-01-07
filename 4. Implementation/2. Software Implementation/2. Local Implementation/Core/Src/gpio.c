@@ -51,7 +51,7 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED_DEBUG1_Pin|MOTOR_R_DIR_Pin|LED_DEBUG2_Pin|MOTOR_L_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED_CONNECT_Pin|MOTOR_R_DIR_Pin|LED_DEBUG2_Pin|MOTOR_L_DIR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin, GPIO_PIN_RESET);
@@ -69,7 +69,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(BUTTON_DEBUG1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin PBPin PBPin */
-  GPIO_InitStruct.Pin = LED_DEBUG1_Pin|MOTOR_R_DIR_Pin|LED_DEBUG2_Pin|MOTOR_L_DIR_Pin;
+  GPIO_InitStruct.Pin = LED_CONNECT_Pin|MOTOR_R_DIR_Pin|LED_DEBUG2_Pin|MOTOR_L_DIR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
