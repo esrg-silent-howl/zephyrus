@@ -5,6 +5,7 @@
 #include "_uss.h"
 #include "_imu.h"
 #include "_utils.h"
+#include "_rf.h"
 
 /*!< Flag definitions */
 #define F_TASKS_CREATED					0
@@ -41,6 +42,7 @@ RTOS_NOTIFICATION(nConfig, 0);
 RTOS_NOTIFICATION(nConnected, 1);
 RTOS_NOTIFICATION(nIMURx, 2);
 RTOS_NOTIFICATION(nIMUTx, 3);
+static RTOS_NOTIFICATION(nRF, 4);
 
 /*!< System Queues Creation */
 RTOS_QUEUE_STATIC(qUSS, float, 2);
@@ -70,7 +72,7 @@ static double THREADS_checkForLowBattery(void);
  *   TIM2_IRQHandler() to maintain consistency with the rest of the program. 
  *   This serves as an alternative to the HAL-generated handler which reads 
  *   the SR register before calling this one, clearing the interrupt flags */
-void THREADS_tim2IRQHandler() {
+void THREADS_tim2IRQHandler(void) {
 	
 	/*!< Read the SR register only once as the interrupt flags are cleared 
 	 *   when this is done. */
@@ -96,6 +98,10 @@ void THREADS_tim2IRQHandler() {
 	}
 }
 
+void THREADS_rfIRQHandler (void) {
+
+	RTOS_NOTIFY_ISR(zRFManager, nRF);		
+}
 
 void HAL_I2C_MemRxCpltCallback (I2C_HandleTypeDef *hi2c){
 	if(hi2c->Instance == I2C1)
@@ -173,10 +179,12 @@ RTOS_TASK_FUN(zMain) {
 RTOS_TASK_FUN(zIMUManager) {
 
 #define N_SAMPLES				4
-#define N_SAMPELS_MASK	(N_SAMPLES - 1)
+#define N_SAMPLES_MASK	(N_SAMPLES - 1)
 #define	IMU_SAMPLE_REQUEST_DELAY_MS	10
 	
+	
 	RTOS_TIMESTAMP(tsIMUMan);
+	
 	imu_t mpu6050;
 	volatile uint32_t samples = 0;
 	float accel_x[N_SAMPLES];
@@ -184,7 +192,7 @@ RTOS_TASK_FUN(zIMUManager) {
 	float angle_z[N_SAMPLES];
 	
 	MODIFY_REG(I2C1->CR1, 0x000000FE, 0x00000001);
-	while(!IMU_Init(&hi2c1));
+	//while(!IMU_Init(&hi2c1));
 	
 	/*!< Signal another configuration complete */
 	THREADS_incSemConfig();
@@ -216,7 +224,7 @@ RTOS_TASK_FUN(zIMUManager) {
 		accel_x[samples] = mpu6050.Ax;
 		accel_y[samples] = mpu6050.Ay;
 		angle_z[samples] = mpu6050.Gz;
-		samples = (samples + 1) & N_SAMPELS_MASK;
+		samples = (samples + 1) & N_SAMPLES_MASK;
 		
 		/*!< When a sampling cycle ends, calculate averages and notify 
 		 *   inference task*/
@@ -242,13 +250,107 @@ RTOS_TASK_FUN(zIMUManager) {
 RTOS_TASK_FUN(zRFManager) {
 
 #define Z_RF_MANAGER_REQUEST_DELAY_MS	25
+#define Z_RF_BROADCAST_PERIOD					500
+#define Z_RF_HS_RESPONSE_TIMEOUT			5
+#define Z_RF_PAYLOAD_SIZE							9
+#define Z_RF_PERIOD_MS								35
+#define Z_RF_QUEUE_TIMEOUT						5
+
+#define Z_RF_MY_ADDRESS								{0x7E, 0x7E, 0x7E, 0x7E, 0x7E}
+#define Z_RF_WB_ADDRESS								{0xE7, 0xE7, 0xE7, 0xE7, 0xE7}
+#define Z_RF_HS_WB_CODE								{0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55}
+#define Z_RF_HS_MY_CODE								{0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA}
+	
+	volatile uint8_t my_address[5] = Z_RF_MY_ADDRESS;
+	volatile uint8_t wb_address[5] = Z_RF_WB_ADDRESS;
+	volatile const uint8_t my_code[Z_RF_PAYLOAD_SIZE] = Z_RF_HS_MY_CODE;
+	volatile const uint8_t wb_code[Z_RF_PAYLOAD_SIZE] = Z_RF_HS_WB_CODE;
+	uint8_t data_in[Z_RF_PAYLOAD_SIZE];
+	uint8_t data_out[Z_RF_PAYLOAD_SIZE];
+
+	RF_IRQ_t nrf_irq;
+	RF_ConnectionState_t conn_state = NOT_CONNECTED;
 
 	RTOS_TIMESTAMP(tsRFMan);
 
 	/*!< Wait for all configurations to be complete */
 	RTOS_AWAIT(nConfig);
+
+/* Initialize NRF24L01+ on channel 15 and 32bytes of payload */
+	/* By default 2Mbps data rate and 0dBm output power */
+	/* NRF24L01 goes to RX mode by default */
+	RF_Init(15, Z_RF_PAYLOAD_SIZE);
 	
-	RTOS_DELAY(200);
+	/* Set 2MBps data rate and -18dBm output power */
+	RF_SetRF(RF_DataRate_2M, RF_OutputPower_0dBm);
+
+	
+	/* Set my address, 5 bytes */
+	RF_SetMyAddress((uint8_t*)my_address);
+	
+	/* Set TX address, 5 bytes */
+	RF_SetTxAddress((uint8_t*)wb_address);
+	
+	/* Go back to RX mode */
+	RF_PowerUpRx();
+	
+	volatile uint8_t st = RF_GetStatus();
+	
+	////////////////////////////// HANDSHAKE //////////////////////////////
+	
+	/*!< Loop while not connected */
+	while(conn_state == NOT_CONNECTED) {
+		
+		int32_t it;
+
+		/*!< Await message */
+		RTOS_AWAIT(nRF);
+		
+		/*!< Read interrupt flags */
+		RF_Read_Interrupts(&nrf_irq);
+		
+		/*!< If data was received, compare with the remote's code */
+		if(nrf_irq.F.DataReady) {
+			
+			/*!< Read the code sent by the other device */
+			RF_GetData(data_in);
+			
+			/*!< Check te received mesage or the code */
+			for (it = Z_RF_PAYLOAD_SIZE-1; it >= 0; it--) {
+				if (data_in[it] != wb_code[it])
+					break;
+			}
+			
+			/*!< Increment it to compare it with 0 down the line */
+			it++;
+			
+			/*!< Give the remote time to respond */
+			RTOS_DELAY(5);
+			
+			// If code correct
+			if (it == 0) {
+				
+				/*!< Respond with the car's own code */
+				RF_Transmit((uint8_t*)my_code);
+				
+				/*!< Give the remote time to respond */
+				RTOS_DELAY(5);
+				
+				/*!< Await message */
+				RTOS_AWAIT(nRF);
+				
+				/*!< Read interrupt flags */
+				RF_Read_Interrupts(&nrf_irq);
+				
+				/*!< If transmission of the code was successful, aconnection is established */
+				if(nrf_irq.F.DataSent) {
+					break;
+				}
+			}
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////
 	
 	/*!< Synchronization time stamp */
 	RTOS_KEEP_TIMESTAMP(tsConnect);

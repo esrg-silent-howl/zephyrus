@@ -108,6 +108,8 @@ void Error_Handler(void);
 #define NRF24L01_INT_Pin GPIO_PIN_3
 #define NRF24L01_INT_GPIO_Port GPIOG
 #define NRF24L01_INT_EXTI_IRQn EXTI3_IRQn
+#define FLAG_DEBUG_Pin GPIO_PIN_6
+#define FLAG_DEBUG_GPIO_Port GPIOC
 #define MOTOR_R_PWM_Pin GPIO_PIN_8
 #define MOTOR_R_PWM_GPIO_Port GPIOC
 #define MOTOR_L_PWM_Pin GPIO_PIN_9

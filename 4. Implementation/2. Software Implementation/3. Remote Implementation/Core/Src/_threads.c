@@ -238,7 +238,6 @@ RTOS_TASK_FUN(zRFManager) {
 #define Z_RF_PAYLOAD_SIZE							9
 #define Z_RF_PERIOD_MS								35
 #define Z_RF_QUEUE_TIMEOUT						5
-#define Z_RF_C_CONN_ACPT							0xAA
 #define Z_RF_MY_ADDRESS								{0xE7, 0xE7, 0xE7, 0xE7, 0xE7}
 #define Z_RF_CAR_ADDRESS							{0x7E, 0x7E, 0x7E, 0x7E, 0x7E}
 #define Z_RF_HS_MY_CODE								{0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55}

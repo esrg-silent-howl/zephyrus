@@ -147,8 +147,6 @@ void EXTI4_15_IRQHandler(void)
 		THREADS_rfIRQHandler();
 	}
   /* USER CODE END EXTI4_15_IRQn 0 */
-	
-
   /* USER CODE BEGIN EXTI4_15_IRQn 1 */
 
   /* USER CODE END EXTI4_15_IRQn 1 */

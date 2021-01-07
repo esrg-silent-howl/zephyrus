@@ -170,9 +170,17 @@ void DebugMon_Handler(void)
 void EXTI3_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI3_IRQn 0 */
-
+	/*!< Interrupt on pin PG3(NRF24L01) */
+	if (READ_BIT(EXTI->PR, EXTI_PR_PR3)) {
+		
+		/*!< Write 1 to the pendig interrupt flag 1 to clear it as instructed in 
+		 *   the datasheet */
+		SET_BIT(EXTI->PR, EXTI_PR_PR3);
+		
+		/*!< Call RF TX/RX handler */
+		THREADS_rfIRQHandler();
+	}
   /* USER CODE END EXTI3_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
 
   /* USER CODE END EXTI3_IRQn 1 */
