@@ -152,14 +152,19 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
 //#define NRF24L01_CE_HIGH			SET_BIT(NRF24L01_CE_GPIO_Port->BSRR, NRF24L01_CE_Pin)
 //#define NRF24L01_CSN_LOW			SET_BIT(NRF24L01_CSN_GPIO_Port->BSRR, NRF24L01_CSN_Pin<<16)
 //#define NRF24L01_CSN_HIGH			SET_BIT(NRF24L01_CSN_GPIO_Port->BSRR, NRF24L01_CSN_Pin)
-#define NRF24L01_CE_LOW				HAL_GPIO_WritePin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin, 0)
-#define NRF24L01_CE_HIGH			HAL_GPIO_WritePin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin, 1)
-#define NRF24L01_CSN_LOW			HAL_GPIO_WritePin(NRF24L01_CSN_GPIO_Port, NRF24L01_CSN_Pin, 0)
-#define NRF24L01_CSN_HIGH			HAL_GPIO_WritePin(NRF24L01_CSN_GPIO_Port, NRF24L01_CSN_Pin, 1)
 
+//#define NRF24L01_CE_LOW				HAL_GPIO_WritePin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin, GPIO_PIN_RESET)
+//#define NRF24L01_CE_HIGH			HAL_GPIO_WritePin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin, GPIO_PIN_SET)
+//#define NRF24L01_CSN_LOW			HAL_GPIO_WritePin(NRF24L01_CSN_GPIO_Port, NRF24L01_CSN_Pin, GPIO_PIN_RESET)
+//#define NRF24L01_CSN_HIGH			HAL_GPIO_WritePin(NRF24L01_CSN_GPIO_Port, NRF24L01_CSN_Pin, GPIO_PIN_SET)
+
+#define NRF24L01_CE_LOW				NRF24L01_CE_GPIO_Port->BSRR |= NRF24L01_CE_Pin<<16
+#define NRF24L01_CE_HIGH			NRF24L01_CE_GPIO_Port->BSRR |= NRF24L01_CE_Pin
+#define NRF24L01_CSN_LOW			NRF24L01_CSN_GPIO_Port->BSRR |= NRF24L01_CE_Pin<<16
+#define NRF24L01_CSN_HIGH			NRF24L01_CSN_GPIO_Port->BSRR |= NRF24L01_CE_Pin
 
 /* Interrupt masks */
-#define NRF24L01_IRQ_DATA_READY     0x40 /*!< Data ready for receive */
+#define NRF24L01_IRQ_DATA_READY     0x40 /*!< Data ready for reception */
 #define NRF24L01_IRQ_TRAN_OK        0x20 /*!< Transmission went OK */
 #define NRF24L01_IRQ_MAX_RT         0x10 /*!< Max retransmissions reached, last transmission failed */
 

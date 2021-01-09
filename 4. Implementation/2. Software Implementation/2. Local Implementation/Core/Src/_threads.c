@@ -24,9 +24,9 @@
 /*!< System Threads Creation */
 RTOS_TASK_STATIC(zMain, 1024, RP_BELOW_NORMAL, "zMain");
 RTOS_TASK_STATIC(zIMUManager, 1024, RP_NORMAL, "zIMUManager");
-RTOS_TASK_STATIC(zRFManager, 1024, RP_REAL_TIME/*RP_HIGH*/, "zRFManager");
+RTOS_TASK_STATIC(zRFManager, 1024, RP_HIGH, "zRFManager");
 RTOS_TASK_STATIC(zInferenceManager, 1024, RP_ABOVE_NORMAL, "zInferenceManager");
-RTOS_TASK_STATIC(zUltrasonicManager, 1024, RP_HIGH/*RP_REAL_TIME*/, "zUltrasonicManager");
+RTOS_TASK_STATIC(zUltrasonicManager, 1024, RP_REAL_TIME, "zUltrasonicManager");
 
 /*!< System Mutexes Creation */
 RTOS_MUTEX_STATIC(mState);
@@ -360,11 +360,18 @@ RTOS_TASK_FUN(zRFManager) {
 	
 	while(1) {	
 		
-		/*!< Somewhere */
-		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin);
-		RTOS_DELAY(5);
-		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin<<16);
-		/*!< Timeout of RXmode */
+		RF_PowerUpRx();
+		
+		RTOS_AWAIT_TIMEOUT(nRF, 10);
+		
+		RF_Read_Interrupts(&nrf_irq);
+		
+		if (nrf_irq.F.DataReady)
+			SET_BIT(LED_CONNECT_GPIO_Port->BSRR, LED_CONNECT_Pin);
+		else 
+			SET_BIT(LED_CONNECT_GPIO_Port->BSRR, LED_CONNECT_Pin<<16);
+		
+		RF_PowerDown();
 		
 		/*!< Sleep */
 		RTOS_DELAY_UNTIL(tsRFMan, MASTER_CYCLE_PERIOD_MS);

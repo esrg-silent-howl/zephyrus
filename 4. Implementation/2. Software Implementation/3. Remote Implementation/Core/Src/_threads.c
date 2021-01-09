@@ -73,7 +73,6 @@ void THREADS_shutdownIRQHandler (void) {
 
 RTOS_TASK_FUN(zMain) {
  
-// #define BATTERY_SAMPLE_PERIOD			(1000-1)
 #define POWER_LED_DUTY_CYCLE			15
 #define POWER_LED_PULSE_NORMAL		BATTERY_SAMPLE_PERIOD
 #define POWER_LED_PULSE_LOW_BATT	\
@@ -82,22 +81,19 @@ RTOS_TASK_FUN(zMain) {
 	
 	RTOS_TIMESTAMP(tsMain);
 	
-	/*!< TIM3: Stop power timer and set counter to the value of CCR1 */
-	CLEAR_BIT(TIM3->CR1, TIM_CR1_CEN);
-	WRITE_REG(TIM3->CNT, BATTERY_SAMPLE_PERIOD);
+	/*!< TIM2: Stop power timer and set counter to the value of CCR1 */
+	CLEAR_BIT(TIM2->CR1, TIM_CR1_CEN);
+	WRITE_REG(TIM2->CNT, BATTERY_SAMPLE_PERIOD);
 	
-	/*!< TIM3: Turn LED on to indicate power up */
-	WRITE_REG(TIM3->CCR1, BATTERY_SAMPLE_PERIOD);
+	/*!< TIM2: Turn LED on to indicate power up */
+	WRITE_REG(TIM2->CCR2, BATTERY_SAMPLE_PERIOD);
 	
 	/*!< Enable OC channel 1 and main output on the power timer */
-	SET_BIT(TIM3->CCER, TIM_CCER_CC1E);
-	SET_BIT(TIM3->BDTR, TIM_BDTR_MOE);
+	SET_BIT(TIM2->CCER, TIM_CCER_CC2E);
+	SET_BIT(TIM2->BDTR, TIM_BDTR_MOE);
 	
-	/*!< TIM3: Set the auto-reload value as the sampling and led blinking period*/
-	// WRITE_REG(TIM3->ARR, BATTERY_SAMPLE_PERIOD);
-	
-	/*!< TIM3: Start */
-	SET_BIT(TIM3->CR1, TIM_CR1_CEN);
+	/*!< TIM2: Start */
+	SET_BIT(TIM2->CR1, TIM_CR1_CEN);
 	
 	/*!< ADC1: Clear regular group conversion flag and overrun flag */
 	CLEAR_BIT(ADC1->ISR, ADC_FLAG_EOC | ADC_FLAG_OVR);
@@ -112,10 +108,6 @@ RTOS_TASK_FUN(zMain) {
 	/*!< ADC1: Enable ADC */
 	SET_BIT(ADC1->CR, ADC_CR_ADEN | ADC_CR_ADSTART);
 	
-	/*!< [DEBUG] Enable the TIM Update interrupt */
-	// SET_BIT(TIM3->DIER, TIM_DIER_UIE);
-
-	
 	while(1) {
 		
 		/*!< If a conversion is complete, interpret it */
@@ -129,9 +121,9 @@ RTOS_TASK_FUN(zMain) {
 			
 			/*!< Read battery voltage and change led indicator accordingly */
 			if (THREADS_checkForLowBattery())
-				WRITE_REG(TIM3->CCR1, POWER_LED_PULSE_LOW_BATT);
+				WRITE_REG(TIM2->CCR2, POWER_LED_PULSE_LOW_BATT);
 			else
-				WRITE_REG(TIM3->CCR1, POWER_LED_PULSE_NORMAL);
+				WRITE_REG(TIM2->CCR2, POWER_LED_PULSE_NORMAL);
 		}
 		
 		/*!< Sleep */
@@ -161,7 +153,7 @@ RTOS_TASK_FUN(zIMUManager) {
 	float angle_y[N_SAMPLES];
 	
 	MODIFY_REG(I2C1->CR1, 0x000000FE, 0x00000001);
-	while(!IMU_Init(&hi2c1));
+	//while(!IMU_Init(&hi2c1));
 	
 	/*!< Enter low power mode */
 	IMU_enterLowPowerMode(&hi2c1);
@@ -237,7 +229,7 @@ RTOS_TASK_FUN(zRFManager) {
 #define Z_RF_HS_RESPONSE_TIMEOUT			50
 #define Z_RF_PAYLOAD_SIZE							9
 #define Z_RF_PERIOD_MS								35
-#define Z_RF_QUEUE_TIMEOUT						5
+#define Z_RF_QUEUE_TIMEOUT						0
 #define Z_RF_MY_ADDRESS								{0xE7, 0xE7, 0xE7, 0xE7, 0xE7}
 #define Z_RF_CAR_ADDRESS							{0x7E, 0x7E, 0x7E, 0x7E, 0x7E}
 #define Z_RF_HS_MY_CODE								{0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55}
@@ -257,8 +249,7 @@ RTOS_TASK_FUN(zRFManager) {
 	RF_IRQ_t nrf_irq;
 	RF_ConnectionState_t conn_state = NOT_CONNECTED;
 	
-	float meas_angle_x;
-	float meas_angle_y;
+	float meas_angle[2];
 
 	/*!< Wait for all configurations to be complete */
 	RTOS_AWAIT(nConfig);
@@ -276,10 +267,11 @@ RTOS_TASK_FUN(zRFManager) {
 	RF_SetMyAddress((uint8_t *) my_address);
 	RF_SetTxAddress((uint8_t *) car_address);
 	
-	// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
-	SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin);
+	/*!< Turn on LED_CONN_PROB */
+	SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
 	
 	RTOS_KEEP_TIMESTAMP(tsRFMan);
+	
 	
 	////////////////////////////// HANDSHAKE /////////////////////////////////////
 		
@@ -293,7 +285,7 @@ RTOS_TASK_FUN(zRFManager) {
 			RF_Transmit((uint8_t*)my_code);
 			
 			/*!< Await acknowledgement or timeout */
-			RTOS_AWAIT(nRF);
+			RTOS_AWAIT_TIMEOUT(nRF, 5);
 			
 			/*!< Read interrupt flags */
 			RF_Read_Interrupts(&nrf_irq);
@@ -336,7 +328,7 @@ RTOS_TASK_FUN(zRFManager) {
 			it++;
 			
 			if (it == 0)
-				break;
+				conn_state = CONNECTED;
 		}
 		
 		/*!< Termination response */
@@ -350,8 +342,7 @@ RTOS_TASK_FUN(zRFManager) {
 	RF_PowerDown();
 	
 	/*!< Turn off LED_CONN_PROB */
-	// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
-	SET_BIT(LED_DEBUG_GPIO_Port->BSRR, LED_DEBUG_Pin<<16);
+	SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, (uint32_t)LED_CONN_PROB_Pin<<16);
 		
 	/*!< Synchronization time stamp */
 	RTOS_KEEP_TIMESTAMP(tsConnect);
@@ -366,22 +357,25 @@ RTOS_TASK_FUN(zRFManager) {
 	while(1) {
 		
 		/*!< Get imu readings */
-		RTOS_QUEUE_RECV_TIMEOUT(qIMU, &meas_angle_x, Z_RF_QUEUE_TIMEOUT);
-		RTOS_QUEUE_RECV_TIMEOUT(qIMU, &meas_angle_y, Z_RF_QUEUE_TIMEOUT);
+		RTOS_QUEUE_RECV_TIMEOUT(qIMU, meas_angle, Z_RF_QUEUE_TIMEOUT);
+		RTOS_QUEUE_RECV_TIMEOUT(qIMU, meas_angle+1, Z_RF_QUEUE_TIMEOUT);
 		
-		/*!< Light up LED_CONN_PROB */ 
-		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
+		RF_Transmit((uint8_t*)meas_angle);
 		
-		/*!< Turn off LED_CONN_PROB */ 
-		// SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin<<16);
+		RTOS_AWAIT_TIMEOUT(nRF, 10);
 		
-		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin);
-		RTOS_DELAY(5);
-		SET_BIT(FLAG_DEBUG_GPIO_Port->BSRR, FLAG_DEBUG_Pin<<16);
+		RF_Read_Interrupts(&nrf_irq);
+		
+		if (nrf_irq.F.DataSent)
+			SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, (uint32_t)LED_CONN_PROB_Pin<<16);
+		else 
+			SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, LED_CONN_PROB_Pin);
 		
 		/*!< Termination response */
 		if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 1)
 			goto cleanup;
+		
+		RF_PowerDown();
 		
 		/*!< Sleep */
 		RTOS_DELAY_UNTIL(tsRFMan, MASTER_CYCLE_PERIOD_MS);
@@ -439,6 +433,7 @@ void THREADS_sleep(void){
 
 	/*!< Request Wait For Interrupt */
 	__WFI();
+
 }
 
 
