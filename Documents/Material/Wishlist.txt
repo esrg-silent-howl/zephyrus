@@ -1,3 +1,0 @@
-- Capa arquivadora (cheap)
-- Caixa de componentes
-- Plataforma baller

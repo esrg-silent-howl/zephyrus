@@ -360,12 +360,16 @@ RTOS_TASK_FUN(zRFManager) {
 		RTOS_QUEUE_RECV_TIMEOUT(qIMU, meas_angle, Z_RF_QUEUE_TIMEOUT);
 		RTOS_QUEUE_RECV_TIMEOUT(qIMU, meas_angle+1, Z_RF_QUEUE_TIMEOUT);
 		
+		/*!< Wake nRF24L01 up and request to send data */
 		RF_Transmit((uint8_t*)meas_angle);
 		
-		RTOS_AWAIT_TIMEOUT(nRF, 10);
+		/*!< Await ACK */
+		RTOS_AWAIT_TIMEOUT(nRF, 5);
 		
+		/*!< Read interrupt flags for DataSent */
 		RF_Read_Interrupts(&nrf_irq);
 		
+		/*!< Announce connection problem if communication was unsuccessful */
 		if (nrf_irq.F.DataSent)
 			SET_BIT(LED_CONN_PROB_GPIO_Port->BSRR, (uint32_t)LED_CONN_PROB_Pin<<16);
 		else 
@@ -375,6 +379,7 @@ RTOS_TASK_FUN(zRFManager) {
 		if (RTOS_SEMAPHORE_GET_COUNT(semTerminate) == 1)
 			goto cleanup;
 		
+		/*!< Send nRF24L01 into sleep mode */
 		RF_PowerDown();
 		
 		/*!< Sleep */
@@ -382,6 +387,7 @@ RTOS_TASK_FUN(zRFManager) {
 	}
 	
 	cleanup:
+	RF_PowerDown();
 	RTOS_SEMAPHORE_INC(semTerminate);
 	RTOS_TASK_DELETE();
 }

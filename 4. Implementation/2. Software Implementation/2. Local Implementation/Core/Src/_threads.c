@@ -360,17 +360,22 @@ RTOS_TASK_FUN(zRFManager) {
 	
 	while(1) {	
 		
+		/*!< Enter RX mode */
 		RF_PowerUpRx();
 		
-		RTOS_AWAIT_TIMEOUT(nRF, 10);
+		/*!< Await command */
+		RTOS_AWAIT_TIMEOUT(nRF, 5);
 		
+		/*!< Poll interrupt flags for DataReady */
 		RF_Read_Interrupts(&nrf_irq);
 		
+		/*!<  */
 		if (nrf_irq.F.DataReady)
 			SET_BIT(LED_CONNECT_GPIO_Port->BSRR, LED_CONNECT_Pin);
 		else 
 			SET_BIT(LED_CONNECT_GPIO_Port->BSRR, LED_CONNECT_Pin<<16);
 		
+		/*!< Enter sleep mode */
 		RF_PowerDown();
 		
 		/*!< Sleep */
